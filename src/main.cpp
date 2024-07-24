@@ -1,3 +1,6 @@
+#include <Dolphin/MTX.h>
+#include <Dolphin/types.h>
+
 #include <Dolphin/CARD.h>
 #include <Dolphin/OS.h>
 #include <Dolphin/math.h>
@@ -7,11 +10,14 @@
 #include <SMS/System/Application.hxx>
 #include <SMS/macros.h>
 #include <SMS/Player/Mario.hxx>
+#include <SMS/raw_fn.hxx>
 
 #include <BetterSMS/game.hxx>
 #include <BetterSMS/module.hxx>
 #include <BetterSMS/settings.hxx>
 #include <BetterSMS/stage.hxx>
+
+#include "defines.hxx"
 
 /*
 / Settings
@@ -392,16 +398,125 @@ static BetterSMS::Settings::SettingsGroup sSettingsGroup(1, 0, BetterSMS::Settin
 static bool sDummyBool = false;
 static BetterSMS::Settings::BoolSetting sDummySetting("Dummy", &sDummyBool);
 
+//static J2DTextBox *sOurTextBox = nullptr;   // move to defines?
+
 /*
 / Module Info
 */
 
 static BetterSMS::ModuleInfo sModuleInfo("Chaos", 1, 1, &sSettingsGroup);
 
+
 /*
 / Callbacks
 */
 
+Code pauseWater;
+Code dummyThiccMario;
+Code noMarioRedraw;
+Code whiteMarioSillouette;
+
+BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) { 
+    currentTime = 0;
+//								    name				  rarity	 duration	  isResetable
+    pauseWater =	        Code("pauseWater",				50,			5,			false);
+    dummyThiccMario =		Code("dummyThiccMario",			40,			15,			false);
+    noMarioRedraw =         Code("noMarioRedraw",			60,			15,			false);
+    whiteMarioSillouette =  Code("whiteMarioSillouette",    50,			15,			false);
+
+    codeContainer.addCode(pauseWater);
+    codeContainer.addCode(dummyThiccMario);
+    codeContainer.addCode(noMarioRedraw);
+    codeContainer.addCode(whiteMarioSillouette);
+
+    OSReport("Finished initVars!\n");
+}
+
+static OSTime sBaseTime = 0;
+
+BETTER_SMS_FOR_CALLBACK static void updateTime(TApplication *tapp) {
+
+    if (!tapp->mDirector)
+        return;
+
+    OSReport("Start of updateTime!\n");
+
+    OSTime diff = OSGetTime() - sBaseTime;
+    float seconds = OSTicksToSeconds(float(u32(diff)));
+    currentTime += seconds;
+    OSReport("%s%f\n", "time -> ", currentTime);
+
+    sBaseTime = OSGetTime();
+
+}
+
+BETTER_SMS_FOR_CALLBACK static void chaosEngine(TApplication *tapp) {
+    if (tapp->mContext != TApplication::Context::CONTEXT_DIRECT_STAGE)
+        return;
+
+    TMarDirector *marDirector = static_cast<TMarDirector*>(tapp->mDirector);
+    if (marDirector->mCurState == TMarDirector::Status::STATE_NORMAL) {
+        codeContainer.activateCodes();
+        codeContainer.checkCodeTimers();
+        codeContainer.iterateThroughCodes();
+    }
+
+
+	//tapp->mContext == 5;
+	//tapp.
+}
+
+static J2DTextBox *codeDisplay = nullptr;
+BETTER_SMS_FOR_CALLBACK static void initCodeDisplay(TMarDirector *director) {
+
+    codeDisplay = new J2DTextBox(gpSystemFont->mFont, "Dummy Code");
+    {
+        codeDisplay->mGradientTop    = {0, 255, 0, 255};  // RGBA
+        codeDisplay->mGradientBottom = {100, 255, 100, 255};  // RGBA
+        codeDisplay->mCharSizeX      = 16;
+        codeDisplay->mCharSizeY      = 16;
+    }
+
+    OSReport("codeDisplay initialization successful!\n");
+}
+
+BETTER_SMS_FOR_CALLBACK static void drawCodeDisplay(TMarDirector *director,  const J2DOrthoGraph *ortho) {
+
+    char displayBuffer[124];
+    for (Code c : codeContainer.codeList) {
+        if (c.isActive)
+            snprintf(displayBuffer, 124, "%s\n%s\n", displayBuffer, c.name);
+    }
+    codeDisplay->setString(displayBuffer);
+
+    codeDisplay->draw(400, 300);
+}
+
+static J2DTextBox *sOurTextBox = nullptr;
+BETTER_SMS_FOR_CALLBACK static void drawOnStageInit(TMarDirector *director) {
+
+    sOurTextBox = new J2DTextBox(gpSystemFont->mFont, "this should change");
+    {
+        sOurTextBox->mGradientTop    = {255, 0, 0, 255};  // RGBA
+        sOurTextBox->mGradientBottom = {0, 255, 0, 255};  // RGBA
+        sOurTextBox->mCharSizeX      = 20;
+        sOurTextBox->mCharSizeY      = 20;
+    }
+
+    OSReport("Textbox initialization successful!\n");
+}
+
+BETTER_SMS_FOR_CALLBACK static void onStageDraw2D(TMarDirector *director, const J2DOrthoGraph *ortho) {
+
+    char time[10];
+    snprintf(time, 10, "%.02f", currentTime);
+    sOurTextBox->setString(time);
+    sOurTextBox->draw(200, 300);
+
+    //OSReport("time -> ");
+    //OSReport("%s%f", "time -> ", currentTime);
+    //OSReport("\n");
+}
 
 // Module definition
 
@@ -409,8 +524,13 @@ static void initModule() {
     OSReport("Initializing Module...\n");
 
     // Register callbacks
-    //BetterSMS::Game::addBootCallback(autoDebug);
-    //BetterSMS::Stage::addUpdateCallback(removeSetting);
+    //BetterSMS::Game::addInitCallback(initVars);
+    BetterSMS::Game::addLoopCallback(chaosEngine);
+    BetterSMS::Game::addLoopCallback(updateTime);
+    BetterSMS::Stage::addInitCallback(drawOnStageInit);
+    BetterSMS::Stage::addDraw2DCallback(onStageDraw2D);
+    BetterSMS::Stage::addInitCallback(initCodeDisplay);
+    BetterSMS::Stage::addDraw2DCallback(drawCodeDisplay);
 
     // Register settings
     sSettingsGroup.addSetting(&sDummySetting);
