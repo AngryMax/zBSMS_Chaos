@@ -1,22 +1,3 @@
-#include <Dolphin/MTX.h>
-#include <Dolphin/types.h>
-
-#include <Dolphin/CARD.h>
-#include <Dolphin/OS.h>
-#include <Dolphin/math.h>
-#include <Dolphin/string.h>
-#include <Dolphin/types.h>
-
-#include <SMS/System/Application.hxx>
-#include <SMS/macros.h>
-#include <SMS/Player/Mario.hxx>
-#include <SMS/raw_fn.hxx>
-
-#include <BetterSMS/game.hxx>
-#include <BetterSMS/module.hxx>
-#include <BetterSMS/settings.hxx>
-#include <BetterSMS/stage.hxx>
-
 #include "p_main.hxx"
 
 /*
@@ -413,11 +394,12 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     currentTime = 0;
 
     Code addList[] = {
-//			name				  rarity	 duration	  isResettable
-        {"Pause Water",				50,			5,			false},		// 0
-        {"Dummy Thicc Mario",		40,			15,			false},		// 1
-        {"No Mario Redraw",			60,			15,			false},     // 2
-        {"White Mario Sillouette",  50,			15,			false}		// 3
+//			name				  rarity	 duration	  isResettable        pFunc
+        {"Pause Water",				50,			5,			false,      codeContainer.pauseWater},		// 0
+        {"Dummy Thicc Mario",		40,			15,			false},										// 1
+        {"No Mario Redraw",			60,			15,			false},										// 2
+        {"White Mario Sillouette",  50,			15,			false},										// 3
+        {"Set Music Volume"         30,         10,         true,       codeContainer.setMusicVol}     // 4
     };
 
     #if DEV_MODE
