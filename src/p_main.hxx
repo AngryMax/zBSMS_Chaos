@@ -2,6 +2,8 @@
 #include <Dolphin/string.h>
 #include <SMS/rand.h>
 
+#define DEV_MODE true
+
 const static int CODE_NAME_BUFFER_SIZE = 30;
 const static int CODE_COUNT            = 10;
 
@@ -53,18 +55,24 @@ public:
     }
 
     bool addCode(Code c) {
-        if (currentCodeListIndex < CODE_COUNT) {
-            codeList[currentCodeListIndex] = c;
-            currentCodeListIndex++;
+        if (currentCodeCount < CODE_COUNT) {
+            codeList[currentCodeCount] = c;
+            currentCodeCount++;
             return true;
         } else
             return false;
     }
 
     void activateCodes() {
-        if (activeCodes < maxActiveCodes) {
+        while (activeCodes < maxActiveCodes && activeCodes < currentCodeCount) {
             int rollWinner = getWeightedRand();
+            
+            if (codeList[rollWinner].isActive || codeList[rollWinner].isGraced) {
+                //OSReport("--> Already Rolled! <--\n");
+                continue;
+            }
 
+            OSReport("%s%s\n\n", "IS ACTIVE TRUE FOR: ", codeList[rollWinner].name);
             codeList[rollWinner].isActive = true;
             codeList[rollWinner].timeCalled = currentTime;
             activeCodes++;
@@ -80,15 +88,16 @@ public:
     }
 
     void checkCodeTimers() {
-        for (auto c : codeList) {
+        for (auto &c : codeList) {
             float elapsedTime = currentTime - c.timeCalled;
             if (c.isActive && c.duration <= elapsedTime) {
                 if (c.pFunc != nullptr)
                     c.pFunc(Code::FuncReset::TRUE);
-
+				
                 c.isActive = false;
                 c.isGraced = true;
             } else if (c.isGraced && c.duration - elapsedTime <= -gracePeriod) {
+                OSReport("%s%s\n\n", "GRACE PERIOD OVER FOR: ", c.name);
                 activeCodes--;
                 c.isGraced = false;
             }
@@ -96,12 +105,11 @@ public:
     }
 
 private:
-    int currentCodeListIndex = 0;
+    int currentCodeCount = 0;
 
-	int getRand() { return (rand() % CODE_COUNT); }
+	int getRand() { return (rand() % currentCodeCount); }
 
 	int getWeightedRand() {
-
         int roll;
 
         while (true) {

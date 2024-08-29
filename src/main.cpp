@@ -17,7 +17,7 @@
 #include <BetterSMS/settings.hxx>
 #include <BetterSMS/stage.hxx>
 
-#include "defines.hxx"
+#include "p_main.hxx"
 
 /*
 / Settings
@@ -398,8 +398,6 @@ static BetterSMS::Settings::SettingsGroup sSettingsGroup(1, 0, BetterSMS::Settin
 static bool sDummyBool = false;
 static BetterSMS::Settings::BoolSetting sDummySetting("Dummy", &sDummyBool);
 
-//static J2DTextBox *sOurTextBox = nullptr;   // move to defines?
-
 /*
 / Module Info
 */
@@ -411,23 +409,40 @@ static BetterSMS::ModuleInfo sModuleInfo("Chaos", 1, 1, &sSettingsGroup);
 / Callbacks
 */
 
-Code pauseWater;
-Code dummyThiccMario;
-Code noMarioRedraw;
-Code whiteMarioSillouette;
-
 BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) { 
     currentTime = 0;
-//								    name				  rarity	 duration	  isResetable
-    pauseWater =	        Code("pauseWater",				50,			5,			false);
-    dummyThiccMario =		Code("dummyThiccMario",			40,			15,			false);
-    noMarioRedraw =         Code("noMarioRedraw",			60,			15,			false);
-    whiteMarioSillouette =  Code("whiteMarioSillouette",    50,			15,			false);
 
-    codeContainer.addCode(pauseWater);
-    codeContainer.addCode(dummyThiccMario);
-    codeContainer.addCode(noMarioRedraw);
-    codeContainer.addCode(whiteMarioSillouette);
+    Code addList[] = {
+//			name				  rarity	 duration	  isResettable
+        {"Pause Water",				50,			5,			false},		// 0
+        {"Dummy Thicc Mario",		40,			15,			false},		// 1
+        {"No Mario Redraw",			60,			15,			false},     // 2
+        {"White Mario Sillouette",  50,			15,			false}		// 3
+    };
+
+    #if DEV_MODE
+
+    // any code names listed here will get their rarity set to 100 while the rest are set to 0
+    char whitelist[][30] = {};
+    if (sizeof(whitelist) != 0) {
+        for (Code c : addList) {
+            for (char *n : whitelist) {
+                if (strcmp(c.name, n) == 0)
+                    codeContainer.addCode(c);
+            }
+        }
+    } else {
+        for (Code c : addList) {
+            codeContainer.addCode(c);
+        }
+    }
+
+    #else
+
+    for (Code c : addList) {
+        codeContainer.addCode(c);
+    }
+    #endif
 
     OSReport("Finished initVars!\n");
 }
@@ -439,12 +454,12 @@ BETTER_SMS_FOR_CALLBACK static void updateTime(TApplication *tapp) {
     if (!tapp->mDirector)
         return;
 
-    OSReport("Start of updateTime!\n");
+    //OSReport("Start of updateTime!\n");
 
     OSTime diff = OSGetTime() - sBaseTime;
     float seconds = OSTicksToSeconds(float(u32(diff)));
     currentTime += seconds;
-    OSReport("%s%f\n", "time -> ", currentTime);
+    //OSReport("%s%f\n", "time -> ", currentTime);
 
     sBaseTime = OSGetTime();
 
@@ -460,63 +475,45 @@ BETTER_SMS_FOR_CALLBACK static void chaosEngine(TApplication *tapp) {
         codeContainer.checkCodeTimers();
         codeContainer.iterateThroughCodes();
     }
-
-
-	//tapp->mContext == 5;
-	//tapp.
 }
 
 static J2DTextBox *codeDisplay = nullptr;
+static J2DTextBox *codeDisplayDropShadow = nullptr;
 BETTER_SMS_FOR_CALLBACK static void initCodeDisplay(TMarDirector *director) {
 
     codeDisplay = new J2DTextBox(gpSystemFont->mFont, "Dummy Code");
     {
-        codeDisplay->mGradientTop    = {0, 255, 0, 255};  // RGBA
-        codeDisplay->mGradientBottom = {100, 255, 100, 255};  // RGBA
+        codeDisplay->mGradientTop    = {0, 255, 0, 255};		// RGBA
+        codeDisplay->mGradientBottom = {100, 255, 100, 255};	// RGBA
         codeDisplay->mCharSizeX      = 16;
         codeDisplay->mCharSizeY      = 16;
+    }
+
+    codeDisplayDropShadow = new J2DTextBox(gpSystemFont->mFont, "Dummy Code");
+    {
+        codeDisplayDropShadow->mGradientTop    = {0, 0, 0, 255};  // RGBA
+        codeDisplayDropShadow->mGradientBottom = {0, 0, 0, 255};  // RGBA
+        codeDisplayDropShadow->mCharSizeX      = 16;
+        codeDisplayDropShadow->mCharSizeY      = 16;
     }
 
     OSReport("codeDisplay initialization successful!\n");
 }
 
 BETTER_SMS_FOR_CALLBACK static void drawCodeDisplay(TMarDirector *director,  const J2DOrthoGraph *ortho) {
-
-    char displayBuffer[124];
+    char displayBuffer[144] = "";
     for (Code c : codeContainer.codeList) {
-        if (c.isActive)
-            snprintf(displayBuffer, 124, "%s\n%s\n", displayBuffer, c.name);
+        if (c.isActive || c.isGraced) {
+            snprintf(displayBuffer, 144, "%s%s%s%.0f%s\n", displayBuffer, c.name, ": ", c.duration - (currentTime - c.timeCalled), "s");
+        }
     }
+
+    codeDisplayDropShadow->setString(displayBuffer);		// TODO: add position settings and widescreen detection
+    codeDisplayDropShadow->draw(-83, 202);
     codeDisplay->setString(displayBuffer);
-
-    codeDisplay->draw(400, 300);
+    codeDisplay->draw(-85, 200);
 }
 
-static J2DTextBox *sOurTextBox = nullptr;
-BETTER_SMS_FOR_CALLBACK static void drawOnStageInit(TMarDirector *director) {
-
-    sOurTextBox = new J2DTextBox(gpSystemFont->mFont, "this should change");
-    {
-        sOurTextBox->mGradientTop    = {255, 0, 0, 255};  // RGBA
-        sOurTextBox->mGradientBottom = {0, 255, 0, 255};  // RGBA
-        sOurTextBox->mCharSizeX      = 20;
-        sOurTextBox->mCharSizeY      = 20;
-    }
-
-    OSReport("Textbox initialization successful!\n");
-}
-
-BETTER_SMS_FOR_CALLBACK static void onStageDraw2D(TMarDirector *director, const J2DOrthoGraph *ortho) {
-
-    char time[10];
-    snprintf(time, 10, "%.02f", currentTime);
-    sOurTextBox->setString(time);
-    sOurTextBox->draw(200, 300);
-
-    //OSReport("time -> ");
-    //OSReport("%s%f", "time -> ", currentTime);
-    //OSReport("\n");
-}
 
 // Module definition
 
@@ -524,11 +521,9 @@ static void initModule() {
     OSReport("Initializing Module...\n");
 
     // Register callbacks
-    //BetterSMS::Game::addInitCallback(initVars);
+    BetterSMS::Game::addInitCallback(initVars);
     BetterSMS::Game::addLoopCallback(chaosEngine);
     BetterSMS::Game::addLoopCallback(updateTime);
-    BetterSMS::Stage::addInitCallback(drawOnStageInit);
-    BetterSMS::Stage::addDraw2DCallback(onStageDraw2D);
     BetterSMS::Stage::addInitCallback(initCodeDisplay);
     BetterSMS::Stage::addDraw2DCallback(drawCodeDisplay);
 
