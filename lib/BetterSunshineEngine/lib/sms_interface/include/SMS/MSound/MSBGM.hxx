@@ -69,6 +69,7 @@ public:
     static void init();
 
     static void *smBgmInTrack[4];  // JASystem::TTrack
+    static f32 smMainVolume;
 };
 
 extern u32 gDemoBGM;

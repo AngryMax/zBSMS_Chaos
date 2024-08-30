@@ -1,3 +1,6 @@
+#include <SMS/Player/Mario.hxx>
+#include <SMS/MSound/MSBGM.hxx>
+
 #include "p_main.hxx"
 
 /*
@@ -394,18 +397,19 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     currentTime = 0;
 
     Code addList[] = {
-//			name				  rarity	 duration	  isResettable        pFunc
-        {"Pause Water",				50,			5,			false,      codeContainer.pauseWater},		// 0
-        {"Dummy Thicc Mario",		40,			15,			false},										// 1
-        {"No Mario Redraw",			60,			15,			false},										// 2
-        {"White Mario Sillouette",  50,			15,			false},										// 3
-        {"Set Music Volume"         30,         10,         true,       codeContainer.setMusicVol}     // 4
+//	   codeID	    name				  rarity	 duration	  isResettable        pFunc
+        {0,    "Pause Water",			    50,			 5,			false},
+        {1,    "Dummy Thicc Mario",		    40,			15,			false},	
+        {2,    "No Mario Redraw",		    60,			15,			false},									
+        {3,    "White Mario Sillouette",    50,			15,			false},
+        {4,    "Set Music Volume",          30,         10,          true,       codeContainer.setMusicVol},
+        {5,    "Give Coins",                 5,          5,          true,       codeContainer.giveCoins} 
     };
 
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    char whitelist[][30] = {};
+    char whitelist[][30] = {"Pause Water"};
     if (sizeof(whitelist) != 0) {
         for (Code c : addList) {
             for (char *n : whitelist) {
@@ -427,6 +431,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #endif
 
     OSReport("Finished initVars!\n");
+    OSReport("%d\n", codeContainer.setMusicVol);
 }
 
 static OSTime sBaseTime = 0;
@@ -436,12 +441,9 @@ BETTER_SMS_FOR_CALLBACK static void updateTime(TApplication *tapp) {
     if (!tapp->mDirector)
         return;
 
-    //OSReport("Start of updateTime!\n");
-
     OSTime diff = OSGetTime() - sBaseTime;
     float seconds = OSTicksToSeconds(float(u32(diff)));
     currentTime += seconds;
-    //OSReport("%s%f\n", "time -> ", currentTime);
 
     sBaseTime = OSGetTime();
 

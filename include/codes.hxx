@@ -12,6 +12,9 @@
 #include <SMS/Player/Mario.hxx>
 #include <SMS/raw_fn.hxx>
 #include <SMS/rand.h>
+#include <SMS/MSound/MSBGM.hxx>
+#include <SMS/Manager/FlagManager.hxx>
+#include <SMS/Manager/ModelWaterManager.hxx>
 
 #include <BetterSMS/game.hxx>
 #include <BetterSMS/module.hxx>
@@ -28,10 +31,11 @@ class Code  // we might want to add a member for display name
 {    
 
 public:
+    u8 codeID;
     char name[CODE_NAME_BUFFER_SIZE];
     bool isActive;
     bool isGraced;
-    int rarity;
+    u32 rarity;
     float duration;
     float timeCalled;
     bool fIsResettable;
@@ -42,8 +46,9 @@ public:
     Code() {
     }
 
-	Code(const char *n, int r, float d, bool fr, void (*pf)(FuncReset)=nullptr) { 
+	Code(u8 c, const char *n, u32 r, float d, bool fr, void (*pf)(FuncReset)=nullptr) { 
 
+        codeID = c;
         strncpy(name, n, CODE_NAME_BUFFER_SIZE);
         isActive			= false;
         isGraced            = false;
@@ -78,16 +83,23 @@ public:
             return false;
     }
 
+    // checks if code with specified id is active
+    bool isCodeActive(u8 id) {
+        for (Code c : codeList) {
+            if (c.codeID == id && c.isActive == true)
+                return true;
+        }
+        
+        return false;
+    }
+
     void activateCodes() {
         while (activeCodes < maxActiveCodes && activeCodes < currentCodeCount) {
             int rollWinner = getWeightedRand();
             
             if (codeList[rollWinner].isActive || codeList[rollWinner].isGraced) {
-                //OSReport("--> Already Rolled! <--\n");
                 continue;
             }
-
-            OSReport("%s%s\n\n", "IS ACTIVE TRUE FOR: ", codeList[rollWinner].name);
             codeList[rollWinner].isActive = true;
             codeList[rollWinner].timeCalled = currentTime;
             activeCodes++;
@@ -112,7 +124,6 @@ public:
                 c.isActive = false;
                 c.isGraced = true;
             } else if (c.isGraced && c.duration - elapsedTime <= -gracePeriod) {
-                OSReport("%s%s\n\n", "GRACE PERIOD OVER FOR: ", c.name);
                 activeCodes--;
                 c.isGraced = false;
             }
@@ -143,6 +154,11 @@ private:
 
 
 public:
-    static void pauseWater(Code::FuncReset);
-    static void setMusicVol(Code::FuncReset)
+    static void pauseWater(TModelWaterManager *);   // patched in game
+    static void dummyThiccMario();                  // patched in game
+    static void setMusicVol(Code::FuncReset);       // called via custom code
+    static void giveCoins(Code::FuncReset);         // called via custom code
 };
+
+// Single instance of CodeContainer that's accessed throughout whole project
+extern CodeContainer codeContainer;
