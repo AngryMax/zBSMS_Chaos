@@ -398,18 +398,24 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 
     Code addList[] = {
 //	   codeID	    name				  rarity	 duration	  isResettable        pFunc
-        {0,    "Pause Water",			    50,			 5,			false},
-        {1,    "Dummy Thicc Mario",		    40,			15,			false},	
-        {2,    "No Mario Redraw",		    60,			15,			false},									
-        {3,    "White Mario Sillouette",    50,			15,			false},
-        {4,    "Set Music Volume",          30,         10,          true,       codeContainer.setMusicVol},
-        {5,    "Give Coins",                 5,          5,          true,       codeContainer.giveCoins} 
+        {0,    "Pause Water",			    50,			 5,		    true,       codeContainer.pauseWater},
+        {1,    "Dummy Thicc Mario",		    40,			15,			true,       codeContainer.dummyThiccMario},	
+        {2,    "No Mario Redraw",		    60,			15,			true,       codeContainer.noMarioRedraw},									
+        {3,    "White Mario Silhouette",    50,			15,			true,       codeContainer.whiteMarioSilhouette},
+        {4,    "No MActor Models",          20,			20,			true,       codeContainer.noMActorModels},
+        {5,    "Move TLiveActor Draw",      20,			20,			true,       codeContainer.moveTLiveActorDraw},
+        {6,    "Stop Control Inputs",       20,			 1,			true,       codeContainer.stopControlInputs},
+        {7,    "Spam Spray Central",        65,			20,			true,       codeContainer.spamSprayCentral},
+        {8,    "Add Code Slot",             15,			60,			true,       codeContainer.addCodeSlot},
+        {9,    "Small Jumps",               55,			15,			true,       codeContainer.smallJumps},
+        {10,   "Set Music Volume",          30,         10,         true,       codeContainer.setMusicVol},
+        {11,   "Give Coins",                 5,          5,         true,       codeContainer.giveCoins} 
     };
 
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    char whitelist[][30] = {"Pause Water"};
+    char whitelist[][30] = {"White Mario Silhouette", "Spam Spray Central", "Give Coins", "Small Jumps"}; // test when home!
     if (sizeof(whitelist) != 0) {
         for (Code c : addList) {
             for (char *n : whitelist) {
@@ -441,9 +447,12 @@ BETTER_SMS_FOR_CALLBACK static void updateTime(TApplication *tapp) {
     if (!tapp->mDirector)
         return;
 
-    OSTime diff = OSGetTime() - sBaseTime;
-    float seconds = OSTicksToSeconds(float(u32(diff)));
-    currentTime += seconds;
+    TMarDirector *marDirector = static_cast<TMarDirector *>(tapp->mDirector);
+    if (marDirector->mCurState == TMarDirector::Status::STATE_NORMAL) {
+        OSTime diff   = OSGetTime() - sBaseTime;
+        float seconds = OSTicksToSeconds(float(u32(diff)));
+        currentTime += seconds;
+    }
 
     sBaseTime = OSGetTime();
 
@@ -462,39 +471,39 @@ BETTER_SMS_FOR_CALLBACK static void chaosEngine(TApplication *tapp) {
 }
 
 static J2DTextBox *codeDisplay = nullptr;
-static J2DTextBox *codeDisplayDropShadow = nullptr;
 BETTER_SMS_FOR_CALLBACK static void initCodeDisplay(TMarDirector *director) {
+
+    char displayBuffer[144];
+    memset(displayBuffer, 'a', 144); // fill up buffer
 
     codeDisplay = new J2DTextBox(gpSystemFont->mFont, "Dummy Code");
     {
-        codeDisplay->mGradientTop    = {0, 255, 0, 255};		// RGBA
-        codeDisplay->mGradientBottom = {100, 255, 100, 255};	// RGBA
         codeDisplay->mCharSizeX      = 16;
         codeDisplay->mCharSizeY      = 16;
     }
-
-    codeDisplayDropShadow = new J2DTextBox(gpSystemFont->mFont, "Dummy Code");
-    {
-        codeDisplayDropShadow->mGradientTop    = {0, 0, 0, 255};  // RGBA
-        codeDisplayDropShadow->mGradientBottom = {0, 0, 0, 255};  // RGBA
-        codeDisplayDropShadow->mCharSizeX      = 16;
-        codeDisplayDropShadow->mCharSizeY      = 16;
-    }
+    codeDisplay->setString(displayBuffer);
 
     OSReport("codeDisplay initialization successful!\n");
 }
 
 BETTER_SMS_FOR_CALLBACK static void drawCodeDisplay(TMarDirector *director,  const J2DOrthoGraph *ortho) {
-    char displayBuffer[144] = "";
+    char *displayBuffer = codeDisplay->getStringPtr();
+    memset(displayBuffer, 0, 144); // clear buffer
+
     for (Code c : codeContainer.codeList) {
         if (c.isActive || c.isGraced) {
-            snprintf(displayBuffer, 144, "%s%s%s%.0f%s\n", displayBuffer, c.name, ": ", c.duration - (currentTime - c.timeCalled), "s");
+            snprintf(displayBuffer, 144, "%s%s%s%.0f%s\n", displayBuffer, c.name, ": ", 
+                c.duration - (currentTime - c.timeCalled), "s");
         }
     }
+    // draw drop shadow
+    codeDisplay->mGradientTop    = BLACK;
+    codeDisplay->mGradientBottom = BLACK;
+    codeDisplay->draw(-83, 202);  // TODO: add position settings and widescreen detection
 
-    codeDisplayDropShadow->setString(displayBuffer);		// TODO: add position settings and widescreen detection
-    codeDisplayDropShadow->draw(-83, 202);
-    codeDisplay->setString(displayBuffer);
+    // draw regular text
+    codeDisplay->mGradientTop = GREEN_TOP;
+    codeDisplay->mGradientBottom = GREEN_BOTTOM;
     codeDisplay->draw(-85, 200);
 }
 

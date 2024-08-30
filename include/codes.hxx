@@ -22,23 +22,29 @@
 #include <BetterSMS/stage.hxx>
 #include <BetterSMS/memory.hxx>
 
+#include <Kuribo/sdk/kuribo_sdk.h>
+
 const static int CODE_NAME_BUFFER_SIZE = 30;
-const static int CODE_COUNT            = 10;
+const static int CODE_COUNT            = 20;
 
 static float currentTime = 0.0;  // unit = seconds
+
+// instructions
+#define NOP 0x60000000
+#define BLR 0x4e800020
 
 class Code  // we might want to add a member for display name
 {    
 
 public:
-    u8 codeID;
-    char name[CODE_NAME_BUFFER_SIZE];
-    bool isActive;
-    bool isGraced;
-    u32 rarity;
-    float duration;
-    float timeCalled;
-    bool fIsResettable;
+    u8 codeID;                          // unique code id
+    char name[CODE_NAME_BUFFER_SIZE];   // unique code display name
+    bool isActive;                      // whether the code is active
+    bool isGraced;                      // whether the code is in grace period
+    u32 rarity;                         // rarity of code 1-100 (1 = rarest, 100 = most common)
+    float duration;                     // code duration in seconds
+    float timeCalled;                   // var used to store when a code is activated
+    bool fIsResettable;                 // whether or not a code needs to be reset at the end of its duration
     
     enum FuncReset { NO_RESET, TRUE, FALSE };
     void (*pFunc)(FuncReset);
@@ -65,12 +71,14 @@ public:
     Code codeList[CODE_COUNT];
 
     float gracePeriod;
-    int maxActiveCodes;
-    int activeCodes;
+    u32 maxActiveCodes;
+    u32 baseMaxActiveCodes;
+    u32 activeCodes;
 
     CodeContainer() {
         activeCodes     = 0; 
         maxActiveCodes  = 4;
+        baseMaxActiveCodes = maxActiveCodes;
         gracePeriod     = 7;
     }
 
@@ -154,10 +162,18 @@ private:
 
 
 public:
-    static void pauseWater(TModelWaterManager *);   // patched in game
-    static void dummyThiccMario();                  // patched in game
-    static void setMusicVol(Code::FuncReset);       // called via custom code
-    static void giveCoins(Code::FuncReset);         // called via custom code
+    static void pauseWater(Code::FuncReset);        
+    static void dummyThiccMario(Code::FuncReset);   
+    static void noMarioRedraw(Code::FuncReset);
+    static void whiteMarioSilhouette(Code::FuncReset);
+    static void noMActorModels(Code::FuncReset);
+    static void moveTLiveActorDraw(Code::FuncReset);
+    static void stopControlInputs(Code::FuncReset);
+    static void spamSprayCentral(Code::FuncReset);
+    static void addCodeSlot(Code::FuncReset);
+    static void smallJumps(Code::FuncReset);
+    static void setMusicVol(Code::FuncReset);       
+    static void giveCoins(Code::FuncReset);         
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project
