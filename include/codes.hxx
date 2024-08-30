@@ -15,6 +15,7 @@
 #include <SMS/MSound/MSBGM.hxx>
 #include <SMS/Manager/FlagManager.hxx>
 #include <SMS/Manager/ModelWaterManager.hxx>
+#include <SMS/MSound/MSoundSESystem.hxx>
 
 #include <BetterSMS/game.hxx>
 #include <BetterSMS/module.hxx>
@@ -101,6 +102,18 @@ public:
         return false;
     }
 
+    bool getCodeFromName(const char name[30], Code output) {
+        for (Code &c : codeList) {
+            if (strcmp(c.name, name) == 0) {
+                output = c;
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     void activateCodes() {
         while (activeCodes < maxActiveCodes && activeCodes < currentCodeCount) {
             int rollWinner = getWeightedRand();
@@ -160,7 +173,7 @@ private:
         }
 	}
 
-
+// all specific code functions
 public:
     static void pauseWater(Code::FuncReset);        
     static void dummyThiccMario(Code::FuncReset);   
@@ -172,9 +185,28 @@ public:
     static void spamSprayCentral(Code::FuncReset);
     static void addCodeSlot(Code::FuncReset);
     static void smallJumps(Code::FuncReset);
+    static void lockJumpDirection(Code::FuncReset);
+    static void sadFLUDD(Code::FuncReset);
+    static void landMovementLock(Code::FuncReset);
+    static void forceTurbo(Code::FuncReset);
     static void setMusicVol(Code::FuncReset);       
-    static void giveCoins(Code::FuncReset);         
+    static void SPEEN(Code::FuncReset);
+    static void changeNozzleRandom(Code::FuncReset);       
+    static void giveCoins(Code::FuncReset);
+    static void spawnYoshi(Code::FuncReset);
 };
+
+namespace Utils {
+
+    // plays the sound of soundId as long as the gate is open
+    static bool playSound(u32 soundId) {
+        if (gpMSound->gateCheck(0)) {
+            MSoundSESystem::MSoundSE::startSoundSystemSE(soundId, 0, 0, 0);
+            return true;
+        } else
+            return false;
+    }
+}
 
 // Single instance of CodeContainer that's accessed throughout whole project
 extern CodeContainer codeContainer;

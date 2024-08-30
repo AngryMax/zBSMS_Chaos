@@ -408,14 +408,21 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {7,    "Spam Spray Central",        65,			20,			true,       codeContainer.spamSprayCentral},
         {8,    "Add Code Slot",             15,			60,			true,       codeContainer.addCodeSlot},
         {9,    "Small Jumps",               55,			15,			true,       codeContainer.smallJumps},
-        {10,   "Set Music Volume",          30,         10,         true,       codeContainer.setMusicVol},
-        {11,   "Give Coins",                 5,          5,         true,       codeContainer.giveCoins} 
+        {10,   "Lock Jump Direction",       60,			20,			true,       codeContainer.lockJumpDirection},
+        {11,   "Sad FLUDD",                 70,			30,			true,       codeContainer.sadFLUDD},
+        {12,   "Land Movement Lock",        40,			30,			true,       codeContainer.landMovementLock},
+        {13,   "Force Turbo",               25,			30,			true,       codeContainer.forceTurbo},
+        {14,   "Set Music Volume",          30,         10,         true,       codeContainer.setMusicVol},
+        {15,   "SPEEN",                     30,         10,         true,       codeContainer.SPEEN},
+        {16,   "Change Nozzle Random",      35,          7,        false,       codeContainer.changeNozzleRandom},
+        {16,   "Give Coins",                 5,          5,         true,       codeContainer.giveCoins},
+        {17,   "Spawn Yoshi",                5,         30,         true,       codeContainer.spawnYoshi} 
     };
 
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    char whitelist[][30] = {"White Mario Silhouette", "Spam Spray Central", "Give Coins", "Small Jumps"}; // test when home!
+    char whitelist[][30] = {};
     if (sizeof(whitelist) != 0) {
         for (Code c : addList) {
             for (char *n : whitelist) {

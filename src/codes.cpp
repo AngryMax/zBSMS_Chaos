@@ -1,5 +1,4 @@
 #include "codes.hxx"
-#include <Kuribo/sdk/kuribo_sdk.h>
 
 
 pp::auto_patch pauseWaterPatch(SMS_PORT_REGION(0x8027bedc, 0, 0, 0), NOP, false);
@@ -82,6 +81,45 @@ void CodeContainer::smallJumps(Code::FuncReset f) {
         smallJumpsPatch.set_enabled(false);
 }
 
+pp::auto_patch lockJumpDirectionPatch(SMS_PORT_REGION(0x8024cad8, 0, 0, 0), BLR, false);
+void CodeContainer::lockJumpDirection(Code::FuncReset f) {
+    if (f == Code::FuncReset::FALSE && !lockJumpDirectionPatch.is_enabled())
+        lockJumpDirectionPatch.set_enabled(true);
+    else if (f == Code::FuncReset::TRUE)
+        lockJumpDirectionPatch.set_enabled(false);
+}
+
+pp::auto_patch sadFLUDDPatch(SMS_PORT_REGION(0x8027ff0c, 0, 0, 0), NOP, false);
+void CodeContainer::sadFLUDD(Code::FuncReset f) {
+    if (f == Code::FuncReset::FALSE && !sadFLUDDPatch.is_enabled())
+        sadFLUDDPatch.set_enabled(true);
+    else if (f == Code::FuncReset::TRUE)
+        sadFLUDDPatch.set_enabled(false);
+}
+
+pp::auto_patch landMovementLockPatch(SMS_PORT_REGION(0x802538e0, 0, 0, 0), BLR, false);
+void CodeContainer::landMovementLock(Code::FuncReset f) {
+    if (f == Code::FuncReset::FALSE && !landMovementLockPatch.is_enabled())
+        landMovementLockPatch.set_enabled(true);
+    else if (f == Code::FuncReset::TRUE)
+        landMovementLockPatch.set_enabled(false);
+}
+
+pp::auto_patch forceTurboPatch(SMS_PORT_REGION(0x80252018, 0, 0, 0), NOP, false);
+void CodeContainer::forceTurbo(Code::FuncReset f) {
+    if (f == Code::FuncReset::FALSE) {
+        u8 bitMask = 0b01000000;
+        u32 state  = gpMarioOriginal->mState;
+        if (state != TMario::State::STATE_JUMPSPINL && state != TMario::State::STATE_JUMPSPINR)
+            gpMarioOriginal->mAttributes.mIsFluddEmitting = 1;
+        
+        if (!forceTurboPatch.is_enabled())
+            forceTurboPatch.set_enabled(true);
+    }
+    else if (f == Code::FuncReset::TRUE)
+        forceTurboPatch.set_enabled(false);
+}
+
 void CodeContainer::setMusicVol(Code::FuncReset f) {
     /*float vol = 0.75;    
 
@@ -129,17 +167,28 @@ void CodeContainer::setMusicVol(Code::FuncReset f) {
 
 }
 
+pp::auto_patch SPEENPatch(SMS_PORT_REGION(0x8025C39C, 0, 0, 0), NOP, false);
+void CodeContainer::SPEEN(Code::FuncReset f) {
+    if (f == Code::FuncReset::FALSE && !SPEENPatch.is_enabled())
+        SPEENPatch.set_enabled(true);
+    else if (f == Code::FuncReset::TRUE)
+        SPEENPatch.set_enabled(false);
+}
+
+void CodeContainer::changeNozzleRandom(Code::FuncReset f) {
+    u32 nozzle = rand() % 6;
+    gpMarioOriginal->mFludd->mCurrentNozzle = nozzle;
+    gpMarioOriginal->mFludd->mSecondNozzle = nozzle;
+
+    Utils::playSound(MS_SOUND_EFFECT::MSD_SE_OBJ_SLOT_SPIN);
+}
+
 void CodeContainer::giveCoins(Code::FuncReset f) {
 
     static bool execOnce = true;
 
-	u32 *i = (u32 *)0x80349a6c;
-    i[0]   = 0x60000000;
-
 	if (f == Code::FuncReset::TRUE) {
         execOnce = true;
-
-        i[0] = 0xf1850000;
         return;
     }
 
@@ -147,5 +196,30 @@ void CodeContainer::giveCoins(Code::FuncReset f) {
     if (execOnce) {
         TFlagManager::smInstance->setFlag(0x40002, TFlagManager::smInstance->getFlag(0x40002) + 99);
         execOnce = false;
+    }
+}
+
+void CodeContainer::spawnYoshi(Code::FuncReset f) {
+
+    static bool execOnce = true;
+    static u8 codeId     = 17;
+
+	if (f == Code::FuncReset::TRUE) {
+        execOnce = true;
+        gpMarioOriginal->mYoshi->mState = TYoshi::State::EGG;
+        return;
+    }
+
+    if (execOnce) {
+        gpMarioOriginal->mYoshi->mState = TYoshi::State::MOUNTED;
+        execOnce = false;
+    }
+
+    if (gpMarioOriginal->mYoshi->mState == TYoshi::State::EGG) {
+        Code yoshiCode;
+        if (codeContainer.getCodeFromName("Spawn Yoshi", yoshiCode)) {
+            yoshiCode.timeCalled = currentTime - yoshiCode.duration;
+            OSReport("YES!\n");
+        }
     }
 }
