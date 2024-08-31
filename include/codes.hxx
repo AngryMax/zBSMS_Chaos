@@ -16,6 +16,7 @@
 #include <SMS/Manager/FlagManager.hxx>
 #include <SMS/Manager/ModelWaterManager.hxx>
 #include <SMS/MSound/MSoundSESystem.hxx>
+#include <SMS/MSound/MSModBgm.hxx>
 
 #include <BetterSMS/game.hxx>
 #include <BetterSMS/module.hxx>
@@ -26,7 +27,7 @@
 #include <Kuribo/sdk/kuribo_sdk.h>
 
 const static int CODE_NAME_BUFFER_SIZE = 30;
-const static int CODE_COUNT            = 20;
+const static int CODE_COUNT            = 25;
 
 static float currentTime = 0.0;  // unit = seconds
 
@@ -194,6 +195,8 @@ public:
     static void changeNozzleRandom(Code::FuncReset);       
     static void giveCoins(Code::FuncReset);
     static void spawnYoshi(Code::FuncReset);
+    static void sunglassesAndShineShirt(Code::FuncReset);
+    static void speedUpTempo(Code::FuncReset);
 };
 
 namespace Utils {

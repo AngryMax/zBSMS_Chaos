@@ -223,3 +223,32 @@ void CodeContainer::spawnYoshi(Code::FuncReset f) {
         }
     }
 }
+
+void CodeContainer::sunglassesAndShineShirt(Code::FuncReset f) {
+
+	static bool execOnce = true;
+
+	//*gpMarioFlag & 0b000000000001;
+
+	if (f == Code::FuncReset::TRUE) {		// TODO: figure out how the fuck to put the shirt on
+        gpMarioOriginal->takeOffGlass();
+        execOnce = true;
+        return;
+	}
+
+	if (execOnce) {
+        gpMarioOriginal->wearGlass();
+        execOnce = false;
+	}
+}
+
+void CodeContainer::speedUpTempo(Code::FuncReset f) {
+
+	static bool execOnce = true;
+
+	if (execOnce)
+	{
+        u8 tempo = rand() % 3;
+        MSModBgm::changeTempo(0, tempo);
+	}
+}

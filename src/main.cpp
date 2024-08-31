@@ -414,15 +414,17 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {13,   "Force Turbo",               25,			30,			true,       codeContainer.forceTurbo},
         {14,   "Set Music Volume",          30,         10,         true,       codeContainer.setMusicVol},
         {15,   "SPEEN",                     30,         10,         true,       codeContainer.SPEEN},
-        {16,   "Change Nozzle Random",      35,          7,        false,       codeContainer.changeNozzleRandom},
-        {16,   "Give Coins",                 5,          5,         true,       codeContainer.giveCoins},
-        {17,   "Spawn Yoshi",                5,         30,         true,       codeContainer.spawnYoshi} 
+        {16,   "Nozzle Roll",				35,          7,        false,       codeContainer.changeNozzleRandom},
+        {17,   "Give Coins",                 5,          5,         true,       codeContainer.giveCoins},
+        {18,   "Spawn Yoshi",                5,         30,         true,       codeContainer.spawnYoshi},
+        {19,   "Sun Drip",					50,			30,			true,		codeContainer.sunglassesAndShineShirt},
+		{20,   "Affrettando",				60,			 5,			true,		codeContainer.speedUpTempo}
     };
 
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    char whitelist[][30] = {};
+    char whitelist[][30] = {"Sun Drip"};
     if (sizeof(whitelist) != 0) {
         for (Code c : addList) {
             for (char *n : whitelist) {

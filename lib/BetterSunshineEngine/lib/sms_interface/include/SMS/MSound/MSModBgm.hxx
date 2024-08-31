@@ -5,7 +5,7 @@
 
 class MSModBgm {
 public:
-    void changeTempo(u8, u8);
+    void *changeTempo(u8, u8);
     void loop();
     JAISound *modBgm(u8, u8);
 };
