@@ -403,7 +403,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {2,    "No Mario Redraw",		    60,			15,			true,       codeContainer.noMarioRedraw},									
         {3,    "White Mario Silhouette",    50,			15,			true,       codeContainer.whiteMarioSilhouette},
         {4,    "No MActor Models",          20,			20,			true,       codeContainer.noMActorModels},
-        {5,    "Move TLiveActor Draw",      20,			20,			true,       codeContainer.moveTLiveActorDraw},
+        {5,    "Move TLiveActor Draw",      20,			20,			true,       codeContainer.moveTLiveActorDraw},	// needs a display name
         {6,    "Stop Control Inputs",       20,			 1,			true,       codeContainer.stopControlInputs},
         {7,    "Spam Spray Central",        65,			20,			true,       codeContainer.spamSprayCentral},
         {8,    "Add Code Slot",             15,			60,			true,       codeContainer.addCodeSlot},
@@ -418,13 +418,19 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {17,   "Give Coins",                 5,          5,         true,       codeContainer.giveCoins},
         {18,   "Spawn Yoshi",                5,         30,         true,       codeContainer.spawnYoshi},
         {19,   "Sun Drip",					50,			30,			true,		codeContainer.sunglassesAndShineShirt},
-		{20,   "Affrettando",				60,			 5,			true,		codeContainer.speedUpTempo}
+		{20,   "Affrettando",				60,			 5,			true,		codeContainer.speedUpTempo},
+        {21,   "tpMarioBack",				10,			15,			true,		codeContainer.tpMarioBack},		// needs a display name
+        {22,   "hpRoulette",				35,			10,			true,		codeContainer.hpRoulette},
+        {23,   "Luigi Slide",				50,			20,			true,		codeContainer.luigiSlide},
+        {24,   "Wrong Framerate NPCs",		50,			25,			true,		codeContainer.wrongFramerateNPC},		// tbh this code is super underwhelming. it either needs to be tweaked to be less conditional or removed
+		{25,   "a s c e n d",				25,			30,			true,		codeContainer.ascend},
+        {26,   "Double Time!!",				25,			30,			true,		codeContainer.doubleTime}
     };
 
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    char whitelist[][30] = {"Affrettando"};
+    char whitelist[][30] = {"a s c e n d", "Double Time!!"};
     if (sizeof(whitelist) != 0) {
         for (Code c : addList) {
             for (char *n : whitelist) {

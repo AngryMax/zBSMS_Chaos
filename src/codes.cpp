@@ -257,11 +257,7 @@ void CodeContainer::sunglassesAndShineShirt(Code::FuncReset f) {
         SMS_ASM_BLOCK("sth 27, 0x118, 30");
 
         execOnce = false;
-	}
-
-	
-
-	
+	}	
 }
 
 void CodeContainer::speedUpTempo(Code::FuncReset f) {
@@ -279,4 +275,62 @@ void CodeContainer::speedUpTempo(Code::FuncReset f) {
         MSModBgm::changeTempo(0, tempo);
         execOnce = false;
 	}
+}
+
+void CodeContainer::tpMarioBack(Code::FuncReset f) {
+
+	static bool execOnce = true;
+    static TVec3f prevPos;
+
+	if (f == Code::FuncReset::TRUE) {
+        *gpMarioPos = prevPos;
+
+        execOnce = true;
+        return;
+    }
+
+	if (execOnce) {
+		prevPos = *gpMarioPos;
+        execOnce = false;
+	}
+}
+
+void CodeContainer::hpRoulette(Code::FuncReset f) {		// CURRENTLY THROWS AN INVALID READ
+
+	//static bool execOnce = true;
+
+
+	gpMarioAddress->mHealth = rand() % 8 + 1;
+
+	if (MSound::gateCheck(0)) {								// idk how to translate this into bettersms
+        MSound::startSoundSystemSE(0x0000308D, 0, 0, 0);
+    }
+}
+
+pp::auto_patch luigiSlidePatch(SMS_PORT_REGION(0x80255734, 0, 0, 0), BLR, false);
+void CodeContainer::luigiSlide(Code::FuncReset f) {
+    if (f == Code::FuncReset::FALSE && !luigiSlidePatch.is_enabled())
+        luigiSlidePatch.set_enabled(true);
+    else if (f == Code::FuncReset::TRUE)
+        luigiSlidePatch.set_enabled(false);
+}
+
+pp::auto_patch wrongFramerateNPCPatch(SMS_PORT_REGION(0x80238e7c, 0, 0, 0), BLR, false);
+void CodeContainer::wrongFramerateNPC(Code::FuncReset f) {
+    if (f == Code::FuncReset::FALSE && !wrongFramerateNPCPatch.is_enabled())
+        wrongFramerateNPCPatch.set_enabled(true);
+    else if (f == Code::FuncReset::TRUE)
+        wrongFramerateNPCPatch.set_enabled(false);
+
+}
+
+void CodeContainer::ascend(Code::FuncReset f) {
+
+	*gpMarioSpeedY = 20.0;		// extrememly simplified code from the ckit version, even though it seems to function exactly the same
+
+}
+
+void CodeContainer::doubleTime(Code::FuncReset f) {		// might never be called
+
+
 }

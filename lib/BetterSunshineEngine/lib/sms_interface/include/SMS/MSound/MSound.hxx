@@ -1653,7 +1653,7 @@ public:
     void enterStage(MS_SCENE_WAVE, u8, u8);
     void exitStage();
     void fadeOutAllSound(u32);
-    bool gateCheck(u32);
+    static bool gateCheck(u32);
     void *getBstSwitch(u32);
     f32 getDistFromCamera(Vec *);
     f32 getDistPowFromCamera(const Vec &);
@@ -1680,7 +1680,7 @@ public:
     void startSoundActorSpecial(u32, const Vec *, f32, f32, u32, JAISound **, u32, u8);
     void startSoundSet(u32, const Vec *, u32, f32, u32, u32, u8);
     void startSoundGrp(u32, const Vec *, u32, f32, u32, u32, u8);
-    void startSoundSystemSE(u32, u32, JAISound **, u32);
+    static void startSoundSystemSE(u32, u32, JAISound **, u32);
     void stopAllSound();
     void stopMarioVoice(u32, u8);
     void talkModeIn(bool);
