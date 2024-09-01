@@ -268,9 +268,15 @@ void CodeContainer::speedUpTempo(Code::FuncReset f) {
 
 	static bool execOnce = true;
 
+	if (f == Code::FuncReset::TRUE) {
+        execOnce = true;
+        return;
+    }
+
 	if (execOnce)
 	{
         u8 tempo = rand() % 3;
-        //MSModBgm::changeTempo(0, tempo);	// doesnt work
+        MSModBgm::changeTempo(0, tempo);
+        execOnce = false;
 	}
 }
