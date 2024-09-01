@@ -230,16 +230,38 @@ void CodeContainer::sunglassesAndShineShirt(Code::FuncReset f) {
 
 	//*gpMarioFlag & 0b000000000001;
 
-	if (f == Code::FuncReset::TRUE) {		// TODO: figure out how the fuck to put the shirt on
-        gpMarioOriginal->takeOffGlass();
+	if (f == Code::FuncReset::TRUE) {		// TODO: currently we are just bit flipping the shine shirt, which means if mario is already wearing it when the code begins, then
+        gpMarioOriginal->takeOffGlass();	//		 he will lose instead of gain it. we need to figure out if this is desirable behavior or not.
+
+		SMS_ASM_BLOCK("lis 30, 0x8040");
+        SMS_ASM_BLOCK("ori 30, 30, 0xE0E8");
+        SMS_ASM_BLOCK("lwz 30, 0, 30");
+        SMS_ASM_BLOCK("lhz 28, 0x118, 30");
+        SMS_ASM_BLOCK("xori 27, 28, 0x10");
+        SMS_ASM_BLOCK("sth 27, 0x118, 30");
+
         execOnce = true;
         return;
 	}
 
 	if (execOnce) {
         gpMarioOriginal->wearGlass();
+
+		// idk how to do this in bettersms w/o using asm
+		// r30 = tmario* | r28 = tmario flags input | r27 = tmario flags output
+		SMS_ASM_BLOCK("lis 30, 0x8040");		
+        SMS_ASM_BLOCK("ori 30, 30, 0xE0E8");
+        SMS_ASM_BLOCK("lwz 30, 0, 30");
+        SMS_ASM_BLOCK("lhz 28, 0x118, 30");
+        SMS_ASM_BLOCK("xori 27, 28, 0x10");
+        SMS_ASM_BLOCK("sth 27, 0x118, 30");
+
         execOnce = false;
 	}
+
+	
+
+	
 }
 
 void CodeContainer::speedUpTempo(Code::FuncReset f) {
@@ -249,6 +271,6 @@ void CodeContainer::speedUpTempo(Code::FuncReset f) {
 	if (execOnce)
 	{
         u8 tempo = rand() % 3;
-        MSModBgm::changeTempo(0, tempo);
+        //MSModBgm::changeTempo(0, tempo);	// doesnt work
 	}
 }
