@@ -204,6 +204,7 @@ public:
     static void wrongFramerateNPC(Code::FuncReset);
     static void ascend(Code::FuncReset);
     static void doubleTime(Code::FuncReset);
+    static void messUpTextures(Code::FuncReset);
 };
 
 namespace Utils {

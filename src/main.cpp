@@ -424,13 +424,14 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {23,   "Luigi Slide",				50,			20,			true,		codeContainer.luigiSlide},
         {24,   "Wrong Framerate NPCs",		50,			25,			true,		codeContainer.wrongFramerateNPC},		// tbh this code is super underwhelming. it either needs to be tweaked to be less conditional or removed
 		{25,   "a s c e n d",				25,			30,			true,		codeContainer.ascend},
-        {26,   "Double Time!!",				25,			30,			true,		codeContainer.doubleTime}
+        {26,   "Double Time!!",				25,			30,			true,		codeContainer.doubleTime},
+		{26,   "Scramble Textures",			60,			20,			true,		codeContainer.messUpTextures}
     };
 
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    char whitelist[][30] = {"a s c e n d", "Double Time!!"};
+    char whitelist[][30] = {"messUpTextures"};
     if (sizeof(whitelist) != 0) {
         for (Code c : addList) {
             for (char *n : whitelist) {

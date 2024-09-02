@@ -295,16 +295,10 @@ void CodeContainer::tpMarioBack(Code::FuncReset f) {
 	}
 }
 
-void CodeContainer::hpRoulette(Code::FuncReset f) {		// CURRENTLY THROWS AN INVALID READ
-
-	//static bool execOnce = true;
-
+void CodeContainer::hpRoulette(Code::FuncReset f) {
 
 	gpMarioAddress->mHealth = rand() % 8 + 1;
-
-	if (MSound::gateCheck(0)) {								// idk how to translate this into bettersms
-        MSound::startSoundSystemSE(0x0000308D, 0, 0, 0);
-    }
+	Utils::playSound(0x0000308D);						// CURRENTLY THROWS AN INVALID READ
 }
 
 pp::auto_patch luigiSlidePatch(SMS_PORT_REGION(0x80255734, 0, 0, 0), BLR, false);
@@ -332,5 +326,9 @@ void CodeContainer::ascend(Code::FuncReset f) {
 
 void CodeContainer::doubleTime(Code::FuncReset f) {		// might never be called
 
+
+}
+
+void CodeContainer::messUpTextures(Code::FuncReset f) {
 
 }
