@@ -6,6 +6,7 @@
 #include <Dolphin/math.h>
 #include <Dolphin/string.h>
 #include <Dolphin/types.h>
+#include <Dolphin/MTX.h>
 
 #include <SMS/System/Application.hxx>
 #include <SMS/macros.h>
@@ -18,6 +19,7 @@
 #include <SMS/MSound/MSoundSESystem.hxx>
 #include <SMS/MSound/MSModBgm.hxx>
 #include <SMS/MSound/MSound.hxx>
+//#include <SMS/MarioUtil/gd-reinit-gx.hxx>
 
 #include <BetterSMS/game.hxx>
 #include <BetterSMS/module.hxx>
@@ -30,7 +32,7 @@
 const static int CODE_NAME_BUFFER_SIZE = 30;
 const static int CODE_COUNT            = 30;
 
-static float currentTime = 0.0;  // unit = seconds
+extern float currentTime;  // unit = seconds
 
 // instructions
 #define NOP 0x60000000
@@ -82,7 +84,7 @@ public:
         activeCodes     = 0; 
         maxActiveCodes  = 4;
         baseMaxActiveCodes = maxActiveCodes;
-        gracePeriod     = 7;
+        gracePeriod     = 1;
     }
 
     bool addCode(Code c) {
@@ -201,10 +203,12 @@ public:
     static void tpMarioBack(Code::FuncReset);
     static void hpRoulette(Code::FuncReset);
     static void luigiSlide(Code::FuncReset);
-    static void wrongFramerateNPC(Code::FuncReset);
+    static void emitFireball(Code::FuncReset);
     static void ascend(Code::FuncReset);
     static void doubleTime(Code::FuncReset);
     static void messUpTextures(Code::FuncReset);
+    static void changeLives(Code::FuncReset);
+    static void helpfulInputDisplay(Code::FuncReset);
 };
 
 namespace Utils {

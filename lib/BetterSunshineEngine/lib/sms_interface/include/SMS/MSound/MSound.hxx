@@ -4,6 +4,7 @@
 #include <Dolphin/types.h>
 #include <JSystem/JAudio/JAIBasic.hxx>
 #include <JSystem/JKernel/JKRHeap.hxx>
+#include <SMS/MSound/MSModBgm.hxx>
 
 enum MS_SCENE_WAVE { MS_WAVE_DEFAULT = 256, MS_WAVE_DELFINO_PLAZA = 513 };
 enum MS_SOUND_EFFECT {
@@ -1653,7 +1654,7 @@ public:
     void enterStage(MS_SCENE_WAVE, u8, u8);
     void exitStage();
     void fadeOutAllSound(u32);
-    static bool gateCheck(u32);
+    bool gateCheck(u32);
     void *getBstSwitch(u32);
     f32 getDistFromCamera(Vec *);
     f32 getDistPowFromCamera(const Vec &);
@@ -1680,13 +1681,44 @@ public:
     void startSoundActorSpecial(u32, const Vec *, f32, f32, u32, JAISound **, u32, u8);
     void startSoundSet(u32, const Vec *, u32, f32, u32, u32, u8);
     void startSoundGrp(u32, const Vec *, u32, f32, u32, u32, u8);
-    static void startSoundSystemSE(u32, u32, JAISound **, u32);
+    void startSoundSystemSE(u32, u32, JAISound **, u32);
     void stopAllSound();
     void stopMarioVoice(u32, u8);
     void talkModeIn(bool);
     void talkModeOut();
 
-    u8 _00[0xD2];
+    u32 _7C;
+    u32 _80;
+    u32 _84;
+    u8 _88;
+    u16 _8A;
+    u32 _8C;
+    u32 _90;
+    s32 _94; // initialized to -1
+    u8 _98;
+    u16 _9A;
+    MSModBgm *mModBgm;
+    f32 *_A0;
+    u32 _A4;
+    u32 _A8;
+    u8 _AC;
+    u16 _AE;
+    u32 *_B0; // camTrans
+    u32 *_B4; // camPreTrans
+    u32 *_B8; // camMtx
+    u32 *_BC; // camTrans
+    u32 *_C0; // camPreTrans
+    u32 *_C4; // camMtx
+    u32 _C8; 
+    u8 _CC;
+    u8 _CD;
+    u8 _CE;
+    u8 _CF;
+    u8 _D0;
+    u8 _D1; // initialized to -1
+    u8 _D2; // initialized to -1
+    u8 _D3; // initialized to 1
+    u8 _D4; // initialized to 1
 };
 
 extern MSound *gpMSound;

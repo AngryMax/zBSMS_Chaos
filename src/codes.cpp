@@ -228,17 +228,10 @@ void CodeContainer::sunglassesAndShineShirt(Code::FuncReset f) {
 
 	static bool execOnce = true;
 
-	//*gpMarioFlag & 0b000000000001;
+	if (f == Code::FuncReset::TRUE) {
+        gpMarioOriginal->takeOffGlass();	
 
-	if (f == Code::FuncReset::TRUE) {		// TODO: currently we are just bit flipping the shine shirt, which means if mario is already wearing it when the code begins, then
-        gpMarioOriginal->takeOffGlass();	//		 he will lose instead of gain it. we need to figure out if this is desirable behavior or not.
-
-		SMS_ASM_BLOCK("lis 30, 0x8040");
-        SMS_ASM_BLOCK("ori 30, 30, 0xE0E8");
-        SMS_ASM_BLOCK("lwz 30, 0, 30");
-        SMS_ASM_BLOCK("lhz 28, 0x118, 30");
-        SMS_ASM_BLOCK("xori 27, 28, 0x10");
-        SMS_ASM_BLOCK("sth 27, 0x118, 30");
+		gpMarioOriginal->mAttributes.mIsShineShirt = 0;
 
         execOnce = true;
         return;
@@ -247,14 +240,7 @@ void CodeContainer::sunglassesAndShineShirt(Code::FuncReset f) {
 	if (execOnce) {
         gpMarioOriginal->wearGlass();
 
-		// idk how to do this in bettersms w/o using asm
-		// r30 = tmario* | r28 = tmario flags input | r27 = tmario flags output
-		SMS_ASM_BLOCK("lis 30, 0x8040");		
-        SMS_ASM_BLOCK("ori 30, 30, 0xE0E8");
-        SMS_ASM_BLOCK("lwz 30, 0, 30");
-        SMS_ASM_BLOCK("lhz 28, 0x118, 30");
-        SMS_ASM_BLOCK("xori 27, 28, 0x10");
-        SMS_ASM_BLOCK("sth 27, 0x118, 30");
+		gpMarioOriginal->mAttributes.mIsShineShirt = 1;
 
         execOnce = false;
 	}	
@@ -272,7 +258,7 @@ void CodeContainer::speedUpTempo(Code::FuncReset f) {
 	if (execOnce)
 	{
         u8 tempo = rand() % 3;
-        MSModBgm::changeTempo(0, tempo);
+        gpMSound->mModBgm->changeTempo(tempo, 0);
         execOnce = false;
 	}
 }
@@ -298,7 +284,7 @@ void CodeContainer::tpMarioBack(Code::FuncReset f) {
 void CodeContainer::hpRoulette(Code::FuncReset f) {
 
 	gpMarioAddress->mHealth = rand() % 8 + 1;
-	Utils::playSound(0x0000308D);						// CURRENTLY THROWS AN INVALID READ
+    Utils::playSound(MS_SOUND_EFFECT::MSD_SE_OBJ_SLOT_SPIN);  // CURRENTLY THROWS AN INVALID READ
 }
 
 pp::auto_patch luigiSlidePatch(SMS_PORT_REGION(0x80255734, 0, 0, 0), BLR, false);
@@ -309,13 +295,10 @@ void CodeContainer::luigiSlide(Code::FuncReset f) {
         luigiSlidePatch.set_enabled(false);
 }
 
-pp::auto_patch wrongFramerateNPCPatch(SMS_PORT_REGION(0x80238e7c, 0, 0, 0), BLR, false);
-void CodeContainer::wrongFramerateNPC(Code::FuncReset f) {
-    if (f == Code::FuncReset::FALSE && !wrongFramerateNPCPatch.is_enabled())
-        wrongFramerateNPCPatch.set_enabled(true);
-    else if (f == Code::FuncReset::TRUE)
-        wrongFramerateNPCPatch.set_enabled(false);
-
+void CodeContainer::emitFireball(Code::FuncReset f) {
+    gpMarioOriginal->emitBlurHipDropSuper();
+    //gpMarioOriginal->emitGetEffect();
+    //gpMarioOriginal->emitSmoke(gpMarioOriginal->mAngle.y);
 }
 
 void CodeContainer::ascend(Code::FuncReset f) {
@@ -329,6 +312,82 @@ void CodeContainer::doubleTime(Code::FuncReset f) {		// might never be called
 
 }
 
+
+#define IdentityMtx ((f32 *)0x803db210)
 void CodeContainer::messUpTextures(Code::FuncReset f) {
 
+	static int lastTime = 0;
+
+	
+	if (f == Code::FuncReset::TRUE)
+	{
+        // reset it back to an actual Identity Matrix
+        IdentityMtx[0] = 1;
+        IdentityMtx[1] = 0;
+        IdentityMtx[2] = 0;
+        IdentityMtx[3] = 0;
+        
+        IdentityMtx[4] = 0;
+        IdentityMtx[5] = 1;
+        IdentityMtx[6] = 0;
+        IdentityMtx[7] = 0;
+
+	 	IdentityMtx[8] = 0;
+        IdentityMtx[9] = 0;
+        IdentityMtx[10] = 1;
+        IdentityMtx[11] = 0;
+
+        return;
+	}
+
+	if ((int)currentTime != lastTime && (int)currentTime % 4 == 0)
+	{
+        lastTime = (int)currentTime;
+		int offset = rand() % 12;
+        float randVal = (rand() % 4) + 2;
+
+		IdentityMtx[offset] = randVal;
+	} 
 }
+
+// allows 1ups to decrement visually
+pp::auto_patch liveLiveCounter(SMS_PORT_REGION(0x801426d8, 0, 0, 0), 0x418200B0, true);
+
+void CodeContainer::changeLives(Code::FuncReset f) {
+
+	static bool execOnce = true;
+
+	if (f == Code::FuncReset::TRUE) {
+        execOnce = true;
+        return;
+    }
+
+    if (execOnce) {
+        int randVal;
+        
+        while (true) {
+            randVal = (rand() % 3) - 1;
+            if (randVal == 0)
+                continue;
+            else
+                break;
+        }
+
+        if (TFlagManager::smInstance->Type2Flag.mLifeCount + randVal < 0) {
+            randVal = 1;
+        }
+
+		TFlagManager::smInstance->Type2Flag.mLifeCount += randVal;
+
+		execOnce = false;
+    }
+
+}
+
+//void CodeContainer::helpfulInputDisplay(Code::FuncReset f) {
+//
+
+//	drawInputDisplay(int button);
+
+//}
+

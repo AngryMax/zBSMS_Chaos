@@ -397,41 +397,43 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     currentTime = 0;
 
     Code addList[] = {
-//	   codeID	    name				  rarity	 duration	  isResettable        pFunc
-        {0,    "Pause Water",			    50,			 5,		    true,       codeContainer.pauseWater},
-        {1,    "Dummy Thicc Mario",		    40,			15,			true,       codeContainer.dummyThiccMario},	
-        {2,    "No Mario Redraw",		    60,			15,			true,       codeContainer.noMarioRedraw},									
-        {3,    "White Mario Silhouette",    50,			15,			true,       codeContainer.whiteMarioSilhouette},
-        {4,    "No MActor Models",          20,			20,			true,       codeContainer.noMActorModels},
-        {5,    "Move TLiveActor Draw",      20,			20,			true,       codeContainer.moveTLiveActorDraw},	// needs a display name
-        {6,    "Stop Control Inputs",       20,			 1,			true,       codeContainer.stopControlInputs},
-        {7,    "Spam Spray Central",        65,			20,			true,       codeContainer.spamSprayCentral},
-        {8,    "Add Code Slot",             15,			60,			true,       codeContainer.addCodeSlot},
-        {9,    "Small Jumps",               55,			15,			true,       codeContainer.smallJumps},
-        {10,   "Lock Jump Direction",       60,			20,			true,       codeContainer.lockJumpDirection},
-        {11,   "Sad FLUDD",                 70,			30,			true,       codeContainer.sadFLUDD},
-        {12,   "Land Movement Lock",        40,			30,			true,       codeContainer.landMovementLock},
-        {13,   "Force Turbo",               25,			30,			true,       codeContainer.forceTurbo},
-        {14,   "Set Music Volume",          30,         10,         true,       codeContainer.setMusicVol},
-        {15,   "SPEEN",                     30,         10,         true,       codeContainer.SPEEN},
-        {16,   "Nozzle Roll",				35,          7,        false,       codeContainer.changeNozzleRandom},
-        {17,   "Give Coins",                 5,          5,         true,       codeContainer.giveCoins},
-        {18,   "Spawn Yoshi",                5,         30,         true,       codeContainer.spawnYoshi},
-        {19,   "Sun Drip",					50,			30,			true,		codeContainer.sunglassesAndShineShirt},
-		{20,   "Affrettando",				60,			 5,			true,		codeContainer.speedUpTempo},
-        {21,   "tpMarioBack",				10,			15,			true,		codeContainer.tpMarioBack},		// needs a display name
-        {22,   "hpRoulette",				35,			10,			true,		codeContainer.hpRoulette},
-        {23,   "Luigi Slide",				50,			20,			true,		codeContainer.luigiSlide},
-        {24,   "Wrong Framerate NPCs",		50,			25,			true,		codeContainer.wrongFramerateNPC},		// tbh this code is super underwhelming. it either needs to be tweaked to be less conditional or removed
-		{25,   "a s c e n d",				25,			30,			true,		codeContainer.ascend},
-        {26,   "Double Time!!",				25,			30,			true,		codeContainer.doubleTime},
-		{26,   "Scramble Textures",			60,			20,			true,		codeContainer.messUpTextures}
+//	   codeID	    name					  rarity	 duration	 isResettable         pFunc
+        {0,    "Pause Water",			        50,			 5,		    true,       codeContainer.pauseWater},
+        {1,    "Dummy Thicc Mario",		        40,			15,			true,       codeContainer.dummyThiccMario},	
+        {2,    "No Mario Redraw",		        60,			15,			true,       codeContainer.noMarioRedraw},									
+        {3,    "White Mario Silhouette",        50,			15,			true,       codeContainer.whiteMarioSilhouette},
+        {4,    "The Void Calls...",		        20,			20,			true,       codeContainer.noMActorModels},
+        {5,    "Untitled",					    20,			20,			true,       codeContainer.moveTLiveActorDraw},
+        {6,    ":)",                            20,			 1,			true,       codeContainer.stopControlInputs},
+        {7,    "Spam Spray Central",            65,			20,			true,       codeContainer.spamSprayCentral},
+        {8,    "Add Code Slot",                 15,			60,			true,       codeContainer.addCodeSlot},
+        {9,    "Small Jumps",                   55,			15,			true,       codeContainer.smallJumps},
+        {10,   "Clumsy Jumps",                  60,			20,			true,       codeContainer.lockJumpDirection},
+        {11,   "Pathetic FLUDD",                70,			30,			true,       codeContainer.sadFLUDD},
+        {12,   "Land Movement Lock",            40,			30,			true,       codeContainer.landMovementLock},
+        {13,   "Unlimited Turbo but no Turbo",  25,			30,			true,       codeContainer.forceTurbo},
+        {14,   "Crescendo",                     30,         10,         true,       codeContainer.setMusicVol},
+        {15,   "S P E E N",                     30,         10,         true,       codeContainer.SPEEN},
+        {16,   "Nozzle Roll",				    35,          7,        false,       codeContainer.changeNozzleRandom},
+        {17,   "We're Rich!",                    5,          5,         true,       codeContainer.giveCoins},
+        {18,   "Spawn Yoshi",                    5,         30,         true,       codeContainer.spawnYoshi},
+        {19,   "Sun Drip",					    50,			30,			true,		codeContainer.sunglassesAndShineShirt},
+		{20,   "Affrettando",				    60,			 5,			true,		codeContainer.speedUpTempo},
+        {21,   "Return to Sender",			    10,			15,			true,		codeContainer.tpMarioBack},
+        {22,   "High Stakes Goomba",		    35,			10,		   false,		codeContainer.hpRoulette},
+        {23,   "Luigi Slide",				    50,			20,			true,		codeContainer.luigiSlide},
+        {24,   "FIREBALL!!!",		            50,			25,		   false,		codeContainer.emitFireball},
+		{25,   "a s c e n d",				    25,			30,		   false,		codeContainer.ascend},
+        {26,   "Double Time!!",				    25,			30,			true,		codeContainer.doubleTime},
+		{27,   "Scramble Textures",			    60,			20,			true,		codeContainer.messUpTextures},
+		{28,   "Life Changer",					50,			 1,			true,		codeContainer.changeLives},
+        {29,   "Helpful Input Display!",        50,			30,			true,		codeContainer.helpfulInputDisplay}
     };
 
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    char whitelist[][30] = {"messUpTextures"};
+    char whitelist[][30] = {"Helpful Input Display!"};
     if (sizeof(whitelist) != 0) {
         for (Code c : addList) {
             for (char *n : whitelist) {
@@ -468,6 +470,10 @@ BETTER_SMS_FOR_CALLBACK static void updateTime(TApplication *tapp) {
         OSTime diff   = OSGetTime() - sBaseTime;
         float seconds = OSTicksToSeconds(float(u32(diff)));
         currentTime += seconds;
+
+        if (codeContainer.isCodeActive(26)) {
+            currentTime += seconds;
+        }
     }
 
     sBaseTime = OSGetTime();
@@ -518,7 +524,7 @@ BETTER_SMS_FOR_CALLBACK static void drawCodeDisplay(TMarDirector *director,  con
     codeDisplay->draw(-83, 202);  // TODO: add position settings and widescreen detection
 
     // draw regular text
-    codeDisplay->mGradientTop = GREEN_TOP;
+    codeDisplay->mGradientTop	 = GREEN_TOP;
     codeDisplay->mGradientBottom = GREEN_BOTTOM;
     codeDisplay->draw(-85, 200);
 }
