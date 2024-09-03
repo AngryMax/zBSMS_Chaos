@@ -7,10 +7,12 @@
 #include <Dolphin/string.h>
 #include <Dolphin/types.h>
 #include <Dolphin/MTX.h>
+#include <Dolphin/PAD.h>
 
 #include <SMS/System/Application.hxx>
 #include <SMS/macros.h>
 #include <SMS/Player/Mario.hxx>
+#include <SMS/Player/MarioGamePad.hxx>
 #include <SMS/raw_fn.hxx>
 #include <SMS/rand.h>
 #include <SMS/MSound/MSBGM.hxx>
@@ -38,6 +40,9 @@ extern float currentTime;  // unit = seconds
 #define NOP 0x60000000
 #define BLR 0x4e800020
 
+#define RED {0xff, 0, 0, 0xff}
+#define GRAY {0x77, 0x77, 0x77, 0xff}
+
 class Code  // we might want to add a member for display name
 {    
 
@@ -49,15 +54,14 @@ public:
     u32 rarity;                         // rarity of code 1-100 (1 = rarest, 100 = most common)
     float duration;                     // code duration in seconds
     float timeCalled;                   // var used to store when a code is activated
-    bool fIsResettable;                 // whether or not a code needs to be reset at the end of its duration
     
-    enum FuncReset { NO_RESET, TRUE, FALSE };
+    enum FuncReset { FALSE, TRUE };
     void (*pFunc)(FuncReset);
 
     Code() {
     }
 
-	Code(u8 c, const char *n, u32 r, float d, bool fr, void (*pf)(FuncReset)=nullptr) { 
+	Code(u8 c, const char *n, u32 r, float d, void (*pf)(FuncReset)=nullptr) { 
 
         codeID = c;
         strncpy(name, n, CODE_NAME_BUFFER_SIZE);
@@ -66,7 +70,6 @@ public:
         rarity              = r;
         duration            = d;
         timeCalled          = 0;
-        fIsResettable       = fr;
         pFunc               = pf;
 	}
 };
@@ -80,11 +83,14 @@ public:
     u32 baseMaxActiveCodes;
     u32 activeCodes;
 
+    J2DTextBox *codeDisplay;
+
     CodeContainer() {
         activeCodes     = 0; 
         maxActiveCodes  = 4;
         baseMaxActiveCodes = maxActiveCodes;
-        gracePeriod     = 1;
+        gracePeriod     = 7;
+        codeDisplay = nullptr;
     }
 
     bool addCode(Code c) {
@@ -134,7 +140,7 @@ public:
     void iterateThroughCodes() {
         for (auto c : codeList) {
             if (c.isActive && c.pFunc != nullptr) {
-                c.pFunc(c.fIsResettable ? Code::FuncReset::FALSE : Code::FuncReset::NO_RESET);
+                c.pFunc(Code::FuncReset::FALSE);
             }
         }
     }

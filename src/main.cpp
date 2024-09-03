@@ -397,37 +397,37 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     currentTime = 0;
 
     Code addList[] = {
-//	   codeID	    name					  rarity	 duration	 isResettable         pFunc
-        {0,    "Pause Water",			        50,			 5,		    true,       codeContainer.pauseWater},
-        {1,    "Dummy Thicc Mario",		        40,			15,			true,       codeContainer.dummyThiccMario},	
-        {2,    "No Mario Redraw",		        60,			15,			true,       codeContainer.noMarioRedraw},									
-        {3,    "White Mario Silhouette",        50,			15,			true,       codeContainer.whiteMarioSilhouette},
-        {4,    "The Void Calls...",		        20,			20,			true,       codeContainer.noMActorModels},
-        {5,    "Untitled",					    20,			20,			true,       codeContainer.moveTLiveActorDraw},
-        {6,    ":)",                            20,			 1,			true,       codeContainer.stopControlInputs},
-        {7,    "Spam Spray Central",            65,			20,			true,       codeContainer.spamSprayCentral},
-        {8,    "Add Code Slot",                 15,			60,			true,       codeContainer.addCodeSlot},
-        {9,    "Small Jumps",                   55,			15,			true,       codeContainer.smallJumps},
-        {10,   "Clumsy Jumps",                  60,			20,			true,       codeContainer.lockJumpDirection},
-        {11,   "Pathetic FLUDD",                70,			30,			true,       codeContainer.sadFLUDD},
-        {12,   "Land Movement Lock",            40,			30,			true,       codeContainer.landMovementLock},
-        {13,   "Unlimited Turbo but no Turbo",  25,			30,			true,       codeContainer.forceTurbo},
-        {14,   "Crescendo",                     30,         10,         true,       codeContainer.setMusicVol},
-        {15,   "S P E E N",                     30,         10,         true,       codeContainer.SPEEN},
-        {16,   "Nozzle Roll",				    35,          7,        false,       codeContainer.changeNozzleRandom},
-        {17,   "We're Rich!",                    5,          5,         true,       codeContainer.giveCoins},
-        {18,   "Spawn Yoshi",                    5,         30,         true,       codeContainer.spawnYoshi},
-        {19,   "Sun Drip",					    50,			30,			true,		codeContainer.sunglassesAndShineShirt},
-		{20,   "Affrettando",				    60,			 5,			true,		codeContainer.speedUpTempo},
-        {21,   "Return to Sender",			    10,			15,			true,		codeContainer.tpMarioBack},
-        {22,   "High Stakes Goomba",		    35,			10,		   false,		codeContainer.hpRoulette},
-        {23,   "Luigi Slide",				    50,			20,			true,		codeContainer.luigiSlide},
-        {24,   "FIREBALL!!!",		            50,			25,		   false,		codeContainer.emitFireball},
-		{25,   "a s c e n d",				    25,			30,		   false,		codeContainer.ascend},
-        {26,   "Double Time!!",				    25,			30,			true,		codeContainer.doubleTime},
-		{27,   "Scramble Textures",			    60,			20,			true,		codeContainer.messUpTextures},
-		{28,   "Life Changer",					50,			 1,			true,		codeContainer.changeLives},
-        {29,   "Helpful Input Display!",        50,			30,			true,		codeContainer.helpfulInputDisplay}
+//	   codeID	    name					  rarity	 duration	               pFunc
+        {0,    "Pause Water",			        50,			 5,	        codeContainer.pauseWater},
+        {1,    "Dummy Thicc Mario",		        40,			15,		    codeContainer.dummyThiccMario},	
+        {2,    "No Mario Redraw",		        60,			15,		    codeContainer.noMarioRedraw},									
+        {3,    "White Mario Silhouette",        50,			15,		    codeContainer.whiteMarioSilhouette},
+        {4,    "The Void Calls...",		        20,			20,		    codeContainer.noMActorModels},
+        {5,    "Untitled",					    20,			20,		    codeContainer.moveTLiveActorDraw},
+        {6,    ":)",                            20,			 1,		    codeContainer.stopControlInputs},
+        {7,    "Spam Spray Central",            65,			20,		    codeContainer.spamSprayCentral},
+        {8,    "Add Code Slot",                 15,			60,		    codeContainer.addCodeSlot},
+        {9,    "Small Jumps",                   55,			15,		    codeContainer.smallJumps},
+        {10,   "Clumsy Jumps",                  60,			20,		    codeContainer.lockJumpDirection},
+        {11,   "Pathetic FLUDD",                70,			30,		    codeContainer.sadFLUDD},
+        {12,   "Land Movement Lock",            40,			30,		    codeContainer.landMovementLock},
+        {13,   "Unlimited Turbo but no Turbo",  25,			30,		    codeContainer.forceTurbo},
+        {14,   "Crescendo",                     30,         10,         codeContainer.setMusicVol},
+        {15,   "S P E E N",                     30,         10,         codeContainer.SPEEN},
+        {16,   "Nozzle Roll",				    35,          7,         codeContainer.changeNozzleRandom},
+        {17,   "We're Rich!",                    5,          5,         codeContainer.giveCoins},
+        {18,   "Spawn Yoshi",                    5,         30,         codeContainer.spawnYoshi},
+        {19,   "Sun Drip",					    50,			30,		    codeContainer.sunglassesAndShineShirt},
+		{20,   "Affrettando",				    60,			 5,		    codeContainer.speedUpTempo},
+        {21,   "Return to Sender",			    10,			15,		    codeContainer.tpMarioBack},
+        {22,   "High Stakes Goomba",		    35,			10,		    codeContainer.hpRoulette},
+        {23,   "Luigi Slide",				    50,			20,		    codeContainer.luigiSlide},
+        {24,   "FIREBALL!!!",		            50,			25,		    codeContainer.emitFireball},
+		{25,   "a s c e n d",				    25,			30,		    codeContainer.ascend},
+        {26,   "Double Time!!",				    25,			30,		    codeContainer.doubleTime},
+		{27,   "Scramble Textures",			    60,			20,		    codeContainer.messUpTextures},
+		{28,   "Life Changer",					50,			 1,		    codeContainer.changeLives},
+        {29,   "Helpful Input Display!",        50,			30,		    codeContainer.helpfulInputDisplay}
     };
 
     #if DEV_MODE
@@ -480,36 +480,33 @@ BETTER_SMS_FOR_CALLBACK static void updateTime(TApplication *tapp) {
 
 }
 
-BETTER_SMS_FOR_CALLBACK static void chaosEngine(TApplication *tapp) {
-    if (tapp->mContext != TApplication::Context::CONTEXT_DIRECT_STAGE)
-        return;
+BETTER_SMS_FOR_CALLBACK static void chaosEngine(TMarDirector *director, const J2DOrthoGraph *ortho) {
 
-    TMarDirector *marDirector = static_cast<TMarDirector*>(tapp->mDirector);
-    if (marDirector->mCurState == TMarDirector::Status::STATE_NORMAL) {
+    if (director->mCurState == TMarDirector::Status::STATE_NORMAL) {
         codeContainer.activateCodes();
         codeContainer.checkCodeTimers();
         codeContainer.iterateThroughCodes();
     }
 }
 
-static J2DTextBox *codeDisplay = nullptr;
 BETTER_SMS_FOR_CALLBACK static void initCodeDisplay(TMarDirector *director) {
 
     char displayBuffer[144];
-    memset(displayBuffer, 'a', 144); // fill up buffer
+    memset(displayBuffer, 'a', 144);  // fill up buffer
 
-    codeDisplay = new J2DTextBox(gpSystemFont->mFont, "Dummy Code");
-    {
-        codeDisplay->mCharSizeX      = 16;
-        codeDisplay->mCharSizeY      = 16;
-    }
-    codeDisplay->setString(displayBuffer);
+    codeContainer.codeDisplay = new J2DTextBox(gpSystemFont->mFont, "Dummy Code");
+    codeContainer.codeDisplay->setString(displayBuffer);
+
+    codeContainer.codeDisplay->mCharSizeX = 16;
+    codeContainer.codeDisplay->mCharSizeY = 16;
+    codeContainer.codeDisplay->mGradientTop    = GREEN_TOP;
+    codeContainer.codeDisplay->mGradientBottom = GREEN_BOTTOM;
 
     OSReport("codeDisplay initialization successful!\n");
 }
 
 BETTER_SMS_FOR_CALLBACK static void drawCodeDisplay(TMarDirector *director,  const J2DOrthoGraph *ortho) {
-    char *displayBuffer = codeDisplay->getStringPtr();
+    char *displayBuffer = codeContainer.codeDisplay->getStringPtr();
     memset(displayBuffer, 0, 144); // clear buffer
 
     for (Code c : codeContainer.codeList) {
@@ -518,15 +515,20 @@ BETTER_SMS_FOR_CALLBACK static void drawCodeDisplay(TMarDirector *director,  con
                 c.duration - (currentTime - c.timeCalled), "s");
         }
     }
+    
+    // set font size
+    codeContainer.codeDisplay->mCharSizeX = 16;
+    codeContainer.codeDisplay->mCharSizeY = 16;
+
     // draw drop shadow
-    codeDisplay->mGradientTop    = BLACK;
-    codeDisplay->mGradientBottom = BLACK;
-    codeDisplay->draw(-83, 202);  // TODO: add position settings and widescreen detection
+    codeContainer.codeDisplay->mGradientTop    = BLACK;
+    codeContainer.codeDisplay->mGradientBottom = BLACK;
+    codeContainer.codeDisplay->draw(-83, 202);  // TODO: add position settings and widescreen detection
 
     // draw regular text
-    codeDisplay->mGradientTop	 = GREEN_TOP;
-    codeDisplay->mGradientBottom = GREEN_BOTTOM;
-    codeDisplay->draw(-85, 200);
+    codeContainer.codeDisplay->mGradientTop	 = GREEN_TOP;
+    codeContainer.codeDisplay->mGradientBottom = GREEN_BOTTOM;
+    codeContainer.codeDisplay->draw(-85, 200);
 }
 
 
@@ -537,9 +539,9 @@ static void initModule() {
 
     // Register callbacks
     BetterSMS::Game::addInitCallback(initVars);
-    BetterSMS::Game::addLoopCallback(chaosEngine);
     BetterSMS::Game::addLoopCallback(updateTime);
     BetterSMS::Stage::addInitCallback(initCodeDisplay);
+    BetterSMS::Stage::addDraw2DCallback(chaosEngine);
     BetterSMS::Stage::addDraw2DCallback(drawCodeDisplay);
 
     // Register settings

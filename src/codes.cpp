@@ -384,10 +384,61 @@ void CodeContainer::changeLives(Code::FuncReset f) {
 
 }
 
-//void CodeContainer::helpfulInputDisplay(Code::FuncReset f) {
-//
+void CodeContainer::helpfulInputDisplay(Code::FuncReset f) {
+    char *displayBuffer = codeContainer.codeDisplay->getStringPtr();
 
-//	drawInputDisplay(int button);
+    codeContainer.codeDisplay->mGradientTop    = RED;
+    codeContainer.codeDisplay->mGradientBottom = RED;
+    codeContainer.codeDisplay->mCharSizeX      = 32;
+    codeContainer.codeDisplay->mCharSizeY      = 32;
 
-//}
+    u32 input           = gpMarioOriginal->mController->mButtons.mInput;
+
+    if (input & TMarioGamePad::A) {
+        memset(displayBuffer, 0, 144);  // clear buffer
+        snprintf(displayBuffer, 144, "\x40 Pressed!");
+        codeContainer.codeDisplay->draw(200, 100);
+    }
+    if (input & TMarioGamePad::B) {
+        memset(displayBuffer, 0, 144);  // clear buffer
+        snprintf(displayBuffer, 144, "\x23 Pressed!");
+        codeContainer.codeDisplay->draw(200, 200);
+    }
+    if (input & TMarioGamePad::X) {
+        memset(displayBuffer, 0, 144);  // clear buffer
+        snprintf(displayBuffer, 144, "\x2B Pressed!");
+        codeContainer.codeDisplay->draw(200, 300);
+    }
+    if (input & TMarioGamePad::Y) {
+        memset(displayBuffer, 0, 144);  // clear buffer
+        snprintf(displayBuffer, 144, "\xA5 Pressed!");
+        codeContainer.codeDisplay->draw(200, 400);
+    }
+
+    codeContainer.codeDisplay->mGradientTop    = GRAY;
+    codeContainer.codeDisplay->mGradientBottom = GRAY;
+    codeContainer.codeDisplay->mCharSizeX      = 24;
+    codeContainer.codeDisplay->mCharSizeY      = 24;
+
+    if (input & TMarioGamePad::MAINSTICK_UP) {
+        memset(displayBuffer, 0, 144);  // clear buffer
+        snprintf(displayBuffer, 144, "Holding Up!");
+        codeContainer.codeDisplay->draw(220, 140);
+    }
+    if (input & TMarioGamePad::MAINSTICK_DOWN) {
+        memset(displayBuffer, 0, 144);  // clear buffer
+        snprintf(displayBuffer, 144, "Holding Down!");
+        codeContainer.codeDisplay->draw(220, 240);
+    }
+    if (input & TMarioGamePad::MAINSTICK_LEFT) {
+        memset(displayBuffer, 0, 144);  // clear buffer
+        snprintf(displayBuffer, 144, "Holding Left!");
+        codeContainer.codeDisplay->draw(220, 340);
+    }
+    if (input & TMarioGamePad::MAINSTICK_RIGHT) {
+        memset(displayBuffer, 0, 144);  // clear buffer
+        snprintf(displayBuffer, 144, "Holding Right!");
+        codeContainer.codeDisplay->draw(220, 440);
+    }
+}
 
