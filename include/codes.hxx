@@ -32,7 +32,7 @@
 #include <Kuribo/sdk/kuribo_sdk.h>
 
 const static int CODE_NAME_BUFFER_SIZE = 30;
-const static int CODE_COUNT            = 30;
+const static int CODE_COUNT            = 70;
 
 extern float currentTime;  // unit = seconds
 
@@ -42,18 +42,19 @@ extern float currentTime;  // unit = seconds
 
 #define RED {0xff, 0, 0, 0xff}
 #define GRAY {0x77, 0x77, 0x77, 0xff}
+#define PURPLE {0xff, 0x00, 0xff, 0xff}
 
 class Code  // we might want to add a member for display name
 {    
 
 public:
-    u8 codeID;                          // unique code id
-    char name[CODE_NAME_BUFFER_SIZE];   // unique code display name
-    bool isActive;                      // whether the code is active
-    bool isGraced;                      // whether the code is in grace period
-    u32 rarity;                         // rarity of code 1-100 (1 = rarest, 100 = most common)
-    float duration;                     // code duration in seconds
-    float timeCalled;                   // var used to store when a code is activated
+    u8 codeID;                              // unique code id
+    char name[CODE_NAME_BUFFER_SIZE];       // unique code display name
+    bool isActive;                          // whether the code is active
+    bool isGraced;                          // whether the code is in grace period
+    u32 rarity;                             // rarity of code 1-100 (1 = rarest, 100 = most common)
+    float duration;                         // code duration in seconds
+    float timeCalled;                       // var used to store when a code is activated
     
     enum FuncReset { FALSE, TRUE };
     void (*pFunc)(FuncReset);
@@ -89,7 +90,7 @@ public:
         activeCodes     = 0; 
         maxActiveCodes  = 4;
         baseMaxActiveCodes = maxActiveCodes;
-        gracePeriod     = 7;
+        gracePeriod     = 3;
         codeDisplay = nullptr;
     }
 
@@ -112,15 +113,22 @@ public:
         return false;
     }
 
-    bool getCodeFromName(const char name[30], Code output) {
-        for (Code &c : codeList) {
-            if (strcmp(c.name, name) == 0) {
-                output = c;
-
-                return true;
+    void endCode(u8 id) {
+        for (Code &c: codeList) {
+            if (c.codeID == id && c.isActive == true) {
+                c.timeCalled = currentTime - c.duration;
             }
         }
+    }
 
+    // returns reference to code with code id in cout
+    bool getCodeFromID(u8 id, Code &cout) {
+        for (Code &c : codeList) {
+            if (c.codeID == id) {
+                cout = c;
+                return true;
+            }    
+        }
         return false;
     }
 
@@ -131,6 +139,18 @@ public:
             if (codeList[rollWinner].isActive || codeList[rollWinner].isGraced) {
                 continue;
             }
+            
+            switch (codeList[rollWinner].codeID) {
+                case 27:					// messUpTextures
+                    if (isCodeActive(31))
+                        continue;
+                    break;
+                case 31:					// simonSays
+                    if (isCodeActive(27))
+                        continue;
+                    break;
+            }
+
             codeList[rollWinner].isActive = true;
             codeList[rollWinner].timeCalled = currentTime;
             activeCodes++;
@@ -215,7 +235,15 @@ public:
     static void messUpTextures(Code::FuncReset);
     static void changeLives(Code::FuncReset);
     static void helpfulInputDisplay(Code::FuncReset);
+    static void reverseInputsToggle(Code::FuncReset);
+    static void reverseInputs();
+    static void simonSays(Code::FuncReset);
+    static void lockMarioAnim(Code::FuncReset);
+    static void scaleMario(Code::FuncReset);
 };
+
+// Single instance of CodeContainer that's accessed throughout whole project
+extern CodeContainer codeContainer;
 
 namespace Utils {
 
@@ -227,7 +255,15 @@ namespace Utils {
         } else
             return false;
     }
-}
 
-// Single instance of CodeContainer that's accessed throughout whole project
-extern CodeContainer codeContainer;
+    // updates the color and fontsize of codeDisplay before drawing it to the given coords
+    // you still have to clear and set the string buffer for codeDisplay yourself
+    static void drawCodeDisplay(JUtility::TColor color, int fontSize, int x, int y) {
+        codeContainer.codeDisplay->mGradientTop    = color;
+        codeContainer.codeDisplay->mGradientBottom = color;
+        codeContainer.codeDisplay->mCharSizeX      = fontSize;
+        codeContainer.codeDisplay->mCharSizeY      = fontSize;
+
+        codeContainer.codeDisplay->draw(x, y);
+    }
+}

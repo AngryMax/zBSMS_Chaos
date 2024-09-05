@@ -199,29 +199,37 @@ void CodeContainer::giveCoins(Code::FuncReset f) {
     }
 }
 
-void CodeContainer::spawnYoshi(Code::FuncReset f) {
+void CodeContainer::spawnYoshi(Code::FuncReset f) {		// TODO: refill yoshi's juice bar on execOnce
 
     static bool execOnce = true;
-    static u8 codeId     = 17;
+    static u8 codeID     = 17;
+    static bool fludd    = true;
 
 	if (f == Code::FuncReset::TRUE) {
         execOnce = true;
         gpMarioOriginal->mYoshi->mState = TYoshi::State::EGG;
-        return;
+        return;		
     }
 
     if (execOnce) {
+        if (gpMarioOriginal->STATUS_HASFLUDD)
+            fludd = true;
+        else
+            fludd = false;
+
         gpMarioOriginal->mYoshi->mState = TYoshi::State::MOUNTED;
-        execOnce = false;
+        execOnce = false;		
     }
 
     if (gpMarioOriginal->mYoshi->mState == TYoshi::State::EGG) {
         Code yoshiCode;
-        if (codeContainer.getCodeFromName("Spawn Yoshi", yoshiCode)) {
+        if (codeContainer.getCodeFromID(codeID, yoshiCode)) {
             yoshiCode.timeCalled = currentTime - yoshiCode.duration;
-            OSReport("YES!\n");
         }
     }
+
+	if (fludd)
+        gpMarioOriginal->mAttributes.mHasFludd = true;
 }
 
 void CodeContainer::sunglassesAndShineShirt(Code::FuncReset f) {
@@ -297,8 +305,8 @@ void CodeContainer::luigiSlide(Code::FuncReset f) {
 
 void CodeContainer::emitFireball(Code::FuncReset f) {
     gpMarioOriginal->emitBlurHipDropSuper();
-    //gpMarioOriginal->emitGetEffect();
-    //gpMarioOriginal->emitSmoke(gpMarioOriginal->mAngle.y);
+    gpMarioOriginal->emitGetEffect();
+    gpMarioOriginal->emitSmoke(gpMarioOriginal->mAngle.y);
 }
 
 void CodeContainer::ascend(Code::FuncReset f) {
@@ -442,3 +450,128 @@ void CodeContainer::helpfulInputDisplay(Code::FuncReset f) {
     }
 }
 
+pp::togglable_ppc_b reverseInputsPatch(SMS_PORT_REGION(0x803519a8, 0, 0, 0), (void *)codeContainer.reverseInputs, false);
+void CodeContainer::reverseInputsToggle(Code::FuncReset f) {
+    if (f == Code::FuncReset::FALSE && !SPEENPatch.is_enabled())
+        reverseInputsPatch.set_enabled(true);
+    else if (f == Code::FuncReset::TRUE)
+        reverseInputsPatch.set_enabled(false);
+}
+void CodeContainer::reverseInputs() {
+
+    PADStatus *originalInput;
+    SMS_FROM_GPR(31, originalInput);
+
+    bool aButton = originalInput->mButton & TMarioGamePad::A;
+    bool bButton = originalInput->mButton & TMarioGamePad::B;
+
+    if (aButton != bButton) {
+        originalInput->mButton ^= TMarioGamePad::A;
+        originalInput->mButton ^= TMarioGamePad::B;
+    }
+}
+
+void CodeContainer::simonSays(Code::FuncReset f) {
+
+    static u8 codeID = 31;
+	static bool execRNGOnce = true;
+    static bool inputMade = false;
+    static int randVal = 0;
+    static int soundPlayed = 0;
+
+	u32 randButtonBinary[4] = {TMarioGamePad::A, TMarioGamePad::B, TMarioGamePad::X, TMarioGamePad::Y};
+    u8 randButton[4][2]   = {"\x40", "\x23", "\x2b", "\xa5"};
+
+	if (f == Code::FuncReset::TRUE) {
+        if (!inputMade)
+            gpMarioOriginal->loserExec();
+
+        execRNGOnce = true;
+        inputMade   = false;
+        soundPlayed = 0;
+        return;
+    }
+
+    // get randVal when the code first activates
+	if (execRNGOnce)
+	{
+        randVal = (rand() % 4);
+        execRNGOnce = false;
+	}
+
+    u32 maskedInput = gpMarioOriginal->mController->mButtons.mInput & ~4294963455; // this masks the input to just the a, b, x, and y buttons!
+
+    Code currentCode;
+    if (!(codeContainer.getCodeFromID(codeID, currentCode))){
+        OSReport("Could not find code with code id %d!\n", codeID);
+        return;
+    }
+    f32 elapsedTime = currentTime - currentCode.timeCalled;
+
+    char *displayBuffer = codeContainer.codeDisplay->getStringPtr();	
+    memset(displayBuffer, 0, 144);
+
+    switch ((u32)elapsedTime) {
+        case 0:
+            snprintf(displayBuffer, 144, "Angry_Max says.");
+            Utils::drawCodeDisplay(PURPLE, 48, 50, 150);
+            if (soundPlayed == 0 && Utils::playSound(MS_SOUND_EFFECT::MSD_SE_OBJ_AP_BUTTON))
+                soundPlayed++;
+            return;
+        case 1:
+            snprintf(displayBuffer, 144, "Angry_Max says..");
+            Utils::drawCodeDisplay(PURPLE, 48, 50, 150);
+            if (soundPlayed == 1 && Utils::playSound(MS_SOUND_EFFECT::MSD_SE_OBJ_AP_BUTTON))
+                soundPlayed++;
+            return;
+        case 2:
+            snprintf(displayBuffer, 144, "Angry_Max says...");
+            Utils::drawCodeDisplay(PURPLE, 48, 50, 150);
+            if (soundPlayed == 2 && Utils::playSound(MS_SOUND_EFFECT::MSD_SE_OBJ_AP_BUTTON))
+                soundPlayed++;
+            return;
+        default:
+            snprintf(displayBuffer, 144, "Press %s!", randButton[randVal]);
+            Utils::drawCodeDisplay(PURPLE, 48, 200, 150);
+            break;
+    }
+    
+	
+	// if an input was made
+    if (maskedInput) {
+        inputMade = true;
+
+        // kills mario if the selected input isn't made
+        if (!(maskedInput & randButtonBinary[randVal]))
+            gpMarioOriginal->loserExec();
+        // kills mario if other inputs are being made while the selected input is also made
+        else if (maskedInput & ~randButtonBinary[randVal])
+            gpMarioOriginal->loserExec();
+
+		codeContainer.endCode(codeID);
+        return;
+    }
+}
+
+
+void CodeContainer::lockMarioAnim(Code::FuncReset f) {
+
+    gpMarioOriginal->mModelData->_24[2] = 175;
+
+}
+
+void CodeContainer::scaleMario(Code::FuncReset f) {
+
+    if (f == Code::FuncReset::TRUE) {
+        gpMarioOriginal->mModelData->mModel->mBaseScale.x = 1.0;
+        gpMarioOriginal->mModelData->mModel->mBaseScale.y = 1.0;
+        gpMarioOriginal->mModelData->mModel->mBaseScale.z = 1.0;
+
+		return;
+    }
+
+    gpMarioOriginal->mModelData->mModel->mBaseScale.x = 5.0;
+    gpMarioOriginal->mModelData->mModel->mBaseScale.y = 5.0;
+    gpMarioOriginal->mModelData->mModel->mBaseScale.z = 5.0;
+
+}

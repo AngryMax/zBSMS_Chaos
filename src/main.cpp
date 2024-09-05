@@ -427,13 +427,17 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {26,   "Double Time!!",				    25,			30,		    codeContainer.doubleTime},
 		{27,   "Scramble Textures",			    60,			20,		    codeContainer.messUpTextures},
 		{28,   "Life Changer",					50,			 1,		    codeContainer.changeLives},
-        {29,   "Helpful Input Display!",        50,			30,		    codeContainer.helpfulInputDisplay}
+        {29,   "Helpful Input Display!",        50,			30,		    codeContainer.helpfulInputDisplay},
+		{30,   "Confusion",						30,			20,		    codeContainer.reverseInputsToggle},
+		{31,   "Angry_Max Says",				55,			 5,		    codeContainer.simonSays},
+		{32,   "DOOR STUCK",					55,			20,		    codeContainer.lockMarioAnim},
+		{32,   "GIANT MARIO",					30,			15,		    codeContainer.scaleMario}
     };
 
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    char whitelist[][30] = {"Helpful Input Display!"};
+    char whitelist[][30] = {"Spawn Yoshi"};
     if (sizeof(whitelist) != 0) {
         for (Code c : addList) {
             for (char *n : whitelist) {
@@ -455,7 +459,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #endif
 
     OSReport("Finished initVars!\n");
-    OSReport("%d\n", codeContainer.setMusicVol);
+    OSReport("%d\n", codeContainer.lockMarioAnim);
 }
 
 static OSTime sBaseTime = 0;
@@ -510,10 +514,17 @@ BETTER_SMS_FOR_CALLBACK static void drawCodeDisplay(TMarDirector *director,  con
     memset(displayBuffer, 0, 144); // clear buffer
 
     for (Code c : codeContainer.codeList) {
+        #if DEV_MODE
         if (c.isActive || c.isGraced) {
             snprintf(displayBuffer, 144, "%s%s%s%.0f%s\n", displayBuffer, c.name, ": ", 
                 c.duration - (currentTime - c.timeCalled), "s");
         }
+        #else
+        if (c.isActive) {
+            snprintf(displayBuffer, 144, "%s%s%s%.0f%s\n", displayBuffer, c.name, ": ", 
+                c.duration - (currentTime - c.timeCalled), "s");
+        }
+        #endif
     }
     
     // set font size
@@ -531,6 +542,20 @@ BETTER_SMS_FOR_CALLBACK static void drawCodeDisplay(TMarDirector *director,  con
     codeContainer.codeDisplay->draw(-85, 200);
 }
 
+BETTER_SMS_FOR_CALLBACK static void avoidCrashCodes(TApplication *tapp) {
+
+    // ends noMarioRedraw when exiting stage and resets it
+    if (codeContainer.isCodeActive(2)) {
+        codeContainer.endCode(2); 
+        Code c;
+        if (!(codeContainer.getCodeFromID(2, c))){
+            OSReport("Could not find code with code id %d!\n", 2);
+            return;
+        }
+        c.pFunc(Code::FuncReset::TRUE);
+    }
+}
+
 
 // Module definition
 
@@ -543,6 +568,7 @@ static void initModule() {
     BetterSMS::Stage::addInitCallback(initCodeDisplay);
     BetterSMS::Stage::addDraw2DCallback(chaosEngine);
     BetterSMS::Stage::addDraw2DCallback(drawCodeDisplay);
+    BetterSMS::Stage::addExitCallback(avoidCrashCodes);
 
     // Register settings
     sSettingsGroup.addSetting(&sDummySetting);
