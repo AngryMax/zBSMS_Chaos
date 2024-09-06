@@ -40,6 +40,7 @@ extern float currentTime;  // unit = seconds
 #define NOP 0x60000000
 #define BLR 0x4e800020
 
+// colors
 #define RED {0xff, 0, 0, 0xff}
 #define GRAY {0x77, 0x77, 0x77, 0xff}
 #define PURPLE {0xff, 0x00, 0xff, 0xff}
@@ -48,6 +49,46 @@ extern float currentTime;  // unit = seconds
 #define GREEN_BOTTOM {100, 0xff, 100, 0xff}
 #define BLACK {0, 0, 0, 0xff}
 #define WHITE {0xff, 0xff, 0xff, 0xff}
+
+// code ids
+#define PAUSE_WATER             0
+#define DUMMY_THICC_MARIO       1
+#define NO_MARIO_REDRAW         2
+#define WHITE_MARIO_SILHOUETTE  3
+#define NO_MACTOR_MODELS        4
+#define MOVE_TLIVEACTOR_DRAW    5
+#define STOP_CONTROL_INPUTS     6
+#define SPAM_SPRAY_CENTRAL      7
+#define ADD_CODE_SLOT           8
+#define SMALL_JUMPS             9
+#define CLUMSY_JUMPS            10
+#define PATHETIC_FLUDD          11
+#define LAND_MOVEMENT_LOCK      12
+#define UNLIMITED_TURBO         13
+#define CRESCENDO               14
+#define SPEEN_ID                15
+#define NOZZLE_ROLL             16
+#define GIVE_COINS              17
+#define SPAWN_YOSHI             18
+#define SUN_DRIP                19
+#define SPEED_UP_TEMPO          20
+#define TP_MARIO_BACK           21
+#define HP_ROULETTE             22
+#define LUIGI_SLIDE             23
+#define FIREBALL                24
+#define ASCEND                  25
+#define DOUBLE_TIME             26
+#define SCRAMBLE_TEXTURES       27
+#define CHANGE_LIVES            28
+#define HELPFUL_INPUT_DISPLAY   29
+#define REVERSE_INPUTS          30
+#define SIMON_SAYS              31
+#define DOOR_STUCK              32
+#define GIANT_MARIO             33
+#define SNAKE                   34
+#define MOON_GRAVITY            35
+#define CRAZY_GRAVITY           36
+#define CHAOS_CODE              37
 
 class Code  // we might want to add a member for display name
 {    
@@ -83,6 +124,7 @@ public:
 class CodeContainer {
 public:
     Code codeList[CODE_COUNT];
+    int currentCodeCount = 0;
 
     float gracePeriod;
     u32 maxActiveCodes;
@@ -95,7 +137,7 @@ public:
         activeCodes     = 0; 
         maxActiveCodes  = 4;
         baseMaxActiveCodes = maxActiveCodes;
-        gracePeriod     = 3;
+        gracePeriod     = 7;
         codeDisplay = nullptr;
     }
 
@@ -115,6 +157,16 @@ public:
                 return true;
         }
         
+        return false;
+    }
+
+    // checks if code with specified id is in grace period
+    bool isCodeGraced(u8 id) {
+        for (Code c : codeList) {
+            if (c.codeID == id && c.isGraced == true)
+                return true;
+        }
+
         return false;
     }
 
@@ -139,6 +191,7 @@ public:
 
     void activateCodes() {
         while (activeCodes < maxActiveCodes && activeCodes < currentCodeCount) {
+
             int rollWinner = getWeightedRand();
             
             if (codeList[rollWinner].isActive || codeList[rollWinner].isGraced) {
@@ -146,13 +199,29 @@ public:
             }
             
             switch (codeList[rollWinner].codeID) {
-                case 27:					// messUpTextures
-                    if (isCodeActive(31) || isCodeActive(34))
-                        continue;
+                case NO_MARIO_REDRAW:
+                    if (isCodeActive(CHAOS_CODE))
+                        return;
                     break;
-                case 31:					// simonSays
-                    if (isCodeActive(27))
-                        continue;
+                case SCRAMBLE_TEXTURES:
+                    if (isCodeActive(SIMON_SAYS) || isCodeActive(SNAKE))
+                        return;
+                    break;
+                case SIMON_SAYS:
+                    if (isCodeActive(SCRAMBLE_TEXTURES) || isCodeActive(CHAOS_CODE))
+                        return;
+                    break;
+                case SNAKE:
+                    if (isCodeActive(CHAOS_CODE))
+                        return;
+                    break;
+                case MOON_GRAVITY:
+                    if (isCodeActive(CRAZY_GRAVITY))
+                        return;
+                    break;
+                case CRAZY_GRAVITY:
+                    if (isCodeActive(MOON_GRAVITY))
+                        return;
                     break;
             }
 
@@ -187,8 +256,6 @@ public:
     }
 
 private:
-    int currentCodeCount = 0;
-
 	int getRand() { return (rand() % currentCodeCount); }
 
 	int getWeightedRand() {
@@ -247,6 +314,8 @@ public:
     static void scaleMario(Code::FuncReset);
     static void snakeGame(Code::FuncReset);
     static void moonGravity(Code::FuncReset);
+    static void crazyGravity(Code::FuncReset);
+    static void chaosCode(Code::FuncReset);
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project

@@ -397,49 +397,51 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     currentTime = 0;
 
     Code addList[] = {
-//	   codeID	    name					  rarity	 duration	               pFunc
-        {0,    "Pause Water",			        50,			 5,	        codeContainer.pauseWater},
-        {1,    "Dummy Thicc Mario",		        40,			15,		    codeContainer.dummyThiccMario},	
-        {2,    "No Mario Redraw",		        60,			15,		    codeContainer.noMarioRedraw},									
-        {3,    "White Mario Silhouette",        50,			15,		    codeContainer.whiteMarioSilhouette},
-        {4,    "The Void Calls...",		        20,			20,		    codeContainer.noMActorModels},
-        {5,    "Untitled",					    20,			20,		    codeContainer.moveTLiveActorDraw},
-        {6,    ":)",                            20,			 1,		    codeContainer.stopControlInputs},
-        {7,    "Spam Spray Central",            65,			20,		    codeContainer.spamSprayCentral},
-        {8,    "Add Code Slot",                 15,			60,		    codeContainer.addCodeSlot},
-        {9,    "Small Jumps",                   55,			15,		    codeContainer.smallJumps},
-        {10,   "Clumsy Jumps",                  60,			20,		    codeContainer.lockJumpDirection},
-        {11,   "Pathetic FLUDD",                70,			30,		    codeContainer.sadFLUDD},
-        {12,   "Land Movement Lock",            40,			30,		    codeContainer.landMovementLock},
-        {13,   "Unlimited Turbo but no Turbo",  25,			30,		    codeContainer.forceTurbo},
-        {14,   "Crescendo",                     30,         10,         codeContainer.setMusicVol},
-        {15,   "S P E E N",                     30,         10,         codeContainer.SPEEN},
-        {16,   "Nozzle Roll",				    35,          7,         codeContainer.changeNozzleRandom},
-        {17,   "We're Rich!",                    5,          5,         codeContainer.giveCoins},
-        {18,   "Spawn Yoshi",                    5,         30,         codeContainer.spawnYoshi},
-        {19,   "Sun Drip",					    50,			30,		    codeContainer.sunglassesAndShineShirt},
-		{20,   "Affrettando",				    60,			 5,		    codeContainer.speedUpTempo},
-        {21,   "Return to Sender",			    10,			15,		    codeContainer.tpMarioBack},
-        {22,   "High Stakes Goomba",		    35,			10,		    codeContainer.hpRoulette},
-        {23,   "Luigi Slide",				    50,			20,		    codeContainer.luigiSlide},
-        {24,   "FIREBALL!!!",		            50,			25,		    codeContainer.emitFireball},
-		{25,   "a s c e n d",				    25,			30,		    codeContainer.ascend},
-        {26,   "Double Time!!",				    25,			30,		    codeContainer.doubleTime},
-		{27,   "Scramble Textures",			    60,			20,		    codeContainer.messUpTextures},
-		{28,   "Life Changer",					50,			 1,		    codeContainer.changeLives},
-        {29,   "Helpful Input Display!",        50,			30,		    codeContainer.helpfulInputDisplay},
-		{30,   "Confusion",						30,			20,		    codeContainer.reverseInputsToggle},
-		{31,   "Angry_Max Says",				55,			 5,		    codeContainer.simonSays},
-		{32,   "DOOR STUCK",					55,			20,		    codeContainer.lockMarioAnim},
-		{33,   "GIANT MARIO",					30,			15,		    codeContainer.scaleMario},
-		{34,   "Snake?",						50,			10,		    codeContainer.snakeGame},		// prob needs a better display name
-		{35,   "Moon Gravity",					50,			15,		    codeContainer.moonGravity}
+        // codeID	                    name					      rarity	 duration	               pFunc
+        {PAUSE_WATER,               "Pause Water",			            50,			 5,	        codeContainer.pauseWater},
+        {DUMMY_THICC_MARIO,         "Dummy Thicc Mario",		        40,			15,		    codeContainer.dummyThiccMario},	
+        {NO_MARIO_REDRAW,           "No Mario Redraw",		            60,			15,		    codeContainer.noMarioRedraw},									
+        {WHITE_MARIO_SILHOUETTE,    "White Mario Silhouette",           50,			15,		    codeContainer.whiteMarioSilhouette},
+        {NO_MACTOR_MODELS,          "The Void Calls...",		        20,			20,		    codeContainer.noMActorModels},
+        {MOVE_TLIVEACTOR_DRAW,      "Untitled",                         20,         20,         codeContainer.moveTLiveActorDraw},
+        {STOP_CONTROL_INPUTS,       ":)",                               20,			 1,		    codeContainer.stopControlInputs},
+        {SPAM_SPRAY_CENTRAL,        "Spam Spray Central",               65,			20,		    codeContainer.spamSprayCentral},
+        {ADD_CODE_SLOT,             "Add Code Slot",                    15,			60,		    codeContainer.addCodeSlot},
+        {SMALL_JUMPS,               "Small Jumps",                      55,			15,		    codeContainer.smallJumps},
+        {CLUMSY_JUMPS,              "Clumsy Jumps",                     60,			20,		    codeContainer.lockJumpDirection},
+        {PATHETIC_FLUDD,            "Pathetic FLUDD",                   70,			30,		    codeContainer.sadFLUDD},
+        {LAND_MOVEMENT_LOCK,        "Land Movement Lock",               40,			30,		    codeContainer.landMovementLock},
+        {UNLIMITED_TURBO,           "Unlimited Turbo but no Turbo",     25,			30,		    codeContainer.forceTurbo},
+        {CRESCENDO,                 "Crescendo",                        30,         10,         codeContainer.setMusicVol},
+        {SPEEN_ID,                  "S P E E N",                        30,         10,         codeContainer.SPEEN},
+        {NOZZLE_ROLL,               "Nozzle Roll",				        35,          7,         codeContainer.changeNozzleRandom},
+        {GIVE_COINS,                "We're Rich!",                       5,          5,         codeContainer.giveCoins},
+        {SPAWN_YOSHI,               "Spawn Yoshi",                       5,         30,         codeContainer.spawnYoshi},
+        {SUN_DRIP,                  "Sun Drip",					        50,			30,		    codeContainer.sunglassesAndShineShirt},
+		{SPEED_UP_TEMPO,            "Affrettando",				        60,			 5,		    codeContainer.speedUpTempo},
+        {TP_MARIO_BACK,             "Return to Sender",			        10,			15,		    codeContainer.tpMarioBack},
+        {HP_ROULETTE,               "High Stakes Goomba",		        35,			10,		    codeContainer.hpRoulette},
+        {LUIGI_SLIDE,               "Luigi Slide",				        50,			20,		    codeContainer.luigiSlide},
+        {FIREBALL,                  "FIREBALL!!!",		                50,			25,		    codeContainer.emitFireball},
+		{ASCEND,                    "a s c e n d",				        25,			30,		    codeContainer.ascend},
+        {DOUBLE_TIME,               "Double Time!!",				    25,			30,		    codeContainer.doubleTime},
+		{SCRAMBLE_TEXTURES,         "Scramble Textures",			    60,			20,		    codeContainer.messUpTextures},
+		{CHANGE_LIVES,              "Life Changer",					    50,			 1,		    codeContainer.changeLives},
+        {HELPFUL_INPUT_DISPLAY,     "Helpful Input Display!",           50,			30,		    codeContainer.helpfulInputDisplay},
+		{REVERSE_INPUTS,            "Confusion",						30,			20,		    codeContainer.reverseInputsToggle},
+		{SIMON_SAYS,                "Angry_Max Says",				    55,			 5,		    codeContainer.simonSays},
+		{DOOR_STUCK,                "DOOR STUCK",					    55,			20,		    codeContainer.lockMarioAnim},
+		{GIANT_MARIO,               "GIANT MARIO",					    30,			15,		    codeContainer.scaleMario},
+		{SNAKE,                     "Snake?",						    50,			10,		    codeContainer.snakeGame},		// prob needs a better display name
+		{MOON_GRAVITY,              "Moon Gravity",					    50,			15,		    codeContainer.moonGravity},
+		{CRAZY_GRAVITY,             "Crazy Gravity",					45,			30,		    codeContainer.crazyGravity},
+		{CHAOS_CODE,                "Chaos Code",					     1,			60,		    codeContainer.chaosCode}
     };
 
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    char whitelist[][30] = {"Moon Gravity"};
+    char whitelist[][30] = {};
     if (sizeof(whitelist) != 0) {
         for (Code c : addList) {
             for (char *n : whitelist) {
@@ -477,7 +479,7 @@ BETTER_SMS_FOR_CALLBACK static void updateTime(TApplication *tapp) {
         float seconds = OSTicksToSeconds(float(u32(diff)));
         currentTime += seconds;
 
-        if (codeContainer.isCodeActive(26)) {
+        if (codeContainer.isCodeActive(DOUBLE_TIME)) {
             currentTime += seconds;
         }
     }
@@ -515,18 +517,24 @@ BETTER_SMS_FOR_CALLBACK static void drawCodeDisplay(TMarDirector *director,  con
     char *displayBuffer = codeContainer.codeDisplay->getStringPtr();
     memset(displayBuffer, 0, 144); // clear buffer
 
-    for (Code c : codeContainer.codeList) {
+    if (codeContainer.isCodeActive(CHAOS_CODE)) {
+        Code chaosCode;
+        codeContainer.getCodeFromID(CHAOS_CODE, chaosCode);
+        snprintf(displayBuffer, 144, "Chaos Code: %.0f%s\n", chaosCode.duration - (currentTime - chaosCode.timeCalled), "s");
+    } else {
+        for (Code c : codeContainer.codeList) {
         #if DEV_MODE
-        if (c.isActive || c.isGraced) {
-            snprintf(displayBuffer, 144, "%s%s%s%.0f%s\n", displayBuffer, c.name, ": ", 
-                c.duration - (currentTime - c.timeCalled), "s");
-        }
+            if (c.isActive || c.isGraced) {
+                snprintf(displayBuffer, 144, "%s%s: %.0f%s\n", displayBuffer, c.name,
+                         c.duration - (currentTime - c.timeCalled), "s");
+            }
         #else
-        if (c.isActive) {
-            snprintf(displayBuffer, 144, "%s%s%s%.0f%s\n", displayBuffer, c.name, ": ", 
-                c.duration - (currentTime - c.timeCalled), "s");
-        }
+            if (c.isActive) {
+                snprintf(displayBuffer, 144, "%s%s: %.0f%s\n", displayBuffer, c.name,
+                         c.duration - (currentTime - c.timeCalled), "s");
+            }
         #endif
+        }
     }
     
     // set font size
@@ -547,11 +555,11 @@ BETTER_SMS_FOR_CALLBACK static void drawCodeDisplay(TMarDirector *director,  con
 BETTER_SMS_FOR_CALLBACK static void avoidCrashCodes(TApplication *tapp) {
 
     // ends noMarioRedraw when exiting stage and resets it
-    if (codeContainer.isCodeActive(2)) {
-        codeContainer.endCode(2); 
+    if (codeContainer.isCodeActive(NO_MARIO_REDRAW)) {
+        codeContainer.endCode(NO_MARIO_REDRAW); 
         Code c;
-        if (!(codeContainer.getCodeFromID(2, c))){
-            OSReport("Could not find code with code id %d!\n", 2);
+        if (!(codeContainer.getCodeFromID(NO_MARIO_REDRAW, c))) {
+            OSReport("[noMarioRedraw] -> Could not find code with code id %d!\n", 2);
             return;
         }
         c.pFunc(Code::FuncReset::TRUE);

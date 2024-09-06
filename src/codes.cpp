@@ -202,7 +202,6 @@ void CodeContainer::giveCoins(Code::FuncReset f) {
 void CodeContainer::spawnYoshi(Code::FuncReset f) {		// TODO: refill yoshi's juice bar on execOnce
 
     static bool execOnce = true;
-    static u8 codeID     = 17;
     static bool fludd    = true;
 
 	if (f == Code::FuncReset::TRUE) {
@@ -223,9 +222,11 @@ void CodeContainer::spawnYoshi(Code::FuncReset f) {		// TODO: refill yoshi's jui
 
     if (gpMarioOriginal->mYoshi->mState == TYoshi::State::EGG) {
         Code yoshiCode;
-        if (codeContainer.getCodeFromID(codeID, yoshiCode)) {
-            yoshiCode.timeCalled = currentTime - yoshiCode.duration;
+        if (!(codeContainer.getCodeFromID(SPAWN_YOSHI, yoshiCode))) {
+            OSReport("[spawnYoshi] -> Could not find code with code id %d!\n", SPAWN_YOSHI);
+            return;
         }
+        codeContainer.endCode(SPAWN_YOSHI);
     }
 
 	if (fludd)
@@ -473,7 +474,6 @@ void CodeContainer::reverseInputs() {
 
 void CodeContainer::simonSays(Code::FuncReset f) {
 
-    static u8 codeID = 31;
 	static bool execRNGOnce = true;
     static bool inputMade = false;
     static int randVal = 0;
@@ -501,12 +501,12 @@ void CodeContainer::simonSays(Code::FuncReset f) {
 
     u32 maskedInput = gpMarioOriginal->mController->mButtons.mInput & ~4294963455; // this masks the input to just the a, b, x, and y buttons!
 
-    Code currentCode;
-    if (!(codeContainer.getCodeFromID(codeID, currentCode))){
-        OSReport("[simonSays] -> Could not find code with code id %d!\n", codeID);
+    Code simonSays;
+    if (!(codeContainer.getCodeFromID(SIMON_SAYS, simonSays))){
+        OSReport("[simonSays] -> Could not find code with code id %d!\n", SIMON_SAYS);
         return;
     }
-    f32 elapsedTime = currentTime - currentCode.timeCalled;
+    f32 elapsedTime = currentTime - simonSays.timeCalled;
 
     char *displayBuffer = codeContainer.codeDisplay->getStringPtr();	
     memset(displayBuffer, 0, 144);
@@ -548,7 +548,7 @@ void CodeContainer::simonSays(Code::FuncReset f) {
         else if (maskedInput & ~randButtonBinary[randVal])
             gpMarioOriginal->loserExec();
 
-		codeContainer.endCode(codeID);
+		codeContainer.endCode(SIMON_SAYS);
         return;
     }
 }
@@ -579,7 +579,6 @@ void CodeContainer::scaleMario(Code::FuncReset f) {
 void CodeContainer::snakeGame(Code::FuncReset f) {		// TODO: test this w/o fullscreen
 
 	static int execOnce;
-    static u8 codeID = 34;
 
 	// ==================== //
     // === Player Logic === //
@@ -630,7 +629,7 @@ void CodeContainer::snakeGame(Code::FuncReset f) {		// TODO: test this w/o fulls
 	 if (((food_xPos - EAT_DIAMETER) < player_xPos) && (player_xPos < (food_xPos + EAT_DIAMETER)) &&	// its messy, but checks if the player is close enough to eat the food
         ((food_yPos - EAT_DIAMETER) < player_yPos) && (player_yPos < (food_yPos + EAT_DIAMETER))) {
     
-		 codeContainer.endCode(codeID);
+		 codeContainer.endCode(SNAKE);
 		 lostGame = false;
 	 }
 
@@ -650,12 +649,12 @@ void CodeContainer::snakeGame(Code::FuncReset f) {		// TODO: test this w/o fulls
      // === Timer Logic === //
      // =================== //
 
-	 Code currentCode;
-     if (!(codeContainer.getCodeFromID(codeID, currentCode))) {
-         OSReport("[snakeGame] -> Could not find code with code id %d!\n", codeID);
+	 Code snakeGame;
+     if (!(codeContainer.getCodeFromID(SNAKE, snakeGame))) {
+         OSReport("[snakeGame] -> Could not find code with code id %d!\n", SNAKE);
          return;
      }
-     f32 elapsedTime = currentTime - currentCode.timeCalled;
+     f32 elapsedTime = currentTime - snakeGame.timeCalled;
 
 
 
@@ -676,7 +675,7 @@ void CodeContainer::snakeGame(Code::FuncReset f) {		// TODO: test this w/o fulls
     Utils::drawCodeDisplay(WHITE, 48, food_xPos, food_yPos);    
 
 	// big timer
-    snprintf(displayBuffer, 144, "%d", (int)(currentCode.duration - (currentTime - currentCode.timeCalled)));
+    snprintf(displayBuffer, 144, "%d", (int)(snakeGame.duration - (currentTime - snakeGame.timeCalled)));
     Utils::drawCodeDisplay(RED, 60, 255, 150);
 	
 }
@@ -688,4 +687,33 @@ void CodeContainer::moonGravity(Code::FuncReset f) {
     }
 
     gpMarioOriginal->mJumpParams.mGravity.set(0.5);
+}
+
+void CodeContainer::crazyGravity(Code::FuncReset f) {
+    if (f == Code::FuncReset::TRUE) {
+        gpMarioOriginal->mJumpParams.mGravity.set(1.0);
+        return;
+    }
+
+    gpMarioOriginal->mJumpParams.mGravity.set(cosf(currentTime));
+}
+
+void CodeContainer::chaosCode(Code::FuncReset f) {
+    static bool execOnce = true;
+
+    if (f == Code::FuncReset::TRUE) {
+        codeContainer.maxActiveCodes = codeContainer.baseMaxActiveCodes;
+        execOnce = true;
+        return;
+    }
+
+    if (execOnce) {
+        codeContainer.endCode(NO_MARIO_REDRAW);
+        codeContainer.endCode(SIMON_SAYS);
+        codeContainer.endCode(SNAKE);
+        execOnce = false;
+        return;
+    }
+
+    codeContainer.maxActiveCodes = codeContainer.currentCodeCount;
 }
