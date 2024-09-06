@@ -23,9 +23,7 @@
 
 #define DEV_MODE true
 
-#define GREEN_TOP {0, 255, 0, 255}
-#define GREEN_BOTTOM {100, 255, 100, 255}
-#define BLACK {0, 0, 0, 255}
+// color definitions have been moved to codes.hxx :)
 
 CodeContainer codeContainer;
 float currentTime;

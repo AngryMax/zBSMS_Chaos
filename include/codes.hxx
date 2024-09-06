@@ -43,6 +43,11 @@ extern float currentTime;  // unit = seconds
 #define RED {0xff, 0, 0, 0xff}
 #define GRAY {0x77, 0x77, 0x77, 0xff}
 #define PURPLE {0xff, 0x00, 0xff, 0xff}
+#define GREEN {0, 0xff, 0, 0xff}
+#define GREEN_TOP {0, 0xff, 0, 0xff}
+#define GREEN_BOTTOM {100, 0xff, 100, 0xff}
+#define BLACK {0, 0, 0, 0xff}
+#define WHITE {0xff, 0xff, 0xff, 0xff}
 
 class Code  // we might want to add a member for display name
 {    
@@ -142,7 +147,7 @@ public:
             
             switch (codeList[rollWinner].codeID) {
                 case 27:					// messUpTextures
-                    if (isCodeActive(31))
+                    if (isCodeActive(31) || isCodeActive(34))
                         continue;
                     break;
                 case 31:					// simonSays
@@ -240,6 +245,7 @@ public:
     static void simonSays(Code::FuncReset);
     static void lockMarioAnim(Code::FuncReset);
     static void scaleMario(Code::FuncReset);
+    static void snakeGame(Code::FuncReset);
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project

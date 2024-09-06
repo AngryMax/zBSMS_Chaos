@@ -503,7 +503,7 @@ void CodeContainer::simonSays(Code::FuncReset f) {
 
     Code currentCode;
     if (!(codeContainer.getCodeFromID(codeID, currentCode))){
-        OSReport("Could not find code with code id %d!\n", codeID);
+        OSReport("[simonSays] -> Could not find code with code id %d!\n", codeID);
         return;
     }
     f32 elapsedTime = currentTime - currentCode.timeCalled;
@@ -574,4 +574,109 @@ void CodeContainer::scaleMario(Code::FuncReset f) {
     gpMarioOriginal->mModelData->mModel->mBaseScale.y = 5.0;
     gpMarioOriginal->mModelData->mModel->mBaseScale.z = 5.0;
 
+}
+
+void CodeContainer::snakeGame(Code::FuncReset f) {		// TODO: test this w/o fullscreen
+
+	static int execOnce;
+    static u8 codeID = 34;
+
+	// ==================== //
+    // === Player Logic === //
+    // ==================== //
+
+	static f32 player_xPos = 200;
+    static f32 player_yPos = 200;		
+
+	// player movement
+    const f32 MOVEMENT_MULTIPLIER = 2.5;
+	player_xPos += gpMarioOriginal->mController->mControlStick.mStickX * MOVEMENT_MULTIPLIER;
+    player_yPos -= gpMarioOriginal->mController->mControlStick.mStickY * MOVEMENT_MULTIPLIER;
+
+	// keeps the player onscreen
+	if (player_xPos < -100)
+        player_xPos = -100;
+    else if (player_xPos > 640)
+        player_xPos = 640;
+    if (player_yPos < 60)
+        player_yPos = 60;
+    else if (player_yPos > 465)
+        player_yPos = 465;
+
+
+
+	// ================== //
+    // === Food Logic === //
+    // ================== //
+
+	static int food_xPos = 300;
+    static int food_yPos = 300;    
+
+	if (execOnce) {
+        food_xPos = (rand() % 285) + 250;
+        food_yPos = (rand() % 205) + 250;		
+		execOnce = false;
+	}
+
+
+
+	// ===================== //
+    // === Outcome Logic === //
+    // ===================== //
+
+	bool lostGame = true;
+    const int EAT_DIAMETER = 40;
+
+	 if (((food_xPos - EAT_DIAMETER) < player_xPos) && (player_xPos < (food_xPos + EAT_DIAMETER)) &&	// its messy, but checks if the player is close enough to eat the food
+        ((food_yPos - EAT_DIAMETER) < player_yPos) && (player_yPos < (food_yPos + EAT_DIAMETER))) {
+    
+		 codeContainer.endCode(codeID);
+		 lostGame = false;
+	 }
+
+	 if (lostGame && f == Code::FuncReset::TRUE)
+         gpMarioOriginal->loserExec();
+
+	 if (f == Code::FuncReset::TRUE) {
+         player_xPos = 200;
+         player_yPos = 200;
+         execOnce    = true;
+         return;
+     }
+
+
+
+	 // =================== //
+     // === Timer Logic === //
+     // =================== //
+
+	 Code currentCode;
+     if (!(codeContainer.getCodeFromID(codeID, currentCode))) {
+         OSReport("[snakeGame] -> Could not find code with code id %d!\n", codeID);
+         return;
+     }
+     f32 elapsedTime = currentTime - currentCode.timeCalled;
+
+
+
+	// ============ //
+	// === Draw === //
+    // ============ //
+
+	char *displayBuffer = codeContainer.codeDisplay->getStringPtr();
+    memset(displayBuffer, 0, 144);
+
+	// player
+    snprintf(displayBuffer, 144, "0");
+    Utils::drawCodeDisplay(GREEN, 48, (int)player_xPos, (int)player_yPos);
+
+	// food
+    snprintf(displayBuffer, 144, "*");
+    Utils::drawCodeDisplay(BLACK, 48, food_xPos + 3, food_yPos + 3);
+    Utils::drawCodeDisplay(WHITE, 48, food_xPos, food_yPos);    
+
+	// big timer
+    snprintf(displayBuffer, 144, "%d", (int)(currentCode.duration - (currentTime - currentCode.timeCalled)));
+    Utils::drawCodeDisplay(RED, 60, 255, 150);
+	
 }

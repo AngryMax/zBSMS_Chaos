@@ -431,13 +431,14 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 		{30,   "Confusion",						30,			20,		    codeContainer.reverseInputsToggle},
 		{31,   "Angry_Max Says",				55,			 5,		    codeContainer.simonSays},
 		{32,   "DOOR STUCK",					55,			20,		    codeContainer.lockMarioAnim},
-		{32,   "GIANT MARIO",					30,			15,		    codeContainer.scaleMario}
+		{33,   "GIANT MARIO",					30,			15,		    codeContainer.scaleMario},
+		{34,   "Snake?",						50,			10,		    codeContainer.snakeGame}		// prob needs a better display name
     };
 
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    char whitelist[][30] = {"Spawn Yoshi"};
+    char whitelist[][30] = {"Snake?"};
     if (sizeof(whitelist) != 0) {
         for (Code c : addList) {
             for (char *n : whitelist) {
