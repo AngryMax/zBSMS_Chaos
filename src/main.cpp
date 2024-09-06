@@ -436,13 +436,16 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 		{MOON_GRAVITY,              "Moon Gravity",					    50,			15,		    codeContainer.moonGravity},
 		{CRAZY_GRAVITY,             "Crazy Gravity",					45,			30,		    codeContainer.crazyGravity},
 		{CHAOS_CODE,                "Chaos Code",					     1,			60,		    codeContainer.chaosCode},
-		{DISABLE_WATER_COL,         "Disable Water Collision",	        50,			60,		    codeContainer.disableWaterCol}
+		{DISABLE_WATER_COL,         "Disable Water Collision",	        50,			60,		    codeContainer.disableWaterCol},
+		// im skipping shuffle fruits bc idk if we're still adding it
+        {CRAZY_COLLISION,			"Crazy Collision",					 1,			15,			codeContainer.crazyCollision},
+        {INV_WATER_MOMENTUM,		"Invert Water",						50,			60,			codeContainer.invertWaterToggle}
     };
 
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {DISABLE_WATER_COL};
+    u8 whitelist[] = {INV_WATER_MOMENTUM};
     if (sizeof(whitelist) != 0) {
         for (Code c : addList) {
             for (u8 id : whitelist) {

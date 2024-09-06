@@ -91,6 +91,9 @@ extern float currentTime;  // unit = seconds
 #define CHAOS_CODE              37
 #define DISABLE_WATER_COL       38
 
+#define CRAZY_COLLISION			40
+#define INV_WATER_MOMENTUM		41
+
 class Code  // we might want to add a member for display name
 {    
 
@@ -313,6 +316,9 @@ public:
     static void crazyGravity(Code::FuncReset);
     static void chaosCode(Code::FuncReset);
     static void disableWaterCol(Code::FuncReset);
+    static void crazyCollision(Code::FuncReset);    
+    static void invertWaterToggle(Code::FuncReset);
+    static void invertWaterMomentum(); // this function is split into 2
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project

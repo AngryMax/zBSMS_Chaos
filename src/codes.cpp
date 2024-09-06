@@ -453,7 +453,7 @@ void CodeContainer::helpfulInputDisplay(Code::FuncReset f) {
 
 pp::togglable_ppc_b reverseInputsPatch(SMS_PORT_REGION(0x803519a8, 0, 0, 0), (void *)codeContainer.reverseInputs, false);
 void CodeContainer::reverseInputsToggle(Code::FuncReset f) {
-    if (f == Code::FuncReset::FALSE && !SPEENPatch.is_enabled())
+    if (f == Code::FuncReset::FALSE && !reverseInputsPatch.is_enabled())
         reverseInputsPatch.set_enabled(true);
     else if (f == Code::FuncReset::TRUE)
         reverseInputsPatch.set_enabled(false);
@@ -724,4 +724,36 @@ void CodeContainer::disableWaterCol(Code::FuncReset f) {
         disableWaterColPatch.set_enabled(true);
     else if (f == Code::FuncReset::TRUE)
         disableWaterColPatch.set_enabled(false);
+}
+
+// shuffle fruits goes here!! <------------------------
+
+pp::auto_patch crazyCollisionPatch(SMS_PORT_REGION(0x8018c1b4, 0, 0, 0), NOP, false);
+void CodeContainer::crazyCollision(Code::FuncReset f) {
+    if (f == Code::FuncReset::FALSE && !crazyCollisionPatch.is_enabled())
+        crazyCollisionPatch.set_enabled(true);
+    else if (f == Code::FuncReset::TRUE)
+        crazyCollisionPatch.set_enabled(false);
+}
+
+
+pp::togglable_ppc_b invertWaterMomentumPatch(SMS_PORT_REGION(0x80269444, 0, 0, 0), (void *)codeContainer.invertWaterMomentum, false);
+void CodeContainer::invertWaterToggle(Code::FuncReset f) {
+    if (f == Code::FuncReset::FALSE && !invertWaterMomentumPatch.is_enabled())
+        invertWaterMomentumPatch.set_enabled(true);
+    else if (f == Code::FuncReset::TRUE)
+        invertWaterMomentumPatch.set_enabled(false);
+}
+
+void CodeContainer::invertWaterMomentum() {
+
+	TVec3f *dir;
+
+	SMS_FROM_GPR(6, dir);
+
+	dir->x *= -1;
+    dir->y *= -1;
+    dir->z *= -1;
+
+	SMS_TO_GPR(6, dir);
 }
