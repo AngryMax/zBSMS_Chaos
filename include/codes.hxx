@@ -241,11 +241,12 @@ public:
     static void changeLives(Code::FuncReset);
     static void helpfulInputDisplay(Code::FuncReset);
     static void reverseInputsToggle(Code::FuncReset);
-    static void reverseInputs();
+    static void reverseInputs(); // this function is split into 2
     static void simonSays(Code::FuncReset);
     static void lockMarioAnim(Code::FuncReset);
     static void scaleMario(Code::FuncReset);
     static void snakeGame(Code::FuncReset);
+    static void moonGravity(Code::FuncReset);
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project

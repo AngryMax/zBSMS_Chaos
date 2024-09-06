@@ -680,3 +680,12 @@ void CodeContainer::snakeGame(Code::FuncReset f) {		// TODO: test this w/o fulls
     Utils::drawCodeDisplay(RED, 60, 255, 150);
 	
 }
+
+void CodeContainer::moonGravity(Code::FuncReset f) {
+    if (f == Code::FuncReset::TRUE) {
+        gpMarioOriginal->mJumpParams.mGravity.set(1.0);
+        return;
+    }
+
+    gpMarioOriginal->mJumpParams.mGravity.set(0.5);
+}
