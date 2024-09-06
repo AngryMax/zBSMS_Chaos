@@ -89,6 +89,7 @@ extern float currentTime;  // unit = seconds
 #define MOON_GRAVITY            35
 #define CRAZY_GRAVITY           36
 #define CHAOS_CODE              37
+#define DISABLE_WATER_COL       38
 
 class Code  // we might want to add a member for display name
 {    
@@ -265,13 +266,8 @@ private:
 
             roll = getRand();
 
-            //if (codeList[60].isActive == true)  // if reverseRarities is active, low rarity values are now valued over higher ones for getting rolled
-            //{
-                if (codeList[roll].rarity < rand() % 101)
-                    return roll;
-            //}
-                else if (codeList[roll].rarity > rand() % 101)
-					return roll;
+            if (codeList[roll].rarity > rand() % 101)
+				return roll;
         }
 	}
 
@@ -316,6 +312,7 @@ public:
     static void moonGravity(Code::FuncReset);
     static void crazyGravity(Code::FuncReset);
     static void chaosCode(Code::FuncReset);
+    static void disableWaterCol(Code::FuncReset);
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project

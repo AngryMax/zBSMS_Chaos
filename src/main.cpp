@@ -435,17 +435,18 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 		{SNAKE,                     "Snake?",						    50,			10,		    codeContainer.snakeGame},		// prob needs a better display name
 		{MOON_GRAVITY,              "Moon Gravity",					    50,			15,		    codeContainer.moonGravity},
 		{CRAZY_GRAVITY,             "Crazy Gravity",					45,			30,		    codeContainer.crazyGravity},
-		{CHAOS_CODE,                "Chaos Code",					     1,			60,		    codeContainer.chaosCode}
+		{CHAOS_CODE,                "Chaos Code",					     1,			60,		    codeContainer.chaosCode},
+		{DISABLE_WATER_COL,         "Disable Water Collision",	        50,			60,		    codeContainer.disableWaterCol}
     };
 
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    char whitelist[][30] = {};
+    u8 whitelist[] = {DISABLE_WATER_COL};
     if (sizeof(whitelist) != 0) {
         for (Code c : addList) {
-            for (char *n : whitelist) {
-                if (strcmp(c.name, n) == 0)
+            for (u8 id : whitelist) {
+                if (c.codeID == id)
                     codeContainer.addCode(c);
             }
         }
@@ -599,14 +600,6 @@ static void initModule() {
     }
     BetterSMS::registerModule(sModuleInfo);
 }
-
-/* static void deinitModule() {
-    OSReport("Deinitializing Module...\n");
-
-    // Cleanup callbacks
-    //BetterSMS::Game::deregisterBootCallback("BetterDebugEntry_autoDebug");
-    //BetterSMS::Stage::deregisterUpdateCallback("BetterDebugEntry_removeSetting");
-} */
 
 // Definition block
 KURIBO_MODULE_BEGIN("Chaos", "Angry_Max, MasterMattK", "v0.1") {

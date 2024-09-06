@@ -717,3 +717,11 @@ void CodeContainer::chaosCode(Code::FuncReset f) {
 
     codeContainer.maxActiveCodes = codeContainer.currentCodeCount;
 }
+
+pp::auto_patch disableWaterColPatch(SMS_PORT_REGION(0x8024efe4, 0, 0, 0), BLR, false);
+void CodeContainer::disableWaterCol(Code::FuncReset f) {
+    if (f == Code::FuncReset::FALSE && !disableWaterColPatch.is_enabled())
+        disableWaterColPatch.set_enabled(true);
+    else if (f == Code::FuncReset::TRUE)
+        disableWaterColPatch.set_enabled(false);
+}
