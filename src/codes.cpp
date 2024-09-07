@@ -766,7 +766,7 @@ void CodeContainer::paintRandomCollision(Code::FuncReset f) {		// TODO: seems fi
     static bool ifRoulette = false;
 
 	static int randCol = 0;
-    const int COL_ARRAY[] = {0, 1, 2, 4, 7, 10, 265, 1793, 16384};
+    const int COL_ARRAY[] = {0, 1, 2, 4, 7, 10, 265, 1793, 16384};	// normal, slippery, no slide, wet, bounce, no fall damage, water, sand, shadow
 
 	if (f == Code::FuncReset::TRUE)
 	{
@@ -793,7 +793,7 @@ void CodeContainer::paintRandomCollision(Code::FuncReset f) {		// TODO: seems fi
 	u16 ***TMario	= (u16 ***)0x8040E0E8;			// prob a better way to do this in the better sunshine engine, but im lazy and couldnt find it in 5 minutes
     TMario[0][0xe0 / 4][0] = COL_ARRAY[randCol];
 
-	if (COL_ARRAY[randCol] == 7)  // if bounce collision, we set the bounce height here(otherwise it defaults to 0, which isn't bouncy at all!)
+	if (COL_ARRAY[randCol] == 7)  // if bounce collision, we set the bounce height here(otherwise it (most of the time) defaults to 0, which isn't bouncy at all!)
         TMario[0][0xe0 / 4][0x2 / 2] = 8500;
 }
 
@@ -833,4 +833,38 @@ void CodeContainer::weirdCamera(Code::FuncReset f) {
 		weirdCameraPatchY.set_enabled(false);
 		weirdCameraPatchZ.set_enabled(false);
     }
+}
+
+// objVortext goes here <---------------------------------------
+																	   // li r0, 1
+pp::auto_patch doublePerspectivePatch(SMS_PORT_REGION(0x802def34, 0, 0, 0), 0x38000001, false);
+void CodeContainer::doublePerspective(Code::FuncReset f) {
+    if (f == Code::FuncReset::FALSE && !doublePerspectivePatch.is_enabled())
+        doublePerspectivePatch.set_enabled(true);
+    else if (f == Code::FuncReset::TRUE)
+        doublePerspectivePatch.set_enabled(false);
+}
+
+pp::auto_patch streeeeetchPatch(SMS_PORT_REGION(0x802d3404, 0, 0, 0), BLR, false);
+void CodeContainer::streeeeetch(Code::FuncReset f) {
+    if (f == Code::FuncReset::FALSE && !streeeeetchPatch.is_enabled())
+        streeeeetchPatch.set_enabled(true);
+    else if (f == Code::FuncReset::TRUE)
+        streeeeetchPatch.set_enabled(false);
+}
+
+// smsWiki goes here <--------------------------------
+
+void CodeContainer::keepAccelerating(Code::FuncReset f) {
+
+	static bool execOnce  = true;
+    static float accelAdd = 0.0f;
+
+	if (execOnce)
+	{
+        //gpMarioOriginal->mRunParams.mMaxSpeed = (f32)100.0;	// this shit doesnt work and its really stupid
+
+
+		accelAdd = 0;
+	}
 }

@@ -443,13 +443,18 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 		// im saving moveShines for you matthew since you said you're excited to get to it
         {PAINT_RANDOM_COLLISION,	"Collision Paint",					50,			20,			codeContainer.paintRandomCollision},
         {TANK_CONTROLS,				"Tank Controls",					30,			30,			codeContainer.tankControls},
-        {WEIRD_CAMERA,				"Weird Cam",						30,			30,			codeContainer.weirdCamera}
+        {WEIRD_CAMERA,				"Weird Cam",						30,			30,			codeContainer.weirdCamera},
+		// im saving obj vortex for later bc i dont wanna do it right now lole
+        {DOUBLE_PERSPECTIVE,		"Double Perspective",				20,			30,			codeContainer.doublePerspective},
+        {STREEEEETCH,				"streeeeetch",						55,			20,			codeContainer.streeeeetch},
+		// skipping smsWiki to discuss if there's a better way to go about the text. also to figure out if i can stream audio to specific codes.
+        {KEEP_ACCELERATING,			"Terminal Velocity?",				50,			40,			codeContainer.keepAccelerating}
     };
 
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {WEIRD_CAMERA};
+    u8 whitelist[] = {KEEP_ACCELERATING};
     if (sizeof(whitelist) != 0) {
         for (Code c : addList) {
             for (u8 id : whitelist) {

@@ -97,6 +97,11 @@ extern float currentTime;  // unit = seconds
 #define PAINT_RANDOM_COLLISION	43
 #define TANK_CONTROLS			44
 #define WEIRD_CAMERA			45
+// objectVortext
+#define DOUBLE_PERSPECTIVE		46
+#define STREEEEETCH				47
+// keepAccelerating
+#define KEEP_ACCELERATING		49
 
 class Code  // we might want to add a member for display name
 {    
@@ -328,6 +333,10 @@ public:
     static void paintRandomCollision(Code::FuncReset);
     static void tankControls(Code::FuncReset);
     static void weirdCamera(Code::FuncReset);
+	// objectVortext
+    static void doublePerspective(Code::FuncReset);
+    static void streeeeetch(Code::FuncReset);
+    static void keepAccelerating(Code::FuncReset);
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project
