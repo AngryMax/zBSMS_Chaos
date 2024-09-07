@@ -758,6 +758,8 @@ void CodeContainer::invertWaterMomentum() {
 	SMS_TO_GPR(6, dir);
 }
 
+// moveShines goes here! <-------------------------------------------------
+
 void CodeContainer::paintRandomCollision(Code::FuncReset f) {		// TODO: seems fine, but do a bit of extra testing
 
 	static bool execOnce = true;
@@ -788,9 +790,47 @@ void CodeContainer::paintRandomCollision(Code::FuncReset f) {		// TODO: seems fi
 
 	}
 
-	u16 ***TMario	= (u16 ***)0x8040E0E8;
+	u16 ***TMario	= (u16 ***)0x8040E0E8;			// prob a better way to do this in the better sunshine engine, but im lazy and couldnt find it in 5 minutes
     TMario[0][0xe0 / 4][0] = COL_ARRAY[randCol];
 
-	if (COL_ARRAY[randCol] == 7)  // bounce collision requires an extra param to work
+	if (COL_ARRAY[randCol] == 7)  // if bounce collision, we set the bounce height here(otherwise it defaults to 0, which isn't bouncy at all!)
         TMario[0][0xe0 / 4][0x2 / 2] = 8500;
+}
+
+pp::auto_patch tankControlsPatch(SMS_PORT_REGION(0x80251de0, 0, 0, 0), NOP, false);
+void CodeContainer::tankControls(Code::FuncReset f) {
+    if (f == Code::FuncReset::FALSE && !tankControlsPatch.is_enabled())
+        tankControlsPatch.set_enabled(true);
+    else if (f == Code::FuncReset::TRUE)
+        tankControlsPatch.set_enabled(false);
+}
+
+pp::auto_patch weirdCameraPatchX(SMS_PORT_REGION(0x80023600, 0, 0, 0), NOP, false);
+pp::auto_patch weirdCameraPatchY(SMS_PORT_REGION(0x80023608, 0, 0, 0), NOP, false);
+pp::auto_patch weirdCameraPatchZ(SMS_PORT_REGION(0x80023610, 0, 0, 0), NOP, false);
+void CodeContainer::weirdCamera(Code::FuncReset f) {
+
+	static bool execOnce = true;
+
+	if (execOnce)
+	{
+        int randVal = (rand() % 3);
+        execOnce = false;
+
+		if (randVal == 0)
+            weirdCameraPatchX.set_enabled(true);
+		else if (randVal == 1)
+            weirdCameraPatchY.set_enabled(true);
+		else if (randVal == 2)
+            weirdCameraPatchZ.set_enabled(true);
+	}
+
+	if (f == Code::FuncReset::TRUE)
+	{
+        execOnce = true;
+
+		weirdCameraPatchX.set_enabled(false);
+		weirdCameraPatchY.set_enabled(false);
+		weirdCameraPatchZ.set_enabled(false);
+    }
 }

@@ -432,7 +432,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 		{SIMON_SAYS,                "Angry_Max Says",				    55,			 5,		    codeContainer.simonSays},
 		{DOOR_STUCK,                "DOOR STUCK",					    55,			20,		    codeContainer.lockMarioAnim},
 		{GIANT_MARIO,               "GIANT MARIO",					    30,			15,		    codeContainer.scaleMario},
-		{SNAKE,                     "Snake?",						    50,			10,		    codeContainer.snakeGame},		// prob needs a better display name
+		{SNAKE,                     "Snake?",						    50,			10,		    codeContainer.snakeGame},		// TODO: prob needs a better display name
 		{MOON_GRAVITY,              "Moon Gravity",					    50,			15,		    codeContainer.moonGravity},
 		{CRAZY_GRAVITY,             "Crazy Gravity",					45,			30,		    codeContainer.crazyGravity},
 		{CHAOS_CODE,                "Chaos Code",					     1,			60,		    codeContainer.chaosCode},
@@ -441,13 +441,15 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {CRAZY_COLLISION,			"Crazy Collision",					 1,			15,			codeContainer.crazyCollision},
         {INV_WATER_MOMENTUM,		"Invert Water",						50,			60,			codeContainer.invertWaterToggle},
 		// im saving moveShines for you matthew since you said you're excited to get to it
-        {PAINT_RANDOM_COLLISION,	"Collision Paint",					50,			20,			codeContainer.paintRandomCollision}
+        {PAINT_RANDOM_COLLISION,	"Collision Paint",					50,			20,			codeContainer.paintRandomCollision},
+        {TANK_CONTROLS,				"Tank Controls",					30,			30,			codeContainer.tankControls},
+        {WEIRD_CAMERA,				"Weird Cam",						30,			30,			codeContainer.weirdCamera}
     };
 
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {PAINT_RANDOM_COLLISION};
+    u8 whitelist[] = {WEIRD_CAMERA};
     if (sizeof(whitelist) != 0) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
