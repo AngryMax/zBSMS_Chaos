@@ -757,3 +757,40 @@ void CodeContainer::invertWaterMomentum() {
 
 	SMS_TO_GPR(6, dir);
 }
+
+void CodeContainer::paintRandomCollision(Code::FuncReset f) {		// TODO: seems fine, but do a bit of extra testing
+
+	static bool execOnce = true;
+    static bool ifRoulette = false;
+
+	static int randCol = 0;
+    const int COL_ARRAY[] = {0, 1, 2, 4, 7, 10, 265, 1793, 16384};
+
+	if (f == Code::FuncReset::TRUE)
+	{
+        execOnce = true;
+        ifRoulette = false;
+        return;
+	}
+
+	if (execOnce)
+	{
+		// roll for collision
+        randCol = rand() % 10;
+		if (randCol == 9)
+		{
+            ifRoulette = true;
+            randCol    = rand() % 9;	// prevents a crash
+		}
+
+		if (!ifRoulette)
+            execOnce = false;
+
+	}
+
+	u16 ***TMario	= (u16 ***)0x8040E0E8;
+    TMario[0][0xe0 / 4][0] = COL_ARRAY[randCol];
+
+	if (COL_ARRAY[randCol] == 7)  // bounce collision requires an extra param to work
+        TMario[0][0xe0 / 4][0x2 / 2] = 8500;
+}

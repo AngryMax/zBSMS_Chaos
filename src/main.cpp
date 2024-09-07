@@ -439,13 +439,15 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 		{DISABLE_WATER_COL,         "Disable Water Collision",	        50,			60,		    codeContainer.disableWaterCol},
 		// im skipping shuffle fruits bc idk if we're still adding it
         {CRAZY_COLLISION,			"Crazy Collision",					 1,			15,			codeContainer.crazyCollision},
-        {INV_WATER_MOMENTUM,		"Invert Water",						50,			60,			codeContainer.invertWaterToggle}
+        {INV_WATER_MOMENTUM,		"Invert Water",						50,			60,			codeContainer.invertWaterToggle},
+		// im saving moveShines for you matthew since you said you're excited to get to it
+        {PAINT_RANDOM_COLLISION,	"Collision Paint",					50,			20,			codeContainer.paintRandomCollision}
     };
 
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {INV_WATER_MOMENTUM};
+    u8 whitelist[] = {PAINT_RANDOM_COLLISION};
     if (sizeof(whitelist) != 0) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
