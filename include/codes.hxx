@@ -21,7 +21,8 @@
 #include <SMS/MSound/MSoundSESystem.hxx>
 #include <SMS/MSound/MSModBgm.hxx>
 #include <SMS/MSound/MSound.hxx>
-//#include <SMS/MarioUtil/gd-reinit-gx.hxx>
+#include <SMS/Enemy/Conductor.hxx>
+#include <SMS/MoveBG/Shine.hxx>
 
 #include <BetterSMS/game.hxx>
 #include <BetterSMS/module.hxx>
@@ -93,7 +94,7 @@ extern float currentTime;  // unit = seconds
 // shuffleFruits
 #define CRAZY_COLLISION			40
 #define INV_WATER_MOMENTUM		41
-// moveShines
+#define MOVE_SHINES		        42
 #define PAINT_RANDOM_COLLISION	43
 #define TANK_CONTROLS			44
 #define WEIRD_CAMERA			45
@@ -329,7 +330,7 @@ public:
     static void crazyCollision(Code::FuncReset);    
     static void invertWaterToggle(Code::FuncReset);
     static void invertWaterMomentum(TWaterGun *, int, TVec3f *, TVec3f *, TVec3f *); // this function is split into 2
-	// moveShines
+    static void moveShines(Code::FuncReset );
     static void paintRandomCollision(Code::FuncReset);
     static void tankControls(Code::FuncReset);
     static void weirdCamera(Code::FuncReset);

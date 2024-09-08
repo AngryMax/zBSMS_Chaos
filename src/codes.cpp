@@ -752,7 +752,15 @@ void CodeContainer::invertWaterMomentum(TWaterGun *waterGun, int _, TVec3f *pos,
     dir->z *= -1;
 }
 
-// moveShines goes here! <-------------------------------------------------
+void CodeContainer::moveShines(Code::FuncReset f) {
+    static bool execOnce = true;
+
+    if (execOnce) {
+        for (JGadget::TList<TLiveActor*>::iterator it = gpConductor->_10.begin(); it != gpConductor->_10.end(); ++it) {
+            OSReport("Code address: %d, %d\n", codeContainer.moveShines, it);
+        }
+    }
+}
 
 void CodeContainer::paintRandomCollision(Code::FuncReset f) {		// TODO: seems fine, but do a bit of extra testing
 
@@ -829,7 +837,7 @@ void CodeContainer::weirdCamera(Code::FuncReset f) {
 }
 
 // objVortext goes here <---------------------------------------
-																	   // li r0, 1
+																			// li r0, 1
 pp::auto_patch doublePerspectivePatch(SMS_PORT_REGION(0x802def34, 0, 0, 0), 0x38000001, false);
 void CodeContainer::doublePerspective(Code::FuncReset f) {
     if (f == Code::FuncReset::FALSE && !doublePerspectivePatch.is_enabled())
@@ -853,11 +861,40 @@ void CodeContainer::keepAccelerating(Code::FuncReset f) {
 	static bool execOnce  = true;
     static float accelAdd = 0.0f;
 
+	if (f == Code::FuncReset::TRUE)
+	{
+		execOnce = true;
+		
+        gpMarioOriginal->mDeParams.mRunningMax.set(80.0);
+        gpMarioOriginal->mRunParams.mAddBase.set(1.1);
+        gpMarioOriginal->mDeParams.mClashSpeed.set(40.0);
+
+        accelAdd = 0;
+
+		return;
+    }
+
 	if (execOnce)
 	{
-        gpMarioOriginal->mRunParams.mMaxSpeed.set(100.0);	// this shit doesnt work and its really stupid
+        gpMarioOriginal->mDeParams.mRunningMax.set(200.0);
+        //gpMarioOriginal->mRunParams.mAddBase.set(1.1);
+        gpMarioOriginal->mDeParams.mClashSpeed.set(5001.0);
 
-
-		accelAdd = 0;
+		execOnce = false;
 	}
+
+    if (gpMarioOriginal->mForwardSpeed > 0.0) {
+        if (accelAdd < 0.0)
+            accelAdd = 0.0;
+
+        accelAdd = accelAdd + 0.004;
+    } else
+        accelAdd = accelAdd - 0.2;
+
+    gpMarioOriginal->mRunParams.mAddBase.set(gpMarioOriginal->mRunParams.mAddBase.get() + accelAdd);
+
+    if (gpMarioOriginal->mRunParams.mAddBase.get() > 400.0)
+        gpMarioOriginal->mRunParams.mAddBase.set(400.0);
+    else if (gpMarioOriginal->mRunParams.mAddBase.get() < 1.1)
+        gpMarioOriginal->mRunParams.mAddBase.set(1.1);
 }

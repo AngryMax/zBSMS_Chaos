@@ -440,7 +440,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 		// im skipping shuffle fruits bc idk if we're still adding it
         {CRAZY_COLLISION,			"Crazy Collision",					 1,			15,			codeContainer.crazyCollision},
         {INV_WATER_MOMENTUM,		"Invert Water",						50,			60,			codeContainer.invertWaterToggle},
-		// im saving moveShines for you matthew since you said you're excited to get to it
+        {MOVE_SHINES,				"The Shining",						 5,			30,			codeContainer.moveShines},
         {PAINT_RANDOM_COLLISION,	"Collision Paint",					50,			20,			codeContainer.paintRandomCollision},
         {TANK_CONTROLS,				"Tank Controls",					30,			30,			codeContainer.tankControls},
         {WEIRD_CAMERA,				"Weird Cam",						30,			30,			codeContainer.weirdCamera},
@@ -454,7 +454,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {DOUBLE_PERSPECTIVE};
+    u8 whitelist[] = {MOVE_SHINES};
     if (sizeof(whitelist) != 0) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
@@ -570,12 +570,22 @@ BETTER_SMS_FOR_CALLBACK static void avoidCrashCodes(TApplication *tapp) {
     // ends noMarioRedraw when exiting stage and resets it
     if (codeContainer.isCodeActive(NO_MARIO_REDRAW)) {
         codeContainer.endCode(NO_MARIO_REDRAW); 
-        Code c;
-        if (!(codeContainer.getCodeFromID(NO_MARIO_REDRAW, c))) {
+        Code noMarioRedraw;
+        if (!(codeContainer.getCodeFromID(NO_MARIO_REDRAW, noMarioRedraw))) {
             OSReport("[noMarioRedraw] -> Could not find code with code id %d!\n", 2);
             return;
         }
-        c.pFunc(Code::FuncReset::TRUE);
+        noMarioRedraw.pFunc(Code::FuncReset::TRUE);
+    }
+
+    // resets keepAccelerating without ending it on stage change
+    if (codeContainer.isCodeActive(KEEP_ACCELERATING)) {
+        Code keepAccelerating;
+        if (!(codeContainer.getCodeFromID(KEEP_ACCELERATING, keepAccelerating))) {
+            OSReport("[keepAccelerating] -> Could not find code with code id %d!\n", 2);
+            return;
+        }
+        keepAccelerating.pFunc(Code::FuncReset::TRUE);
     }
 }
 
