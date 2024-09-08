@@ -756,9 +756,20 @@ void CodeContainer::moveShines(Code::FuncReset f) {
     static bool execOnce = true;
 
     if (execOnce) {
-        for (JGadget::TList<TLiveActor*>::iterator it = gpConductor->_10.begin(); it != gpConductor->_10.end(); ++it) {
-            OSReport("Code address: %d, %d\n", codeContainer.moveShines, it);
+        for (auto iter = gpConductor->mManagerList.begin();
+             iter != gpConductor->mManagerList.end(); iter++) {
+            TLiveManager *manager = *iter;
+            for (int i = 0; i < manager->mObjCount; i++) {
+                JDrama::TViewObj *obj = manager->mObjAry[i];
+                u32 vtable = *(u32 *)obj;
+                if (vtable == 0x803c97ec) // if the vtable is the TShine vtable
+                    OSReport("Obj: 0x%x, Manager: 0x%x\n", obj, manager);
+                else
+                    OSReport("Not a shine!\n");
+            }
         }
+
+        execOnce = false;
     }
 }
 

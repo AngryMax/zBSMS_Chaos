@@ -9,6 +9,7 @@
 #include <SMS/Graph/GraphGroup.hxx>
 #include <SMS/Graph/GraphWeb.hxx>
 #include <SMS/Manager/LiveManager.hxx>
+#include <SMS/Manager/EnemyManager.hxx>
 #include <SMS/Strategic/LiveActor.hxx>
 #include <SMS/System/BaseParam.hxx>
 #include <SMS/System/Params.hxx>
@@ -56,23 +57,23 @@ public:
     void registerAloneActor(TLiveActor *actor);
     void registerAreaCylinderManager(void * /*TAreaCylinderManager*/);
     void registerEnemyInfoTable(void * /*TStageEnemyInfoTable*/);
-    void registerEnemyManager(void * /*TEnemyManager*/);
+    void registerEnemyManager(TEnemyManager *);
     void registerGenerator(void * /*TGenerator*/);
     void registerManager(TLiveManager *);
     void registerOtherObj(JDrama::TViewObj *);
     void registerSDLModelData(void * /*SDLModelData*/);
 
     u32 _0C;
-    JGadget::TList<TLiveActor *> _10;
-    JGadget::TList<TLiveActor *> _20;
-    JGadget::TList<TLiveActor *> _30;
-    JGadget::TList<TLiveActor *> _40;
-    JGadget::TList<TLiveActor *> _50;
-    JGadget::TList<TLiveActor *> _60;
-    JGadget::TList<TLiveActor *> _70;
+    JGadget::TList<TLiveManager *> mManagerList; // _10
+    JGadget::TList<TEnemyManager *> mEnemyManagerList; // _20
+    JGadget::TList<TLiveActor *> mAloneActorList; // _30
+    JGadget::TList<JDrama::TViewObj *> mOtherObjList; // _40
+    JGadget::TList<void * /*TAreaCylinderManager*/> mAreaCylinderManagerList; // _50
+    JGadget::TList<void * /*TGenerator*/> mGeneratorList; // _60
+    JGadget::TList<void * /*SDLModelData*/> mSDLModelDataList; // _70
     TGraphGroup *mGraphGroup;
     TConductorParams mParams;
-    u32 _F0;
+    void *mStageEnemyInfoTable;  // TStageEnemyInfoTable *
     void *mNpcParams;  // TNpcParams *
     u32 _F8;
     u32 _FC;
