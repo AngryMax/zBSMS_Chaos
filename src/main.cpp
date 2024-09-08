@@ -454,7 +454,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {KEEP_ACCELERATING};
+    u8 whitelist[] = {DOUBLE_PERSPECTIVE};
     if (sizeof(whitelist) != 0) {
         for (Code c : addList) {
             for (u8 id : whitelist) {

@@ -745,17 +745,11 @@ void CodeContainer::invertWaterToggle(Code::FuncReset f) {
         invertWaterMomentumPatch.set_enabled(false);
 }
 
-void CodeContainer::invertWaterMomentum() {
-
-	TVec3f *dir;
-
-	SMS_FROM_GPR(6, dir);
+void CodeContainer::invertWaterMomentum(TWaterGun *waterGun, int _, TVec3f *pos, TVec3f *dir, TVec3f *speed) {
 
 	dir->x *= -1;
     dir->y *= -1;
     dir->z *= -1;
-
-	SMS_TO_GPR(6, dir);
 }
 
 // moveShines goes here! <-------------------------------------------------
@@ -790,11 +784,10 @@ void CodeContainer::paintRandomCollision(Code::FuncReset f) {		// TODO: seems fi
 
 	}
 
-	u16 ***TMario	= (u16 ***)0x8040E0E8;			// prob a better way to do this in the better sunshine engine, but im lazy and couldnt find it in 5 minutes
-    TMario[0][0xe0 / 4][0] = COL_ARRAY[randCol];
+    ((TBGCheckData *)gpMarioOriginal->mFloorTriangle)->mType = COL_ARRAY[randCol]; // have to cast it to a non const ptr
 
 	if (COL_ARRAY[randCol] == 7)  // if bounce collision, we set the bounce height here(otherwise it (most of the time) defaults to 0, which isn't bouncy at all!)
-        TMario[0][0xe0 / 4][0x2 / 2] = 8500;
+        ((TBGCheckData *)gpMarioOriginal->mFloorTriangle)->mValue = 8500; // have to cast it to a non const ptr
 }
 
 pp::auto_patch tankControlsPatch(SMS_PORT_REGION(0x80251de0, 0, 0, 0), NOP, false);
@@ -862,7 +855,7 @@ void CodeContainer::keepAccelerating(Code::FuncReset f) {
 
 	if (execOnce)
 	{
-        //gpMarioOriginal->mRunParams.mMaxSpeed = (f32)100.0;	// this shit doesnt work and its really stupid
+        gpMarioOriginal->mRunParams.mMaxSpeed.set(100.0);	// this shit doesnt work and its really stupid
 
 
 		accelAdd = 0;

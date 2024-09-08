@@ -328,7 +328,7 @@ public:
 	// shuffle fruits
     static void crazyCollision(Code::FuncReset);    
     static void invertWaterToggle(Code::FuncReset);
-    static void invertWaterMomentum(); // this function is split into 2
+    static void invertWaterMomentum(TWaterGun *, int, TVec3f *, TVec3f *, TVec3f *); // this function is split into 2
 	// moveShines
     static void paintRandomCollision(Code::FuncReset);
     static void tankControls(Code::FuncReset);
