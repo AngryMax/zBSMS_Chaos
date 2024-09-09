@@ -572,7 +572,7 @@ BETTER_SMS_FOR_CALLBACK static void avoidCrashCodes(TApplication *tapp) {
         codeContainer.endCode(NO_MARIO_REDRAW); 
         Code noMarioRedraw;
         if (!(codeContainer.getCodeFromID(NO_MARIO_REDRAW, noMarioRedraw))) {
-            OSReport("[noMarioRedraw] -> Could not find code with code id %d!\n", 2);
+            OSReport("[noMarioRedraw] -> Could not find code with code id %d!\n", NO_MARIO_REDRAW);
             return;
         }
         noMarioRedraw.pFunc(Code::FuncReset::TRUE);
@@ -582,10 +582,20 @@ BETTER_SMS_FOR_CALLBACK static void avoidCrashCodes(TApplication *tapp) {
     if (codeContainer.isCodeActive(KEEP_ACCELERATING)) {
         Code keepAccelerating;
         if (!(codeContainer.getCodeFromID(KEEP_ACCELERATING, keepAccelerating))) {
-            OSReport("[keepAccelerating] -> Could not find code with code id %d!\n", 2);
+            OSReport("[keepAccelerating] -> Could not find code with code id %d!\n", KEEP_ACCELERATING);
             return;
         }
         keepAccelerating.pFunc(Code::FuncReset::TRUE);
+    }
+
+    // resets moveShines without ending it on stage change
+    if (codeContainer.isCodeActive(MOVE_SHINES)) {
+        Code moveShines;
+        if (!(codeContainer.getCodeFromID(MOVE_SHINES, moveShines))) {
+            OSReport("[moveShines] -> Could not find code with code id %d!\n", MOVE_SHINES);
+            return;
+        }
+        moveShines.pFunc(Code::FuncReset::TRUE);
     }
 }
 

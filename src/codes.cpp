@@ -752,24 +752,80 @@ void CodeContainer::invertWaterMomentum(TWaterGun *waterGun, int _, TVec3f *pos,
     dir->z *= -1;
 }
 
+// struct used for the moveShines code
+typedef struct ShineData {
+    TShine *addr;
+    TVec3f pos;
+    f32 angleOffset;
+    bool wasVisible;
+} ShineData;
+
 void CodeContainer::moveShines(Code::FuncReset f) {
     static bool execOnce = true;
+    static ShineData shineArr[12] = { {nullptr, {}, 0.0f, false} };
+
+    if (f == Code::FuncReset::TRUE) {
+        for (int i = 0; i < 12; i++) {
+            if (shineArr[i].addr == nullptr)
+                continue;
+
+            shineArr[i].addr->mTranslation = shineArr[i].pos;
+
+            // reset shines back to original visibility
+            if (!shineArr[i].wasVisible)
+                shineArr[i].addr->kill();
+
+            shineArr[i].addr = nullptr;
+        }
+
+        execOnce = true;
+        return;
+    }
 
     if (execOnce) {
+        u32 shineCount = 0;
+
         for (auto iter = gpConductor->mManagerList.begin();
              iter != gpConductor->mManagerList.end(); iter++) {
+
+            if (shineCount >= 12)
+                break;
+
             TLiveManager *manager = *iter;
             for (int i = 0; i < manager->mObjCount; i++) {
+
+                if (shineCount >= 12)
+                    break;
+
                 JDrama::TViewObj *obj = manager->mObjAry[i];
                 u32 vtable = *(u32 *)obj;
-                if (vtable == 0x803c97ec) // if the vtable is the TShine vtable
-                    OSReport("Obj: 0x%x, Manager: 0x%x\n", obj, manager);
-                else
-                    OSReport("Not a shine!\n");
+                if (vtable != 0x803c97ec) // if the vtable isn't the TShine vtable
+                    continue;
+                TShine *shineObj = static_cast<TShine *>(obj);
+
+                shineArr[shineCount].addr = shineObj;
+                shineArr[shineCount].pos = shineObj->mTranslation;
+                shineArr[shineCount].angleOffset = (rand() % 628) / 100.0f; // 6.28 is about 2pi
+                shineArr[shineCount].wasVisible  = !shineObj->mStateFlags.asFlags.mIsObjDead;
+
+                // we want all shines to be visible for the duration of the code
+                if (!shineArr[shineCount].wasVisible)
+                    shineObj->appear();
+
+                shineCount++;
             }
         }
 
         execOnce = false;
+    }
+
+    for (int i = 0; i < 12; i++) {
+        if (shineArr[i].addr == nullptr)
+            continue;
+
+        shineArr[i].addr->mTranslation.x = gpMarioPos->x + (200.0 * sinf(currentTime + shineArr[i].angleOffset));
+        shineArr[i].addr->mTranslation.y = gpMarioPos->y;
+        shineArr[i].addr->mTranslation.z = gpMarioPos->z + (200.0 * cosf(currentTime + shineArr[i].angleOffset));
     }
 }
 
