@@ -699,7 +699,8 @@ public:
         STATE_NPC_PUTDOWN     = 0x80000387,
         STATE_NPC_THROW       = 0x80000588,
         STATE_NPC_JUMPTHROW   = 0x820008AB,
-        STATE_NPC_BOUNCE      = 0x02000890
+        STATE_NPC_BOUNCE      = 0x02000890,
+        STATE_UNLOADED        = 0x0000133F
     };
 
     enum Status : u32 {

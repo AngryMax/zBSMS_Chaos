@@ -37,6 +37,9 @@ const static int CODE_COUNT            = 70;
 
 extern float currentTime;  // unit = seconds
 
+#define NORMAL_BUF 144
+#define MAX_BUF 410 // the string buffer is this large for smsWiki
+
 // instructions
 #define NOP 0x60000000
 #define BLR 0x4e800020
@@ -91,18 +94,22 @@ extern float currentTime;  // unit = seconds
 #define CRAZY_GRAVITY           36
 #define CHAOS_CODE              37
 #define DISABLE_WATER_COL       38
-// shuffleFruits
+#define	SHUFFLE_OBJECTS			39
 #define CRAZY_COLLISION			40
 #define INV_WATER_MOMENTUM		41
 #define MOVE_SHINES		        42
 #define PAINT_RANDOM_COLLISION	43
 #define TANK_CONTROLS			44
 #define WEIRD_CAMERA			45
-// objectVortext
-#define DOUBLE_PERSPECTIVE		46
-#define STREEEEETCH				47
-// keepAccelerating
-#define KEEP_ACCELERATING		49
+#define OBJECT_VORTEX           46
+#define DOUBLE_PERSPECTIVE		47
+#define STREEEEETCH				48
+#define SMS_WIKI				49
+#define KEEP_ACCELERATING		50
+// icePhysics
+#define CHANGE_WALLS			52
+//makeMarioAnObject
+#define POPUP_SAVE_PROMPT		54
 
 class Code  // we might want to add a member for display name
 {    
@@ -326,7 +333,7 @@ public:
     static void crazyGravity(Code::FuncReset);
     static void chaosCode(Code::FuncReset);
     static void disableWaterCol(Code::FuncReset);
-	// shuffle fruits
+    static void shuffleObjects(Code::FuncReset);
     static void crazyCollision(Code::FuncReset);    
     static void invertWaterToggle(Code::FuncReset);
     static void invertWaterMomentum(TWaterGun *, int, TVec3f *, TVec3f *, TVec3f *); // this function is split into 2
@@ -334,10 +341,15 @@ public:
     static void paintRandomCollision(Code::FuncReset);
     static void tankControls(Code::FuncReset);
     static void weirdCamera(Code::FuncReset);
-	// objectVortext
+    static void objectVortex(Code::FuncReset);
     static void doublePerspective(Code::FuncReset);
     static void streeeeetch(Code::FuncReset);
+    static void smsWiki(Code::FuncReset);
     static void keepAccelerating(Code::FuncReset);
+	// icePhysics
+    static void changeWalls(Code::FuncReset);
+	// makeMarioAnObject
+    static void popupSavePrompt(Code::FuncReset);
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project
@@ -359,6 +371,15 @@ namespace Utils {
     static void drawCodeDisplay(JUtility::TColor color, int fontSize, int x, int y) {
         codeContainer.codeDisplay->mGradientTop    = color;
         codeContainer.codeDisplay->mGradientBottom = color;
+        codeContainer.codeDisplay->mCharSizeX      = fontSize;
+        codeContainer.codeDisplay->mCharSizeY      = fontSize;
+
+        codeContainer.codeDisplay->draw(x, y);
+    }
+
+    static void drawCodeDisplay(JUtility::TColor topColor, JUtility::TColor bottomColor, int fontSize, int x, int y) {
+        codeContainer.codeDisplay->mGradientTop    = topColor;
+        codeContainer.codeDisplay->mGradientBottom = bottomColor;
         codeContainer.codeDisplay->mCharSizeX      = fontSize;
         codeContainer.codeDisplay->mCharSizeY      = fontSize;
 

@@ -18,6 +18,8 @@
 #include <BetterSMS/settings.hxx>
 #include <BetterSMS/stage.hxx>
 #include <BetterSMS/memory.hxx>
+//#include <BetterSMS/p_settings.hxx>
+
 
 #include "codes.hxx"
 

@@ -437,24 +437,29 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 		{CRAZY_GRAVITY,             "Crazy Gravity",					45,			30,		    codeContainer.crazyGravity},
 		{CHAOS_CODE,                "Chaos Code",					     1,			60,		    codeContainer.chaosCode},
 		{DISABLE_WATER_COL,         "Disable Water Collision",	        50,			60,		    codeContainer.disableWaterCol},
-		// im skipping shuffle fruits bc idk if we're still adding it
+        {SHUFFLE_OBJECTS,			"Shuffle Objects",					15,			 3,			codeContainer.shuffleObjects},
         {CRAZY_COLLISION,			"Crazy Collision",					 1,			15,			codeContainer.crazyCollision},
         {INV_WATER_MOMENTUM,		"Invert Water",						50,			60,			codeContainer.invertWaterToggle},
         {MOVE_SHINES,				"The Shining",						 5,			30,			codeContainer.moveShines},
         {PAINT_RANDOM_COLLISION,	"Collision Paint",					50,			20,			codeContainer.paintRandomCollision},
         {TANK_CONTROLS,				"Tank Controls",					30,			30,			codeContainer.tankControls},
         {WEIRD_CAMERA,				"Weird Cam",						30,			30,			codeContainer.weirdCamera},
-		// im saving obj vortex for later bc i dont wanna do it right now lole
+        {OBJECT_VORTEX,				"Object Vortex",					20,			30,			codeContainer.objectVortex},
         {DOUBLE_PERSPECTIVE,		"Double Perspective",				20,			30,			codeContainer.doublePerspective},
         {STREEEEETCH,				"streeeeetch",						55,			20,			codeContainer.streeeeetch},
-		// skipping smsWiki to discuss if there's a better way to go about the text. also to figure out if i can stream audio to specific codes.
-        {KEEP_ACCELERATING,			"Terminal Velocity?",				50,			40,			codeContainer.keepAccelerating}
+        {SMS_WIKI,					"SMS Wiki",							30,			20,			codeContainer.smsWiki},
+        {KEEP_ACCELERATING,			"Terminal Velocity?",				50,			40,			codeContainer.keepAccelerating},
+		// ice physics
+        {CHANGE_WALLS,				"Weird Walls",						20,			30,			codeContainer.changeWalls},
+		// make mario an object
+		// popUpSavePrompt
+		{POPUP_SAVE_PROMPT,			"Quicksave",						50,			1,			codeContainer.popupSavePrompt}
     };
 
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {MOVE_SHINES};
+    u8 whitelist[] = {POPUP_SAVE_PROMPT};
     if (sizeof(whitelist) != 0) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
@@ -512,8 +517,8 @@ BETTER_SMS_FOR_CALLBACK static void chaosEngine(TMarDirector *director, const J2
 
 BETTER_SMS_FOR_CALLBACK static void initCodeDisplay(TMarDirector *director) {
 
-    char displayBuffer[144];
-    memset(displayBuffer, 'a', 144);  // fill up buffer
+    char displayBuffer[MAX_BUF];
+    memset(displayBuffer, 'a', MAX_BUF);  // fill up buffer
 
     codeContainer.codeDisplay = new J2DTextBox(gpSystemFont->mFont, "Dummy Code");
     codeContainer.codeDisplay->setString(displayBuffer);
@@ -528,22 +533,23 @@ BETTER_SMS_FOR_CALLBACK static void initCodeDisplay(TMarDirector *director) {
 
 BETTER_SMS_FOR_CALLBACK static void drawCodeDisplay(TMarDirector *director,  const J2DOrthoGraph *ortho) {
     char *displayBuffer = codeContainer.codeDisplay->getStringPtr();
-    memset(displayBuffer, 0, 144); // clear buffer
+    memset(displayBuffer, 0, NORMAL_BUF);  // clear buffer
 
     if (codeContainer.isCodeActive(CHAOS_CODE)) {
         Code chaosCode;
         codeContainer.getCodeFromID(CHAOS_CODE, chaosCode);
-        snprintf(displayBuffer, 144, "Chaos Code: %.0f%s\n", chaosCode.duration - (currentTime - chaosCode.timeCalled), "s");
+        snprintf(displayBuffer, NORMAL_BUF, "Chaos Code: %.0f%s\n",
+                 chaosCode.duration - (currentTime - chaosCode.timeCalled), "s");
     } else {
         for (Code c : codeContainer.codeList) {
         #if DEV_MODE
             if (c.isActive || c.isGraced) {
-                snprintf(displayBuffer, 144, "%s%s: %.0f%s\n", displayBuffer, c.name,
+                snprintf(displayBuffer, NORMAL_BUF, "%s%s: %.0f%s\n", displayBuffer, c.name,
                          c.duration - (currentTime - c.timeCalled), "s");
             }
         #else
             if (c.isActive) {
-                snprintf(displayBuffer, 144, "%s%s: %.0f%s\n", displayBuffer, c.name,
+                snprintf(displayBuffer, NORMAL_BUF, "%s%s: %.0f%s\n", displayBuffer, c.name,
                          c.duration - (currentTime - c.timeCalled), "s");
             }
         #endif
