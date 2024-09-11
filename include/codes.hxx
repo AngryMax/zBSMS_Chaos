@@ -111,6 +111,8 @@ extern float currentTime;  // unit = seconds
 //makeMarioAnObject
 #define POPUP_SAVE_PROMPT		54
 
+#define NO_WHITELIST		   255		// used to stay in DEV_MODE w/o a whitelist
+
 class Code  // we might want to add a member for display name
 {    
 
@@ -385,4 +387,12 @@ namespace Utils {
 
         codeContainer.codeDisplay->draw(x, y);
     }
+
+	static void endAllCodes() {
+		for ( u8 i = 0; i < CODE_COUNT; i++)
+		{
+            if(codeContainer.isCodeActive(i))
+				codeContainer.endCode(i);
+		}
+	}
 }

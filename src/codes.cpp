@@ -476,6 +476,7 @@ void CodeContainer::simonSays(Code::FuncReset f) {
 
 	static bool execRNGOnce = true;
     static bool inputMade = false;
+    static bool wasCodeInterrupted = true;
     static int randVal = 0;
     static int soundPlayed = 0;
 
@@ -483,12 +484,13 @@ void CodeContainer::simonSays(Code::FuncReset f) {
     u8 randButton[4][2]   = {"\x40", "\x23", "\x2b", "\xa5"};
 
 	if (f == Code::FuncReset::TRUE) {
-        if (!inputMade)
+        if (!inputMade && !wasCodeInterrupted)
             gpMarioOriginal->loserExec();
 
         execRNGOnce = true;
         inputMade   = false;
         soundPlayed = 0;
+        wasCodeInterrupted = true;
         return;
     }
 
@@ -533,6 +535,7 @@ void CodeContainer::simonSays(Code::FuncReset f) {
         default:
             snprintf(displayBuffer, NORMAL_BUF, "Press %s!", randButton[randVal]);
             Utils::drawCodeDisplay(PURPLE, 48, 200, 150);
+            wasCodeInterrupted = false;
             break;
     }
     
@@ -578,7 +581,8 @@ void CodeContainer::scaleMario(Code::FuncReset f) {
 
 void CodeContainer::snakeGame(Code::FuncReset f) {		// TODO: test this w/o fullscreen
 
-	static int execOnce;
+	static bool execOnce;
+    static bool wasCodeInterrupted = true;
 
 	// ==================== //
     // === Player Logic === //
@@ -633,13 +637,14 @@ void CodeContainer::snakeGame(Code::FuncReset f) {		// TODO: test this w/o fulls
 		 lostGame = false;
 	 }
 
-	 if (lostGame && f == Code::FuncReset::TRUE)
+	 if (lostGame && f == Code::FuncReset::TRUE && !wasCodeInterrupted)
          gpMarioOriginal->loserExec();
 
 	 if (f == Code::FuncReset::TRUE) {
          player_xPos = 200;
          player_yPos = 200;
          execOnce    = true;
+         wasCodeInterrupted = true;
          return;
      }
 
@@ -655,6 +660,10 @@ void CodeContainer::snakeGame(Code::FuncReset f) {		// TODO: test this w/o fulls
          return;
      }
      f32 timeLeft = snakeGame.duration - (currentTime - snakeGame.timeCalled);
+
+	 if (timeLeft <= 0.5)  // if the code was prematurely ended for any reason, makes sure the
+                             // player doesnt get killed
+         wasCodeInterrupted = false;
 
 
 

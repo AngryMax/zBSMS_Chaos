@@ -459,8 +459,8 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {POPUP_SAVE_PROMPT};
-    if (sizeof(whitelist) != 0) {
+    u8 whitelist[] = {SNAKE};
+    if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
                 if (c.codeID == id)
@@ -505,6 +505,19 @@ BETTER_SMS_FOR_CALLBACK static void updateTime(TApplication *tapp) {
     sBaseTime = OSGetTime();
 
 }
+
+#if DEV_MODE
+BETTER_SMS_FOR_CALLBACK static void requestEndAllCodes(TMarDirector *director) {
+
+	//OSReport("-> Made it into requestEndAllCodes!");
+
+	u32 maskedInput = gpMarioOriginal->mController->mButtons.mInput & ~4294963455; // this is just copied from simonSays bc im a lazy bastard
+
+	// if "a + b + x + y" are all pressed
+	if (maskedInput & TMarioGamePad::A && maskedInput & TMarioGamePad::B && maskedInput & TMarioGamePad::X && maskedInput & TMarioGamePad::Y)
+        Utils::endAllCodes();
+}
+#endif
 
 BETTER_SMS_FOR_CALLBACK static void chaosEngine(TMarDirector *director, const J2DOrthoGraph *ortho) {
 
@@ -613,11 +626,15 @@ static void initModule() {
 
     // Register callbacks
     BetterSMS::Game::addInitCallback(initVars);
-    BetterSMS::Game::addLoopCallback(updateTime);
+    BetterSMS::Game::addLoopCallback(updateTime);    
     BetterSMS::Stage::addInitCallback(initCodeDisplay);
     BetterSMS::Stage::addDraw2DCallback(chaosEngine);
     BetterSMS::Stage::addDraw2DCallback(drawCodeDisplay);
     BetterSMS::Stage::addExitCallback(avoidCrashCodes);
+
+	#if DEV_MODE
+    BetterSMS::Stage::addUpdateCallback(requestEndAllCodes);
+	#endif
 
     // Register settings
     sSettingsGroup.addSetting(&sDummySetting);
