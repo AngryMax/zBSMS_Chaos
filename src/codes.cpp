@@ -1221,7 +1221,7 @@ void CodeContainer::makeMarioAnObject(Code::FuncReset f) {
             chosenObj.addr->mTranslation = chosenObj.pos;
             chosenObj.addr->mRotation = chosenObj.rot;
             chosenObj.addr->mObjectType  = chosenObj.objectType;
-            if (!chosenObj.wasVisible)
+            if (chosenObj.isShine && !chosenObj.wasVisible)
                 static_cast<TShine *>(chosenObj.addr)->kill();
 
             chosenObj.addr = nullptr;
@@ -1284,11 +1284,11 @@ void CodeContainer::makeMarioAnObject(Code::FuncReset f) {
         chosenObj.pos = chosenObj.addr->mTranslation;
         chosenObj.rot = chosenObj.addr->mRotation;
         chosenObj.objectType = chosenObj.addr->mObjectType;
-
-        chosenObj.addr->mObjectType |= 1;
+        
         execOnce = false;
     }
 
+    chosenObj.addr->mObjectType |= 1;
     chosenObj.addr->mTranslation = *gpMarioPos;
     chosenObj.addr->mRotation    = gpMarioAddress->mRotation;
     chosenObj.addr->mRidingInfo.mHitActor = nullptr;
@@ -1614,7 +1614,10 @@ void CodeContainer::jumpscare(Code::FuncReset f) {		// TODO: make the visual par
 
         u8 randSound = rand() % 5;
 
-        while (!Utils::playSound(soundArray[randSound]));
+        Utils::playSound(soundArray[randSound]);
+
+        char *c = "\x83\x7d\x83\x8a\x83\x49"; // mario in shift-jis
+        gpMarDirector->fireStartDemoCamera(c, gpMarioPos, -1, 0, true, nullptr, 0, 0, 0);
         execOnce = false;
     }
 }
@@ -1663,4 +1666,96 @@ void CodeContainer::playAllSounds(Code::FuncReset f) {
 
 	Utils::playSound(rand() % (MSD_SE_SHINE_EXIST + 1));
 
+}
+
+//pp::auto_patch pickUpPatch1(SMS_PORT_REGION(0x802137D0, 0, 0, 0), 0x64A50010, false);	// oris	r5, r5, 0x0010		// currently, once these patch, all npcs become pick up able regard
+//pp::auto_patch pickUpPatch2(SMS_PORT_REGION(0x802137D4, 0, 0, 0), 0x90A300F0, false);   // stw	r5, 0x00F0 (r3)
+void CodeContainer::pickUpObj(Code::FuncReset f) {
+
+	static bool execOnce = true;
+	static bool isBird = false;
+    static bool isGrabSuccess   = false;
+    static ObjectData chosenObj = {nullptr, {}, {}, 0, false, false};
+
+    if (f == Code::FuncReset::TRUE)
+	{
+        //pickUpPatch1.disable();
+        //pickUpPatch2.disable();
+        chosenObj.addr->mStateFlags.asFlags.mCanBeTaken = false;
+
+        f32 **mPtrSaveNormal = (f32 **)(0x8040DFA0);
+        mPtrSaveNormal[0][0x1d0 / 4] = 3.5; // mThrowSpeedXZ for npcs
+        mPtrSaveNormal[0][0x1e4 / 4] = 2.5; // mThrowSpeedY for npcs
+
+		isBird   = false;
+        isGrabSuccess = false;
+        execOnce = true;
+        return;
+	}
+
+	if (execOnce)
+	{
+		auto iter = gpConductor->mManagerList.begin();
+        while (true) {
+            if (iter == gpConductor->mManagerList.end())
+                iter = gpConductor->mManagerList.begin();
+
+            TLiveManager *manager = *iter;
+            for (int i = 0; i < manager->mObjCount; i++) {
+
+                JDrama::TViewObj *obj = manager->mObjAry[i];
+                u32 vtable            = *(u32 *)obj;
+                switch (vtable) {               
+                case (0x803abe78):  // TAnimalBird | works but is weird
+                    isBird = true;
+                case (0x803d8448):  // TBaseNpc
+                //case (0x803abb70):  // TAnimalBase | doesnt work
+                //case (0x803cb06c):  // TMapObjBillboard | crashes
+                    chosenObj.addr = static_cast<TLiveActor *>(obj);
+                    OSReport("Manager: 0x%x, Object: 0x%x\n", manager, obj);
+                    break;
+                }
+
+                if (chosenObj.addr != nullptr) {
+                    // only break some of the time to pick a random object
+                    if (rand() % 10 == 0)
+                        break;
+                    else {
+                        chosenObj.addr    = nullptr;
+                        isBird         = false;
+                    }
+                }
+                break;
+            }
+
+            if (chosenObj.addr != nullptr)
+                break;
+
+            iter++;
+        }
+
+		
+
+        chosenObj.objectType = chosenObj.addr->mObjectType;
+        chosenObj.addr->mStateFlags.asFlags.mCanBeTaken = true;
+
+        f32 **mPtrSaveNormal = (f32 **)(0x8040DFA0);
+        mPtrSaveNormal[0][0x1d0 / 4] = 16.0; // mThrowSpeedXZ for npcs
+        mPtrSaveNormal[0][0x1e4 / 4] = 13.5; // mThrowSpeedY for npcs        
+	}
+
+	if (!isGrabSuccess && (gpMarioOriginal->mState == TMario::State::STATE_RUNNING		  ||
+                           gpMarioOriginal->mState == TMario::State::STATE_IDLE			  ||
+                           gpMarioOriginal->mState == TMario::State::STATE_STOP			  ||
+                           gpMarioOriginal->mState == TMario::State::STATE_DIVESLIDE	  ||
+                           gpMarioOriginal->mState == TMario::State::STATE_G_POUND_RECOVER))
+	{
+        gpMarioOriginal->mGrabTarget = chosenObj.addr;
+        gpMarioOriginal->mState      = TMario::State::STATE_GRABBING;
+        isGrabSuccess                = true;
+        execOnce                     = false;
+	}
+
+	if (isBird) 
+        chosenObj.addr->mStateFlags.asU32 &= 0x4;
 }

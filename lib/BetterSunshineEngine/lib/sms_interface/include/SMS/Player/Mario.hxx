@@ -681,6 +681,7 @@ public:
         STATE_TALKING         = 0x10001308,
         STATE_TURNING_MID     = 0x00000443,
         STATE_TURNING         = 0x00000444,
+		STATE_GRABBING		  = 0x00000383,
         STATE_YOSHI_ESC       = 0x0000089C,
         STATE_SHINE_C         = 0x00001302,  // Collected Shine Sprite
         STATE_DEATH           = 0x00020467,
@@ -696,6 +697,7 @@ public:
         STATE_SLIDE_R2        = 0x00000386,  // Recover from slide by getting up
         STATE_R_SPRAY         = 0x0C008220,  // Recover from spray
         STATE_G_POUND         = 0x008008A9,  // Ground pounding
+        STATE_G_POUND_RECOVER = 0x0C00023E,  // Getting up after ground pounding
         STATE_NPC_PUTDOWN     = 0x80000387,
         STATE_NPC_THROW       = 0x80000588,
         STATE_NPC_JUMPTHROW   = 0x820008AB,

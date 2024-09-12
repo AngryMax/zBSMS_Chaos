@@ -468,14 +468,15 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 		{JUMPSCARE,					"Jumpscare",						 1,			 1,			codeContainer.jumpscare},
 		{SMALL_WORLD,				"it's a Small World",				50,			 1,			codeContainer.smallWorld},
 		{RANDOM_SPRAY,				"Precision",						50,			30,			codeContainer.randomSpray},
-        {PLAY_SOUNDS,				"epic sfx",							50,			60,			codeContainer.playAllSounds}
+        {PLAY_SOUNDS,				"epic sfx",							50,			60,			codeContainer.playAllSounds},
+        {PICK_UP_OBJ,				"Grab Object",						50,			 5,			codeContainer.pickUpObj}
 		// code idea: shrinkray. it shrinks objects that are hit with water particles.
 	};
 
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {PLAY_SOUNDS};
+    u8 whitelist[] = {PICK_UP_OBJ};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {

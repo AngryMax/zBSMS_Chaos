@@ -29,6 +29,7 @@
 #include <SMS/GC2D/SunGlass.hxx>
 #include <SMS/Camera/CameraShake.hxx>
 #include <SMS/Camera/PolarSubCamera.hxx>
+#include <SMS/NPC/NpcBase.hxx>
 
 #include <BetterSMS/game.hxx>
 #include <BetterSMS/module.hxx>
@@ -40,7 +41,7 @@
 #include <Kuribo/sdk/kuribo_sdk.h>
 
 const static int CODE_NAME_BUFFER_SIZE = 30;
-const static int CODE_COUNT            = 70;
+const static int CODE_COUNT            = 75;
 
 extern float currentTime;  // unit = seconds
 
@@ -133,6 +134,7 @@ extern float currentTime;  // unit = seconds
 #define SMALL_WORLD				68
 #define RANDOM_SPRAY		    69
 #define PLAY_SOUNDS				70
+#define PICK_UP_OBJ				71
 
 #define NO_WHITELIST		   255		// used to stay in DEV_MODE w/o a whitelist
 
@@ -404,6 +406,7 @@ public:
     static void smallWorld(Code::FuncReset);
     static void randomSpray(Code::FuncReset);
     static void playAllSounds(Code::FuncReset);
+    static void pickUpObj(Code::FuncReset);
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project
