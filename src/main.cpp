@@ -451,22 +451,24 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {KEEP_ACCELERATING,			"Terminal Velocity?",				50,			40,			codeContainer.keepAccelerating},
 		// ice physics
         {CHANGE_WALLS,				"Weird Walls",						20,			30,			codeContainer.changeWalls},
-        {MAKE_MARIO_OBJ,			"Mario??",							50,			60,			codeContainer.makeMarioAnObject},
+        {MAKE_MARIO_OBJ,			"Prop Hunt",						50,			60,			codeContainer.makeMarioAnObject},
 		{POPUP_SAVE_PROMPT,			"Quicksave",						50,			 1,			codeContainer.popupSavePrompt},
 		{PING_LAG,					"Nintendo Online",					25,			25,			codeContainer.pingLag},
-		{NO_GRACE,					"No Grace Period",					10,			25,			codeContainer.noGracePeriods},		// disp name is awful
+		{NO_GRACE,					"No Grace Period",					10,			25,			codeContainer.noGracePeriods},
 		{EARTHQUAKE,				"Earthquake!!!!",					10,			25,			codeContainer.earthquake},
 		{SOMETIMES_DOUBLE_COINS,	"Double Coins???",					60,			30,			codeContainer.sometimesDoubleCoins},
 		{REVERSE_RARITIES,			"Rarity Swap",						 1,			90,			codeContainer.reverseRarities},
 		{CHANGE_SCREEN_COLOR,	    "GAMING MONITOR",				    50,			30,			codeContainer.changeScreenColorToggle},
 		{UPSIDEDOWN_CAM,			"Flip-Turned Upside Down",			20,			30,			codeContainer.upsideDownCamToggle},
-		{JOYCON_DRIFT,				"Joycon Drift",						20,			30,			codeContainer.joyconDrift}
+		{JOYCON_DRIFT,				"Joycon Drift",						20,			30,			codeContainer.joyconDrift},
+		{SINE_MOMENTUM,				"Whacky Momentum",					15,			30,			codeContainer.sineMomentum},
+		{WINDY_DAY,					"Windy Day",						15,			30,			codeContainer.windyDay}
     };
 
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {MAKE_MARIO_OBJ};
+    u8 whitelist[] = {SINE_MOMENTUM};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
@@ -614,16 +616,6 @@ BETTER_SMS_FOR_CALLBACK static void avoidCrashCodes(TApplication *tapp) {
         keepAccelerating.pFunc(Code::FuncReset::TRUE);
     }
 
-    // resets makeMarioAnObject without ending it on stage change
-    if (codeContainer.isCodeActive(MAKE_MARIO_OBJ)) {
-        Code makeMarioAnObject;
-        if (!(codeContainer.getCodeFromID(MAKE_MARIO_OBJ, makeMarioAnObject))) {
-            OSReport("[makeMarioAnObject] -> Could not find code with code id %d!\n", MAKE_MARIO_OBJ);
-            return;
-        }
-        makeMarioAnObject.pFunc(Code::FuncReset::TRUE);
-    }
-
     // resets moveShines without ending it on stage change
     if (codeContainer.isCodeActive(MOVE_SHINES)) {
         Code moveShines;
@@ -632,6 +624,17 @@ BETTER_SMS_FOR_CALLBACK static void avoidCrashCodes(TApplication *tapp) {
             return;
         }
         moveShines.pFunc(Code::FuncReset::TRUE);
+    }
+
+    // resets makeMarioAnObject without ending it on stage change
+    if (codeContainer.isCodeActive(MAKE_MARIO_OBJ)) {
+        Code makeMarioAnObject;
+        if (!(codeContainer.getCodeFromID(MAKE_MARIO_OBJ, makeMarioAnObject))) {
+            OSReport("[makeMarioAnObject] -> Could not find code with code id %d!\n",
+                     MAKE_MARIO_OBJ);
+            return;
+        }
+        makeMarioAnObject.pFunc(Code::FuncReset::TRUE);
     }
 }
 

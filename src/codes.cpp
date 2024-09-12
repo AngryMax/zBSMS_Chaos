@@ -1228,7 +1228,10 @@ void CodeContainer::makeMarioAnObject(Code::FuncReset f) {
     }
 
     if (execOnce) {
-        for (auto iter = gpConductor->mManagerList.begin(); iter != gpConductor->mManagerList.end(); iter++) {
+        auto iter = gpConductor->mManagerList.begin();
+        while (true) {
+            if (iter == gpConductor->mManagerList.end())
+                iter = gpConductor->mManagerList.begin();
 
             TLiveManager *manager = *iter;
             for (int i = 0; i < manager->mObjCount; i++) {
@@ -1241,7 +1244,7 @@ void CodeContainer::makeMarioAnObject(Code::FuncReset f) {
                         chosenObj.isShine = true;
                         chosenObj.wasVisible = !chosenObj.addr->mStateFlags.asFlags.mIsObjDead;
                         if (!chosenObj.wasVisible)
-                            static_cast<TShine *>(chosenObj.addr)->appear();
+                            static_cast<TShine *>(chosenObj.addr)->makeObjAppeared();
 
                     case (0x803d8448): // TBaseNpc
                     case (0x803abe78): // TAnimalBird
@@ -1252,12 +1255,22 @@ void CodeContainer::makeMarioAnObject(Code::FuncReset f) {
                         break;
                 }
 
-                if (chosenObj.addr != nullptr)
+                if (chosenObj.addr != nullptr) {
+                    // only break some of the time to pick a random object
+                    if (rand() % 10 == 0)
+                        break;
+                    else {
+                        chosenObj.addr = nullptr;
+                        chosenObj.isShine = false;
+                    }
+                }
                     break;
             }
 
             if (chosenObj.addr != nullptr)
                 break;
+
+            iter++;
         }
 
         gpMarioOriginal->mAttributes.mIsVisible = true;
@@ -1269,8 +1282,6 @@ void CodeContainer::makeMarioAnObject(Code::FuncReset f) {
         chosenObj.addr->mObjectType |= 1;
         execOnce = false;
     }
-
-	chosenObj.addr->mObjectType |= 1;
 
     chosenObj.addr->mTranslation = *gpMarioPos;
     chosenObj.addr->mRotation    = gpMarioAddress->mRotation;
@@ -1505,4 +1516,17 @@ void CodeContainer::joyconDrift(Code::FuncReset f) {
         gpMarioOriginal->mController->mStickY += yDrift_camera;
     }
 
+}
+
+void CodeContainer::sineMomentum(Code::FuncReset f) {
+
+    gpMarioOriginal->mBaseAcceleration = cosf(currentTime);
+}
+
+void CodeContainer::windyDay(Code::FuncReset f) {
+
+	gpMarioOriginal->setPlayerVelocity(50 * cosf(currentTime));
+    gpMarioOriginal->mSpeed.y *= cosf(currentTime);
+
+	Utils::playSound(MS_SOUND_EFFECT::MSD_SE_EN_KAZEKUN_WAIT);
 }

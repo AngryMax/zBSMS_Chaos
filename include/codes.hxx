@@ -124,6 +124,8 @@ extern float currentTime;  // unit = seconds
 #define CHANGE_SCREEN_COLOR	    60
 #define UPSIDEDOWN_CAM		    61
 #define JOYCON_DRIFT		    62
+#define SINE_MOMENTUM		    63
+#define WINDY_DAY			    64
 
 #define NO_WHITELIST		   255		// used to stay in DEV_MODE w/o a whitelist
 
@@ -384,6 +386,8 @@ public:
     static void upsideDownCamToggle(Code::FuncReset);
     static void upsideDownCam();  // this function is split into 2
     static void joyconDrift(Code::FuncReset);
+    static void sineMomentum(Code::FuncReset);
+    static void windyDay(Code::FuncReset);
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project
