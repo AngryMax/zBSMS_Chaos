@@ -9,6 +9,7 @@
 #include <JSystem/JStage/JSGObject.hxx>
 
 #include <SMS/GC2D/Guide.hxx>
+#include <SMS/GC2D/PauseMenu2.hxx>
 
 #include <SMS/MoveBG/Coin.hxx>
 #include <SMS/MoveBG/Shine.hxx>
@@ -101,7 +102,7 @@ public:
     u32 _88[0x18 / 4];
     TBaseNPC *mTalkingNPC;  // 0x00A0
     u32 _A4[2];
-    u32 *mpNextState;                     // 0x00AC
+    TPauseMenu2 *mPauseMenu;              // 0x00AC
     u32 _11;                              // 0x00B0
     u8 mNextState;                        // 0x00B4
     JKRMemArchive *mCurrentStageArchive;  // 0x00B8

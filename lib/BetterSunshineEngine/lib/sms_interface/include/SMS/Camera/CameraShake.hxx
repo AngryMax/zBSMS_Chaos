@@ -4,10 +4,12 @@
 #include <JSystem/JGeometry/JGMVec.hxx>
 
 enum EnumCamShakeMode {
+    HipdropShake   = 0x0,
     UnknownShake3  = 0x3,
     UnknownShake5  = 0x5,
     UnknownShake8  = 0x8,
     UnknownShake9  = 0x9,
+    TiltShake	   = 0xB,		// tilts the camera?
     UnknownShakeE  = 0xE,
     UnknownShakeF  = 0xF,
     UnknownShake10 = 0x10,

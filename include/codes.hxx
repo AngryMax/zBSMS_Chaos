@@ -9,6 +9,8 @@
 #include <Dolphin/MTX.h>
 #include <Dolphin/PAD.h>
 
+#include <JSystem/JDrama/JDRRect.hxx>
+
 #include <SMS/System/Application.hxx>
 #include <SMS/macros.h>
 #include <SMS/Player/Mario.hxx>
@@ -23,6 +25,10 @@
 #include <SMS/MSound/MSound.hxx>
 #include <SMS/Enemy/Conductor.hxx>
 #include <SMS/MoveBG/Shine.hxx>
+#include <SMS/GC2D/CardSave.hxx>
+#include <SMS/GC2D/SunGlass.hxx>
+#include <SMS/Camera/CameraShake.hxx>
+#include <SMS/Camera/PolarSubCamera.hxx>
 
 #include <BetterSMS/game.hxx>
 #include <BetterSMS/module.hxx>
@@ -108,8 +114,16 @@ extern float currentTime;  // unit = seconds
 #define KEEP_ACCELERATING		50
 // icePhysics
 #define CHANGE_WALLS			52
-//makeMarioAnObject
+#define MAKE_MARIO_OBJ			53
 #define POPUP_SAVE_PROMPT		54
+#define PING_LAG				55
+#define NO_GRACE				56
+#define EARTHQUAKE				57
+#define SOMETIMES_DOUBLE_COINS  58
+#define REVERSE_RARITIES	    59
+#define CHANGE_SCREEN_COLOR	    60
+#define UPSIDEDOWN_CAM		    61
+#define JOYCON_DRIFT		    62
 
 #define NO_WHITELIST		   255		// used to stay in DEV_MODE w/o a whitelist
 
@@ -150,6 +164,7 @@ public:
     int currentCodeCount = 0;
 
     float gracePeriod;
+    float baseGracePeriod;
     u32 maxActiveCodes;
     u32 baseMaxActiveCodes;
     u32 activeCodes;
@@ -161,6 +176,7 @@ public:
         maxActiveCodes  = 4;
         baseMaxActiveCodes = maxActiveCodes;
         gracePeriod     = 7;
+        baseGracePeriod    = gracePeriod;
         codeDisplay = nullptr;
     }
 
@@ -235,7 +251,7 @@ public:
                         return;
                     break;
                 case SNAKE:
-                    if (isCodeActive(CHAOS_CODE))
+                    if (isCodeActive(CHAOS_CODE) || isCodeActive(SCRAMBLE_TEXTURES))
                         return;
                     break;
                 case MOON_GRAVITY:
@@ -288,8 +304,14 @@ private:
 
             roll = getRand();
 
-            if (codeList[roll].rarity > rand() % 101)
-				return roll;
+            if (isCodeActive(REVERSE_RARITIES)) {
+                if (codeList[roll].rarity < rand() % 101)
+                    return roll;
+            } else {
+                if (codeList[roll].rarity > rand() % 101)
+                    return roll;
+            }
+            
         }
 	}
 
@@ -326,7 +348,7 @@ public:
     static void changeLives(Code::FuncReset);
     static void helpfulInputDisplay(Code::FuncReset);
     static void reverseInputsToggle(Code::FuncReset);
-    static void reverseInputs(); // this function is split into 2
+    static void reverseInputs();
     static void simonSays(Code::FuncReset);
     static void lockMarioAnim(Code::FuncReset);
     static void scaleMario(Code::FuncReset);
@@ -350,8 +372,18 @@ public:
     static void keepAccelerating(Code::FuncReset);
 	// icePhysics
     static void changeWalls(Code::FuncReset);
-	// makeMarioAnObject
+    static void makeMarioAnObject(Code::FuncReset);
     static void popupSavePrompt(Code::FuncReset);
+    static void pingLag(Code::FuncReset);
+    static void noGracePeriods(Code::FuncReset);
+    static void earthquake(Code::FuncReset);
+    static void sometimesDoubleCoins(Code::FuncReset);
+    static void reverseRarities(Code::FuncReset);
+    static void changeScreenColorToggle(Code::FuncReset);
+    static void changeScreenColor(TSunGlass *, JDrama::TRect &, JUtility::TColor);
+    static void upsideDownCamToggle(Code::FuncReset);
+    static void upsideDownCam();  // this function is split into 2
+    static void joyconDrift(Code::FuncReset);
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project

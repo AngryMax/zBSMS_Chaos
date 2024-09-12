@@ -1195,6 +1195,88 @@ void CodeContainer::changeWalls(Code::FuncReset f) {
 	}
 }
 
+// struct used for the moveShines code
+typedef struct ObjectData {
+    TLiveActor *addr;
+    TVec3f pos;
+    TVec3f rot;
+    u32 objectType;
+    bool isShine;
+    bool wasVisible;
+    
+} ObjectData;
+
+void CodeContainer::makeMarioAnObject(Code::FuncReset f) {
+    static bool execOnce = true;
+    static ObjectData chosenObj = {nullptr, {}, {}, 0, false, false};
+
+    if (f == Code::FuncReset::TRUE) {
+        if (chosenObj.addr != nullptr) {
+            chosenObj.addr->mTranslation = chosenObj.pos;
+            chosenObj.addr->mRotation = chosenObj.rot;
+            chosenObj.addr->mObjectType  = chosenObj.objectType;
+            if (!chosenObj.wasVisible)
+                static_cast<TShine *>(chosenObj.addr)->kill();
+
+            chosenObj.addr = nullptr;
+        }
+        chosenObj.isShine = false;
+
+        execOnce = true;
+        gpMarioOriginal->mAttributes.mIsVisible = false;
+        return;
+    }
+
+    if (execOnce) {
+        for (auto iter = gpConductor->mManagerList.begin(); iter != gpConductor->mManagerList.end(); iter++) {
+
+            TLiveManager *manager = *iter;
+            for (int i = 0; i < manager->mObjCount; i++) {
+
+                JDrama::TViewObj *obj = manager->mObjAry[i];
+                u32 vtable            = *(u32 *)obj;
+                switch (vtable) {
+                    case (0x803c97ec):  // TShine
+                        chosenObj.addr       = static_cast<TLiveActor *>(obj);
+                        chosenObj.isShine = true;
+                        chosenObj.wasVisible = !chosenObj.addr->mStateFlags.asFlags.mIsObjDead;
+                        if (!chosenObj.wasVisible)
+                            static_cast<TShine *>(chosenObj.addr)->appear();
+
+                    case (0x803d8448): // TBaseNpc
+                    case (0x803abe78): // TAnimalBird
+                    case (0x803abb70): // TAnimalBase
+                    case (0x803cb06c): // TMapObjBillboard
+                        chosenObj.addr = static_cast<TLiveActor *>(obj);
+                        OSReport("Manager: 0x%x, Object: 0x%x\n", manager, obj);
+                        break;
+                }
+
+                if (chosenObj.addr != nullptr)
+                    break;
+            }
+
+            if (chosenObj.addr != nullptr)
+                break;
+        }
+
+        gpMarioOriginal->mAttributes.mIsVisible = true;
+        
+        chosenObj.pos = chosenObj.addr->mTranslation;
+        chosenObj.rot = chosenObj.addr->mRotation;
+        chosenObj.objectType = chosenObj.addr->mObjectType;
+
+        chosenObj.addr->mObjectType |= 1;
+        execOnce = false;
+    }
+
+	chosenObj.addr->mObjectType |= 1;
+
+    chosenObj.addr->mTranslation = *gpMarioPos;
+    chosenObj.addr->mRotation    = gpMarioAddress->mRotation;
+    chosenObj.addr->mRidingInfo.mHitActor = nullptr;
+}
+
 void CodeContainer::popupSavePrompt(Code::FuncReset f) {
     static bool execOnce = true;
 
@@ -1204,14 +1286,223 @@ void CodeContainer::popupSavePrompt(Code::FuncReset f) {
     }
 
     if (execOnce) {
-        if (gpMarioOriginal->mState == TMario::STATE_UNLOADED)
+        if (gpMarioOriginal->mState == TMario::STATE_INACTIVE)
             return;
 
-        gpMarDirector->mGameState ^= 0b1000000000; 
+        gpMarDirector->mPauseMenu->mCardSave->init(rand() % 6);
 
 		execOnce = false;
 		
     }
+}
 
+void CodeContainer::pingLag(Code::FuncReset f) {
+    static TVec3f marPrevPos;
+    static f32 timeToWait    = 0;
+    static f32 timeStarted   = 0;
+    static bool execOnce     = true;
+    static bool getMarioPos  = true;
+
+    if (f == Code::FuncReset::TRUE) {
+        timeToWait = 0;
+        execOnce   = true;
+        getMarioPos = true;
+        return;
+    }
+
+	if (execOnce) {
+        marPrevPos = *gpMarioPos;
+        execOnce   = false;
+    }
+
+    if (timeToWait == 0) {
+        timeToWait = ((rand() % 10) + 1) / 10.0;
+        timeStarted = currentTime;
+
+    }
+
+    if ((currentTime - timeStarted) >= timeToWait) {
+        if (getMarioPos) {
+            marPrevPos = *gpMarioPos;
+            getMarioPos = false;
+        } else {
+            *gpMarioPos = marPrevPos;
+            getMarioPos = true;
+        }
+        timeToWait     = 0;
+    }
+}
+
+void CodeContainer::noGracePeriods(Code::FuncReset f) {
+
+	static bool execOnce = true;
+
+	if (execOnce)
+	{
+        codeContainer.gracePeriod = 0;
+        codeContainer.maxActiveCodes++;
+        execOnce = false;
+	}
+
+	if (f == Code::FuncReset::TRUE)
+	{
+        codeContainer.gracePeriod = codeContainer.baseGracePeriod;
+        codeContainer.maxActiveCodes--;
+        execOnce = true;
+	}
+}
+
+void CodeContainer::earthquake(Code::FuncReset f) {
+
+	for (auto iter = gpConductor->mManagerList.begin(); iter != gpConductor->mManagerList.end(); iter++) {
+
+        TLiveManager *manager = *iter;
+        for (int i = 0; i < manager->mObjCount; i++) {
+            TLiveActor *obj = static_cast<TLiveActor *>(manager->mObjAry[i]);
+
+            int xJitter = rand() % 21;
+            xJitter     = xJitter - 10;
+            int zJitter = rand() % 21;
+            zJitter     = zJitter - 10;
+
+			obj->mTranslation.x += xJitter;
+			obj->mTranslation.z += zJitter;
+        }
+
+		Utils::playSound(MSD_SE_OBJ_QUAKE);
+        gpCameraShake->startShake(static_cast<EnumCamShakeMode>(rand() % 0x28), 0.1);
+    }
+}
+																			 // li r5, 2
+pp::auto_patch sometimesDoubleCoinsPatch(SMS_PORT_REGION(0x801becd4, 0, 0, 0), 0x38a00002, false);
+void CodeContainer::sometimesDoubleCoins(Code::FuncReset f) {
+    if (f == Code::FuncReset::TRUE) {
+        sometimesDoubleCoinsPatch.disable();
+        return;
+    }
+
+    if ((u32)currentTime % 2 == 0) {
+        sometimesDoubleCoinsPatch.enable();
+    } else
+        sometimesDoubleCoinsPatch.disable();
+}
+
+void CodeContainer::reverseRarities(Code::FuncReset f) {
 	
+static bool execOnce = true;
+
+    if (execOnce) {			// adds a code slot so that the affect of this code can actually be felt
+        codeContainer.maxActiveCodes++;
+        execOnce = false;
+    }
+
+    if (f == Code::FuncReset::TRUE) {
+        codeContainer.maxActiveCodes--;
+        execOnce = true;
+    }
+}
+
+pp::togglable_ppc_bl changeScreenColorPatch(SMS_PORT_REGION(0x8017d0e8, 0, 0, 0), (void *)codeContainer.changeScreenColor, false);
+void CodeContainer::changeScreenColorToggle(Code::FuncReset f) {
+    if (f == Code::FuncReset::FALSE && !changeScreenColorPatch.is_enabled())
+        changeScreenColorPatch.enable();
+    else if (f == Code::FuncReset::TRUE)
+        changeScreenColorPatch.disable();
+}
+void CodeContainer::changeScreenColor(TSunGlass *sunglass, JDrama::TRect &rect, JUtility::TColor color) {
+
+    static u8 newColor[4] = {0xA0, 0xA0, 0xA0, 0x80};
+    static bool rCountUp = true;
+    static bool gCountUp = true;
+    static bool bCountUp = true;
+
+
+
+    if (rCountUp && newColor[0] >= 249)
+        rCountUp = false;
+    else if (!rCountUp && newColor[0] <= 6)
+        rCountUp = true;
+
+    if (gCountUp && newColor[1] >= 249)
+        gCountUp = false;
+    else if (!gCountUp && newColor[1] <= 6)
+        gCountUp = true;
+
+    if (bCountUp && newColor[2] >= 249)
+        bCountUp = false;
+    else if (!bCountUp && newColor[2] <= 6)
+        bCountUp = true;
+
+    u8 val = rand() % 6;
+    if (rCountUp)
+        newColor[0] += val;
+    else
+        newColor[0] -= val;
+
+    val = rand() % 6;
+    if (gCountUp)
+        newColor[1] += val;
+    else
+        newColor[1] -= val;
+
+    val = rand() % 6;
+    if (bCountUp)
+        newColor[2] += val;
+    else
+        newColor[2] -= val;
+
+    color.set(newColor[0], newColor[1], newColor[2], newColor[3]);
+
+    sunglass->draw(rect, color);
+}
+
+pp::togglable_ppc_bl upsideDownCamPatch(SMS_PORT_REGION(0x8002380c, 0, 0, 0), (void *)codeContainer.upsideDownCam, false);
+void CodeContainer::upsideDownCamToggle(Code::FuncReset f) {
+    if (f == Code::FuncReset::FALSE && !upsideDownCamPatch.is_enabled())
+        upsideDownCamPatch.enable();
+    else if (f == Code::FuncReset::TRUE)
+        upsideDownCamPatch.disable();
+}
+void CodeContainer::upsideDownCam() {
+
+	gpCamera->mProjectionFovy = (f32)310;
+}
+
+
+void CodeContainer::joyconDrift(Code::FuncReset f) {
+	 
+	static bool execOnce = true;
+    static f32 xDrift_control;
+    static f32 yDrift_control;
+    static f32 xDrift_camera;
+    static f32 yDrift_camera;
+
+	if (f == Code::FuncReset::TRUE)
+	{
+		execOnce = true;
+		return;
+	}
+
+	if (execOnce)
+	{
+        xDrift_control = (((rand() % 101)) - 50) / 100.0;
+        yDrift_control = (((rand() % 101)) - 50) / 100.0;
+        xDrift_camera = (((rand() % 101)) - 50) / 100.0;
+        yDrift_camera = (((rand() % 101)) - 50) / 100.0;
+
+		execOnce = false;
+	}
+
+	if (gpMarioOriginal->mController->mControlStick.mStickX == 0 && gpMarioOriginal->mController->mControlStick.mStickY == 0)
+	{
+        gpMarioOriginal->mController->mControlStick.mStickX += xDrift_control;
+        gpMarioOriginal->mController->mControlStick.mStickY += yDrift_control;
+    }
+
+	if (gpMarioOriginal->mController->mStickX == 0 && gpMarioOriginal->mController->mStickY == 0)
+	{
+        gpMarioOriginal->mController->mStickX += xDrift_camera;
+        gpMarioOriginal->mController->mStickY += yDrift_camera;
+    }
+
 }
