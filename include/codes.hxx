@@ -35,6 +35,7 @@
 #include <BetterSMS/settings.hxx>
 #include <BetterSMS/stage.hxx>
 #include <BetterSMS/memory.hxx>
+//#include <BetterSMS/debug/p_debug.hxx>
 
 #include <Kuribo/sdk/kuribo_sdk.h>
 
@@ -112,7 +113,7 @@ extern float currentTime;  // unit = seconds
 #define STREEEEETCH				48
 #define SMS_WIKI				49
 #define KEEP_ACCELERATING		50
-// icePhysics
+#define ICE_PHYSICS				51
 #define CHANGE_WALLS			52
 #define MAKE_MARIO_OBJ			53
 #define POPUP_SAVE_PROMPT		54
@@ -126,6 +127,12 @@ extern float currentTime;  // unit = seconds
 #define JOYCON_DRIFT		    62
 #define SINE_MOMENTUM		    63
 #define WINDY_DAY			    64
+#define BRAWL					65
+#define NOCLIP					66
+#define JUMPSCARE				67
+#define SMALL_WORLD				68
+#define RANDOM_SPRAY		    69
+#define PLAY_SOUNDS				70
 
 #define NO_WHITELIST		   255		// used to stay in DEV_MODE w/o a whitelist
 
@@ -264,6 +271,9 @@ public:
                     if (isCodeActive(MOON_GRAVITY))
                         return;
                     break;
+                case CHAOS_CODE:
+                    if (isCodeActive(NOCLIP))
+                        return;
             }
 
             codeList[rollWinner].isActive = true;
@@ -372,7 +382,7 @@ public:
     static void streeeeetch(Code::FuncReset);
     static void smsWiki(Code::FuncReset);
     static void keepAccelerating(Code::FuncReset);
-	// icePhysics
+    static void icePhysics(Code::FuncReset);
     static void changeWalls(Code::FuncReset);
     static void makeMarioAnObject(Code::FuncReset);
     static void popupSavePrompt(Code::FuncReset);
@@ -388,6 +398,12 @@ public:
     static void joyconDrift(Code::FuncReset);
     static void sineMomentum(Code::FuncReset);
     static void windyDay(Code::FuncReset);
+    static void brawl(Code::FuncReset);
+    static void noclip(Code::FuncReset);
+    static void jumpscare(Code::FuncReset);
+    static void smallWorld(Code::FuncReset);
+    static void randomSpray(Code::FuncReset);
+    static void playAllSounds(Code::FuncReset);
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project

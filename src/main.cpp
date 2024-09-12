@@ -449,7 +449,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {STREEEEETCH,				"streeeeetch",						55,			20,			codeContainer.streeeeetch},
         {SMS_WIKI,					"SMS Wiki",							30,			20,			codeContainer.smsWiki},
         {KEEP_ACCELERATING,			"Terminal Velocity?",				50,			40,			codeContainer.keepAccelerating},
-		// ice physics
+        {ICE_PHYSICS,				"Slippery",							50,			40,			codeContainer.icePhysics},
         {CHANGE_WALLS,				"Weird Walls",						20,			30,			codeContainer.changeWalls},
         {MAKE_MARIO_OBJ,			"Prop Hunt",						50,			60,			codeContainer.makeMarioAnObject},
 		{POPUP_SAVE_PROMPT,			"Quicksave",						50,			 1,			codeContainer.popupSavePrompt},
@@ -462,13 +462,20 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 		{UPSIDEDOWN_CAM,			"Flip-Turned Upside Down",			20,			30,			codeContainer.upsideDownCamToggle},
 		{JOYCON_DRIFT,				"Joycon Drift",						20,			30,			codeContainer.joyconDrift},
 		{SINE_MOMENTUM,				"Whacky Momentum",					15,			30,			codeContainer.sineMomentum},
-		{WINDY_DAY,					"Windy Day",						15,			30,			codeContainer.windyDay}
-    };
+		{WINDY_DAY,					"Windy Day",						15,			30,			codeContainer.windyDay},
+		{BRAWL,						"brawl lol",						30,			30,			codeContainer.brawl},
+		{NOCLIP,					"Noclip",							 1,			 3,			codeContainer.noclip},		// shoutouts to joshuamk for unintentionally doing all the heavy work for this code
+		{JUMPSCARE,					"Jumpscare",						 1,			 1,			codeContainer.jumpscare},
+		{SMALL_WORLD,				"it's a Small World",				50,			 1,			codeContainer.smallWorld},
+		{RANDOM_SPRAY,				"Precision",						50,			30,			codeContainer.randomSpray},
+        {PLAY_SOUNDS,				"epic sfx",							50,			60,			codeContainer.playAllSounds}
+		// code idea: shrinkray. it shrinks objects that are hit with water particles.
+	};
 
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {SINE_MOMENTUM};
+    u8 whitelist[] = {PLAY_SOUNDS};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {

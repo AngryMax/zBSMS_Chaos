@@ -293,7 +293,7 @@ void CodeContainer::tpMarioBack(Code::FuncReset f) {
 void CodeContainer::hpRoulette(Code::FuncReset f) {
 
 	gpMarioAddress->mHealth = rand() % 8 + 1;
-    Utils::playSound(MS_SOUND_EFFECT::MSD_SE_OBJ_SLOT_SPIN);  // CURRENTLY THROWS AN INVALID READ
+    Utils::playSound(MS_SOUND_EFFECT::MSD_SE_OBJ_SLOT_SPIN);
 }
 
 pp::auto_patch luigiSlidePatch(SMS_PORT_REGION(0x80255734, 0, 0, 0), BLR, false);
@@ -1169,6 +1169,12 @@ void CodeContainer::keepAccelerating(Code::FuncReset f) {
         gpMarioOriginal->mRunParams.mAddBase.set(1.1);
 }
 
+void CodeContainer::icePhysics(Code::FuncReset f) {		// not really ice physics but good enough?
+
+	gpMarioOriginal->checkGraffitoSlip();
+}
+
+
 pp::auto_patch changeWallsPatch(SMS_PORT_REGION(0x802505f4, 0, 0, 0), NOP, false);
 void CodeContainer::changeWalls(Code::FuncReset f) {
 
@@ -1529,4 +1535,132 @@ void CodeContainer::windyDay(Code::FuncReset f) {
     gpMarioOriginal->mSpeed.y *= cosf(currentTime);
 
 	Utils::playSound(MS_SOUND_EFFECT::MSD_SE_EN_KAZEKUN_WAIT);
+}
+
+void CodeContainer::brawl(Code::FuncReset f) {
+
+	static bool execOnce = true;
+	static bool execRNG = true;
+    static f32 tripTimer = 0;
+    static f32 lastTrip = 0;
+
+	if (f == Code::FuncReset::TRUE)
+	{
+        execOnce = true;
+        return;
+	}
+
+	if (execOnce)
+	{
+        lastTrip = currentTime;
+        execOnce = false;
+	}
+	
+	if (execRNG)
+	{
+        tripTimer = (rand() % 91) / 10;
+        execRNG   = false;
+	}
+
+	Code brawl;
+    if (!(codeContainer.getCodeFromID(BRAWL, brawl))) {
+        OSReport("[brawl] -> Could not find code with code id %d!\n", BRAWL);
+        return;
+    }
+
+	f32 elapsedTime = currentTime - lastTrip;
+
+	if (elapsedTime >= tripTimer) {
+        gpMarioOriginal->oilSlip();
+        execRNG = true;
+        lastTrip = currentTime;
+    }
+
+}
+
+void CodeContainer::noclip(Code::FuncReset f) {
+
+	static bool execOnce = true;
+
+	if (f == Code::FuncReset::TRUE)
+	{
+        gpMarioOriginal->mState = TMario::State::STATE_IDLE;
+		execOnce = true;
+        return;
+	}
+
+	if (execOnce) {
+
+        gpMarioOriginal->mState = 0xF000FFFF;	// bettersms debug state
+		execOnce = false;
+    }
+}
+
+void CodeContainer::jumpscare(Code::FuncReset f) {		// TODO: make the visual part of the jumpscare
+
+	static bool execOnce = true;
+
+	if (f == Code::FuncReset::TRUE)
+	{
+        execOnce = true;
+        return;
+	}
+	
+	if (execOnce)
+	{
+        MS_SOUND_EFFECT soundArray[] = {MSD_SE_BS_MKP_EXPLOSION_S,   MSD_SE_BS_TELESA_DAMAGE,
+                                        MSD_SE_EN_GATEKEEPER_APPEAR, MSD_SE_NB_UNG_VOICE_M_CRY,
+                                        MSD_SE_NB_UNG_VOICE_W_CRY};
+
+        u8 randSound = rand() % 5;
+
+        while (!Utils::playSound(soundArray[randSound]));
+        execOnce = false;
+    }
+}
+
+void CodeContainer::smallWorld(Code::FuncReset f) {
+
+	static bool execOnce = true;
+
+	if (f == Code::FuncReset::TRUE)
+	{
+        execOnce = true;
+        return;
+	}
+
+
+	if (execOnce) {
+
+        for (auto iter = gpConductor->mManagerList.begin(); iter != gpConductor->mManagerList.end();
+             iter++) {
+
+            TLiveManager *manager = *iter;
+            for (int i = 0; i < manager->mObjCount; i++) {
+                TLiveActor *obj = static_cast<TLiveActor *>(manager->mObjAry[i]);
+
+                if (obj->mScale.x > 0.1)
+                    obj->mScale.x -= 0.1;
+                if (obj->mScale.y > 0.1)
+                    obj->mScale.y -= 0.1;
+                if (obj->mScale.z > 0.1)
+                    obj->mScale.z -= 0.1;
+            }
+        }
+        execOnce = false;
+    }
+}
+
+pp::auto_patch randomSprayPatch(SMS_PORT_REGION(0x8027fe78, 0, 0, 0), NOP, false);
+void CodeContainer::randomSpray(Code::FuncReset f) {
+    if (f == Code::FuncReset::FALSE && !randomSprayPatch.is_enabled())
+        randomSprayPatch.enable();
+    else if (f == Code::FuncReset::TRUE)
+        randomSprayPatch.disable();
+}
+
+void CodeContainer::playAllSounds(Code::FuncReset f) {
+
+	Utils::playSound(rand() % (MSD_SE_SHINE_EXIST + 1));
+
 }
