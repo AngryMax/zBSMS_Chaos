@@ -1212,7 +1212,7 @@ typedef struct ObjectData {
     
 } ObjectData;
 
-void CodeContainer::makeMarioAnObject(Code::FuncReset f) {
+void CodeContainer::makeMarioAnObject(Code::FuncReset f) {					// TODO: fix bug where this code causes inactive shines to suddenly become active(even if they arent chosenObj)
     static bool execOnce = true;
     static ObjectData chosenObj = {nullptr, {}, {}, 0, false, false};
 
@@ -1319,6 +1319,9 @@ void CodeContainer::pingLag(Code::FuncReset f) {
     static f32 timeStarted   = 0;
     static bool execOnce     = true;
     static bool getMarioPos  = true;
+
+	if (gpMarDirector->mCurState != TMarDirector::Status::STATE_NORMAL)		// prevents coordinates from previous stages translating into the next stage(when changing stages)
+        f = Code::FuncReset::TRUE;
 
     if (f == Code::FuncReset::TRUE) {
         timeToWait = 0;
@@ -1616,8 +1619,8 @@ void CodeContainer::jumpscare(Code::FuncReset f) {		// TODO: make the visual par
 
         Utils::playSound(soundArray[randSound]);
 
-        char *c = "\x83\x7d\x83\x8a\x83\x49"; // mario in shift-jis
-        gpMarDirector->fireStartDemoCamera(c, gpMarioPos, -1, 0, true, nullptr, 0, 0, 0);
+        //char *c = "\x83\x7d\x83\x8a\x83\x49"; // mario in shift-jis
+        //gpMarDirector->fireStartDemoCamera(c, gpMarioPos, -1, 0, true, nullptr, 0, 0, 0);
         execOnce = false;
     }
 }
