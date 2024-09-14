@@ -237,7 +237,7 @@ public:
 
     void resetCode(u8 id) {
         Code code;
-        if (!(codeContainer.getCodeFromID(id, code))) {
+        if (!(getCodeFromID(id, code))) {
             OSReport("[resetCode] -> Could not find code with code id %d!\n",
                      id);
             return;
