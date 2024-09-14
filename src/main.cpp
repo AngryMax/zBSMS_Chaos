@@ -473,13 +473,14 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {ROTATE_OBJS,				"Rotate Objects",					60,			 1,			codeContainer.rotateObjs},
         {QUAKE_PRO,					"Minecraft Pro",					50,			60,			codeContainer.quakeProToggle},
         {ROLLIN,					"Keep Rollin' Rollin' Rollin'",		50,			45,			codeContainer.rollin},
-        {SHRINK_RAY,				"Shrink Ray!",						50,			45,			codeContainer.shrinkRay}
+        {SHRINK_RAY,				"Shrink Ray!",						50,			45,			codeContainer.shrinkRay},
+        {CS_PLAYERS,				"CS Players",						50,			41.2,		codeContainer.csPlayers}
 	};
 
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {SNAKE};
+    u8 whitelist[] = {CS_PLAYERS};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {

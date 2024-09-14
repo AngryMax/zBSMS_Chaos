@@ -42,7 +42,7 @@
 #include <Kuribo/sdk/kuribo_sdk.h>
 
 const static int CODE_NAME_BUFFER_SIZE = 30;
-const static int CODE_COUNT            = 75;
+const static int CODE_COUNT            = 80;
 
 extern float currentTime;  // unit = seconds
 
@@ -140,6 +140,7 @@ extern float currentTime;  // unit = seconds
 #define QUAKE_PRO				73
 #define ROLLIN					74
 #define SHRINK_RAY				75
+#define CS_PLAYERS				76
 
 #define NO_WHITELIST		   255		// used to stay in DEV_MODE w/o a whitelist
 
@@ -284,13 +285,17 @@ public:
                         return;
                     break;
                 case UPSIDEDOWN_CAM:
-                    if (isCodeActive(QUAKE_PRO))
+                    if (isCodeActive(QUAKE_PRO) || isCodeActive(CS_PLAYERS))
                         return;
                     break;
                 case QUAKE_PRO:
-                    if (isCodeActive(UPSIDEDOWN_CAM))
+                    if (isCodeActive(UPSIDEDOWN_CAM) || isCodeActive(CS_PLAYERS))
                         return;
 					break;
+                case CS_PLAYERS:
+                    if (isCodeActive(QUAKE_PRO) || isCodeActive(UPSIDEDOWN_CAM))
+						return;
+				break;
             }
 
             codeList[rollWinner].isActive = true;
@@ -443,6 +448,7 @@ public:
     static void quakePro();	  // this function is split into 2
     static void rollin(Code::FuncReset);
     static void shrinkRay(Code::FuncReset);
+    static void csPlayers(Code::FuncReset);
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project

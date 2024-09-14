@@ -1876,3 +1876,29 @@ void CodeContainer::shrinkRay(Code::FuncReset f) {
         }
     }
 }
+
+void CodeContainer::csPlayers(Code::FuncReset f) {
+
+	static bool execOnce = true;
+    static f32 origAspect;	// easiest way to satisfy all possible aspect ratios
+
+	if (f == Code::FuncReset::TRUE) {
+        gpCamera->mProjectionAspect = origAspect;
+        execOnce                    = true;
+        return;
+    }
+
+	if (execOnce)
+	{
+        origAspect = gpCamera->mProjectionAspect;
+        execOnce   = false;
+	}
+
+	Code csPlayers;
+    if (!(codeContainer.getCodeFromID(CS_PLAYERS, csPlayers))) {
+        OSReport("[csPlayers] -> Could not find code with code id %d!\n", CS_PLAYERS);
+        return;
+    }
+
+	gpCamera->mProjectionAspect = (2.25 * sinf((currentTime - csPlayers.timeCalled - 1.75) / 4)) + 2.75;	// range: .5 - 5
+}
