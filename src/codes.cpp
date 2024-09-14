@@ -1753,7 +1753,7 @@ void CodeContainer::pickUpObj(Code::FuncReset f) {		// TODO: fix crash bug where
 
                 // NPC Manager
                 case 0x803d9228:  // TNPCManager
-                    if (manager->mObjCount > 0 && vtable == 0x803abe24) {
+                    if (manager->mObjCount > 0) {
                         OSReport("Manager: 0x%x\n", manager);
                         pickUpMgrList.push_front(manager);
                     }
@@ -1783,7 +1783,7 @@ void CodeContainer::pickUpObj(Code::FuncReset f) {		// TODO: fix crash bug where
             if (mgrVtable == 0x803abe24)  // TAnimalBirdManager
                 isBird = true;
 
-            obj->mTranslation = *gpMarioPos;
+            //obj->mTranslation = *gpMarioPos;
 
             break;
         }
@@ -1796,10 +1796,7 @@ void CodeContainer::pickUpObj(Code::FuncReset f) {		// TODO: fix crash bug where
 
     f32 **mPtrSaveNormal = (f32 **)(0x8040DFA0);
     mPtrSaveNormal[0][0x1d0 / 4] = 16.0;  // mThrowSpeedXZ for npcs
-    mPtrSaveNormal[0][0x1e4 / 4] = 13.5;  // mThrowSpeedY for npcs   
-
-	if (isBird)
-        chosenObj.addr->mTranslation = gpMarioOriginal->mTranslation;
+    mPtrSaveNormal[0][0x1e4 / 4] = 13.5;  // mThrowSpeedY for npcs          
 
 	if (!isGrabSuccess && (gpMarioOriginal->mState == TMario::State::STATE_RUNNING		  ||
                            gpMarioOriginal->mState == TMario::State::STATE_IDLE			  ||
@@ -1809,11 +1806,14 @@ void CodeContainer::pickUpObj(Code::FuncReset f) {		// TODO: fix crash bug where
 	{
         gpMarioOriginal->mGrabTarget = chosenObj.addr;
         gpMarioOriginal->mState      = TMario::State::STATE_GRABBING;
+        chosenObj.addr->mTranslation = *gpMarioPos;
         isGrabSuccess                = true;
 	}
 
-	//if (isBird) 
-        //chosenObj.addr->mStateFlags.asU32 &= 0x4;
+	if (isBird && gpMarioOriginal->mHeldObject == chosenObj.addr) {
+        chosenObj.addr->mStateFlags.asU32 &= 0x4;
+        chosenObj.addr->mTranslation = gpMarioOriginal->mTranslation;
+    }
 }
 
 void CodeContainer::rotateObjs(Code::FuncReset f) {
