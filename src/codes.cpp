@@ -199,7 +199,7 @@ void CodeContainer::giveCoins(Code::FuncReset f) {
     }
 }
 
-void CodeContainer::spawnYoshi(Code::FuncReset f) {		// TODO: refill yoshi's juice bar on execOnce
+void CodeContainer::spawnYoshi(Code::FuncReset f) {
 
     static bool execOnce = true;
     static bool fludd    = true;
@@ -207,6 +207,8 @@ void CodeContainer::spawnYoshi(Code::FuncReset f) {		// TODO: refill yoshi's jui
 	if (f == Code::FuncReset::TRUE) {
         execOnce = true;
         gpMarioOriginal->mYoshi->mState = TYoshi::State::EGG;
+        if (fludd)
+            gpMarioOriginal->mAttributes.mHasFludd = true;
         return;		
     }
 
@@ -215,10 +217,13 @@ void CodeContainer::spawnYoshi(Code::FuncReset f) {		// TODO: refill yoshi's jui
             fludd = true;
         else
             fludd = false;
-
+        gpMarioOriginal->mYoshi->mCurJuice = gpMarioOriginal->mYoshi->mMaxJuice;
         gpMarioOriginal->mYoshi->mState = TYoshi::State::MOUNTED;
         execOnce = false;		
     }
+
+	if (fludd)
+        gpMarioOriginal->mAttributes.mHasFludd = true;
 
     if (gpMarioOriginal->mYoshi->mState == TYoshi::State::EGG) {
         Code yoshiCode;
@@ -227,10 +232,7 @@ void CodeContainer::spawnYoshi(Code::FuncReset f) {		// TODO: refill yoshi's jui
             return;
         }
         codeContainer.endCode(SPAWN_YOSHI);
-    }
-
-	if (fludd)
-        gpMarioOriginal->mAttributes.mHasFludd = true;
+    }	
 }
 
 void CodeContainer::sunglassesAndShineShirt(Code::FuncReset f) {
@@ -596,7 +598,7 @@ void CodeContainer::snakeGame(Code::FuncReset f) {		// TODO: test this w/o fulls
 	player_xPos += gpMarioOriginal->mController->mControlStick.mStickX * MOVEMENT_MULTIPLIER;
     player_yPos -= gpMarioOriginal->mController->mControlStick.mStickY * MOVEMENT_MULTIPLIER;
 
-	// keeps the player onscreen
+	// keeps the player onscreen(tuned for widescreen, but it doesnt matter since the player should never leave the screen)
 	if (player_xPos < -100)
         player_xPos = -100;
     else if (player_xPos > 640)
@@ -605,6 +607,9 @@ void CodeContainer::snakeGame(Code::FuncReset f) {		// TODO: test this w/o fulls
         player_yPos = 60;
     else if (player_yPos > 465)
         player_yPos = 465;
+
+	OSReport("X: %f\n", player_xPos);
+	OSReport("Y: %f\n", player_yPos);
 
 
 
@@ -616,7 +621,7 @@ void CodeContainer::snakeGame(Code::FuncReset f) {		// TODO: test this w/o fulls
     static int food_yPos = 300;    
 
 	if (execOnce) {
-        food_xPos = (rand() % 285) + 250;
+        food_xPos = (rand() % 251) + 250;
         food_yPos = (rand() % 205) + 250;		
 		execOnce = false;
 	}
@@ -936,7 +941,7 @@ void CodeContainer::moveShines(Code::FuncReset f) {
     }
 }
 
-void CodeContainer::paintRandomCollision(Code::FuncReset f) {		// TODO: seems fine, but do a bit of extra testing
+void CodeContainer::paintRandomCollision(Code::FuncReset f) {
 
 	static bool execOnce = true;
     static bool ifRoulette = false;
