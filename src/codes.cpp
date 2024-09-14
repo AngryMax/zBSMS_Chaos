@@ -621,7 +621,7 @@ void CodeContainer::snakeGame(Code::FuncReset f) {		// TODO: test this w/o fulls
     static int food_yPos = 300;    
 
 	if (execOnce) {
-        food_xPos = (rand() % 251) + 250;
+        food_xPos = (rand() % 251) + 300;
         food_yPos = (rand() % 205) + 250;		
 		execOnce = false;
 	}
