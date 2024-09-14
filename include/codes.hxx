@@ -235,6 +235,16 @@ public:
         }
     }
 
+    void resetCode(u8 id) {
+        Code code;
+        if (!(codeContainer.getCodeFromID(id, code))) {
+            OSReport("[resetCode] -> Could not find code with code id %d!\n",
+                     id);
+            return;
+        }
+        code.pFunc(Code::FuncReset::TRUE);
+    }
+
     // returns reference to code with code id in cout
     bool getCodeFromID(u8 id, Code &cout) {
         for (Code &c : codeList) {

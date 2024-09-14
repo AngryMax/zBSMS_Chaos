@@ -1325,9 +1325,6 @@ void CodeContainer::pingLag(Code::FuncReset f) {
     static bool execOnce     = true;
     static bool getMarioPos  = true;
 
-	if (gpMarDirector->mCurState != TMarDirector::Status::STATE_NORMAL)		// prevents coordinates from previous stages translating into the next stage(when changing stages)
-        f = Code::FuncReset::TRUE;
-
     if (f == Code::FuncReset::TRUE) {
         timeToWait = 0;
         execOnce   = true;

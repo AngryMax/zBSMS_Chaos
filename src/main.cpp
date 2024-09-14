@@ -594,65 +594,33 @@ BETTER_SMS_FOR_CALLBACK static void drawCodeDisplay(TMarDirector *director,  con
         #endif
         }
     }
-    
-    // set font size
-    codeContainer.codeDisplay->mCharSizeX = 16;
-    codeContainer.codeDisplay->mCharSizeY = 16;
 
     // draw drop shadow
-    codeContainer.codeDisplay->mGradientTop    = BLACK;
-    codeContainer.codeDisplay->mGradientBottom = BLACK;
-    codeContainer.codeDisplay->draw(-83, 202);  // TODO: add position settings and widescreen detection
+    Utils::drawCodeDisplay(BLACK, 16, -83, 202);
 
     // draw regular text
-    codeContainer.codeDisplay->mGradientTop	 = GREEN_TOP;
-    codeContainer.codeDisplay->mGradientBottom = GREEN_BOTTOM;
-    codeContainer.codeDisplay->draw(-85, 200);
+    Utils::drawCodeDisplay(GREEN_TOP, GREEN_BOTTOM, 16, -85, 200);
 }
 
-BETTER_SMS_FOR_CALLBACK static void avoidCrashCodes(TApplication *tapp) {
+// resets and/or ends codes in between stages if need be
+BETTER_SMS_FOR_CALLBACK static void resetCodesOnStageExit(TApplication *tapp) {
 
-    // ends noMarioRedraw when exiting stage and resets it
     if (codeContainer.isCodeActive(NO_MARIO_REDRAW)) {
         codeContainer.endCode(NO_MARIO_REDRAW); 
-        Code noMarioRedraw;
-        if (!(codeContainer.getCodeFromID(NO_MARIO_REDRAW, noMarioRedraw))) {
-            OSReport("[noMarioRedraw] -> Could not find code with code id %d!\n", NO_MARIO_REDRAW);
-            return;
-        }
-        noMarioRedraw.pFunc(Code::FuncReset::TRUE);
+        codeContainer.resetCode(NO_MARIO_REDRAW);
     }
 
-    // resets keepAccelerating without ending it on stage change
-    if (codeContainer.isCodeActive(KEEP_ACCELERATING)) {
-        Code keepAccelerating;
-        if (!(codeContainer.getCodeFromID(KEEP_ACCELERATING, keepAccelerating))) {
-            OSReport("[keepAccelerating] -> Could not find code with code id %d!\n", KEEP_ACCELERATING);
-            return;
-        }
-        keepAccelerating.pFunc(Code::FuncReset::TRUE);
-    }
+    if (codeContainer.isCodeActive(KEEP_ACCELERATING))
+        codeContainer.resetCode(KEEP_ACCELERATING);
 
-    // resets moveShines without ending it on stage change
-    if (codeContainer.isCodeActive(MOVE_SHINES)) {
-        Code moveShines;
-        if (!(codeContainer.getCodeFromID(MOVE_SHINES, moveShines))) {
-            OSReport("[moveShines] -> Could not find code with code id %d!\n", MOVE_SHINES);
-            return;
-        }
-        moveShines.pFunc(Code::FuncReset::TRUE);
-    }
+    if (codeContainer.isCodeActive(MOVE_SHINES))
+        codeContainer.resetCode(MOVE_SHINES);
 
-    // resets makeMarioAnObject without ending it on stage change
-    if (codeContainer.isCodeActive(MAKE_MARIO_OBJ)) {
-        Code makeMarioAnObject;
-        if (!(codeContainer.getCodeFromID(MAKE_MARIO_OBJ, makeMarioAnObject))) {
-            OSReport("[makeMarioAnObject] -> Could not find code with code id %d!\n",
-                     MAKE_MARIO_OBJ);
-            return;
-        }
-        makeMarioAnObject.pFunc(Code::FuncReset::TRUE);
-    }
+    if (codeContainer.isCodeActive(MAKE_MARIO_OBJ))
+        codeContainer.resetCode(MAKE_MARIO_OBJ);
+
+    if (codeContainer.isCodeActive(PING_LAG))
+        codeContainer.resetCode(PING_LAG);
 }
 
 
@@ -667,7 +635,7 @@ static void initModule() {
     BetterSMS::Stage::addInitCallback(initCodeDisplay);
     BetterSMS::Stage::addDraw2DCallback(chaosEngine);
     BetterSMS::Stage::addDraw2DCallback(drawCodeDisplay);
-    BetterSMS::Stage::addExitCallback(avoidCrashCodes);
+    BetterSMS::Stage::addExitCallback(resetCodesOnStageExit);
 
 	#if DEV_MODE
     BetterSMS::Stage::addUpdateCallback(requestEndAllCodes);
