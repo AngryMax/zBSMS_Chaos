@@ -477,6 +477,11 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {CS_PLAYERS,				"CS Players",						50,			41.2,		codeContainer.csPlayers}
 	};
 
+	//					 ######################### !!!SUPER IMPORTANT!!! #########################
+	//			TODO: fix bug with *some* code that causes the game to hang in specifically Corona Mountain
+	//				  guesses: it might have to do with pickUpObj, moveShines, or makeMarioObj since Corona doesn't have a Shine Sprite?
+	//				  suggested method for finding: print the name of codes when the get activated.
+
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0

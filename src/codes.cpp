@@ -1676,9 +1676,7 @@ void CodeContainer::playAllSounds(Code::FuncReset f) {
 
 }
 
-//pp::auto_patch pickUpPatch1(SMS_PORT_REGION(0x802137D0, 0, 0, 0), 0x64A50010, false);	// oris	r5, r5, 0x0010		// currently, once these patch, all npcs become pick up able regard
-//pp::auto_patch pickUpPatch2(SMS_PORT_REGION(0x802137D4, 0, 0, 0), 0x90A300F0, false);   // stw	r5, 0x00F0 (r3)
-void CodeContainer::pickUpObj(Code::FuncReset f) {
+void CodeContainer::pickUpObj(Code::FuncReset f) {		// TODO: fix crash bug where NPCBoards are selected as the grab obj
 
 	static bool execOnce = true;
 	static bool isBird = false;
