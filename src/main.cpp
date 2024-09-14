@@ -485,7 +485,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {CS_PLAYERS};
+    u8 whitelist[] = {PICK_UP_OBJ};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
@@ -621,6 +621,9 @@ BETTER_SMS_FOR_CALLBACK static void resetCodesOnStageExit(TApplication *tapp) {
 
     if (codeContainer.isCodeActive(PING_LAG))
         codeContainer.resetCode(PING_LAG);
+
+    if (codeContainer.isCodeActive(PICK_UP_OBJ))
+        codeContainer.resetCode(PICK_UP_OBJ);
 }
 
 

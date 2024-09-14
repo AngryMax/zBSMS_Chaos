@@ -305,7 +305,7 @@ public:
                 case CS_PLAYERS:
                     if (isCodeActive(QUAKE_PRO) || isCodeActive(UPSIDEDOWN_CAM))
 						return;
-				break;
+                    break;
             }
 
             codeList[rollWinner].isActive = true;
@@ -371,6 +371,8 @@ private:
 
 		if (inter < 0)		// this slows down the count to -1, as well as caps the negative side of addTo_maxActiveCodes to 1 (effectively)
             inter = inter / 1.5;
+        if (inter <= -1)		// makes addTo_maxActiveCodes spend a bit less time at -1
+            inter += 0.1;
 
 		addTo_maxActiveCodes = inter;
 	}
