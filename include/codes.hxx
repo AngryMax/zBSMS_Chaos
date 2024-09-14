@@ -15,6 +15,7 @@
 #include <SMS/macros.h>
 #include <SMS/Player/Mario.hxx>
 #include <SMS/Player/MarioGamePad.hxx>
+#include <SMS/Player/Watergun.hxx>
 #include <SMS/raw_fn.hxx>
 #include <SMS/rand.h>
 #include <SMS/MSound/MSBGM.hxx>
@@ -135,6 +136,10 @@ extern float currentTime;  // unit = seconds
 #define RANDOM_SPRAY		    69
 #define PLAY_SOUNDS				70
 #define PICK_UP_OBJ				71
+#define ROTATE_OBJS				72
+#define QUAKE_PRO				73
+#define ROLLIN					74
+#define SHRINK_RAY				75
 
 #define NO_WHITELIST		   255		// used to stay in DEV_MODE w/o a whitelist
 
@@ -277,6 +282,15 @@ public:
                 case CHAOS_CODE:
                     if (isCodeActive(NOCLIP))
                         return;
+                    break;
+                case UPSIDEDOWN_CAM:
+                    if (isCodeActive(QUAKE_PRO))
+                        return;
+                    break;
+                case QUAKE_PRO:
+                    if (isCodeActive(UPSIDEDOWN_CAM))
+                        return;
+					break;
             }
 
             codeList[rollWinner].isActive = true;
@@ -424,6 +438,11 @@ public:
     static void randomSpray(Code::FuncReset);
     static void playAllSounds(Code::FuncReset);
     static void pickUpObj(Code::FuncReset);
+    static void rotateObjs(Code::FuncReset);
+    static void quakeProToggle(Code::FuncReset);
+    static void quakePro();	  // this function is split into 2
+    static void rollin(Code::FuncReset);
+    static void shrinkRay(Code::FuncReset);
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project

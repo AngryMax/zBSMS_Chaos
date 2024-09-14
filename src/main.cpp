@@ -413,10 +413,10 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {LAND_MOVEMENT_LOCK,        "Land Movement Lock",               40,			30,		    codeContainer.landMovementLock},
         {UNLIMITED_TURBO,           "Unlimited Turbo but no Turbo",     25,			30,		    codeContainer.forceTurbo},
         {CRESCENDO,                 "Crescendo",                        30,         10,         codeContainer.setMusicVol},
-        {SPEEN_ID,                  "S P E E N",                        30,         10,         codeContainer.SPEEN},
+        {SPEEN_ID,                  "S P E E N",                        40,         10,         codeContainer.SPEEN},
         {NOZZLE_ROLL,               "Nozzle Roll",				        35,          7,         codeContainer.changeNozzleRandom},
         {GIVE_COINS,                "We're Rich!",                       5,          5,         codeContainer.giveCoins},
-        {SPAWN_YOSHI,               "Spawn Yoshi",                       5,         30,         codeContainer.spawnYoshi},
+        {SPAWN_YOSHI,               "Spawn Yoshi",                      20,         30,         codeContainer.spawnYoshi},
         {SUN_DRIP,                  "Sun Drip",					        50,			30,		    codeContainer.sunglassesAndShineShirt},
 		{SPEED_UP_TEMPO,            "Affrettando",				        60,			 5,		    codeContainer.speedUpTempo},
         {TP_MARIO_BACK,             "Return to Sender",			        10,			15,		    codeContainer.tpMarioBack},
@@ -466,17 +466,20 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 		{BRAWL,						"brawl lol",						30,			30,			codeContainer.brawl},
 		{NOCLIP,					"Noclip",							 1,			 3,			codeContainer.noclip},		// shoutouts to joshuamk for unintentionally doing all the heavy work for this code
 		{JUMPSCARE,					"Jumpscare",						 1,			 1,			codeContainer.jumpscare},
-		{SMALL_WORLD,				"it's a Small World",				50,			 1,			codeContainer.smallWorld},
+		{SMALL_WORLD,				"it's a Small World",				60,			 1,			codeContainer.smallWorld},
 		{RANDOM_SPRAY,				"Precision",						50,			30,			codeContainer.randomSpray},
         {PLAY_SOUNDS,				"epic sfx",							50,			60,			codeContainer.playAllSounds},
-        {PICK_UP_OBJ,				"Grab Object",						50,			 5,			codeContainer.pickUpObj}
-		// code idea: shrinkray. it shrinks objects that are hit with water particles.
+        {PICK_UP_OBJ,				"Grab Object",						50,			 5,			codeContainer.pickUpObj},
+        {ROTATE_OBJS,				"Rotate Objects",					60,			 1,			codeContainer.rotateObjs},
+        {QUAKE_PRO,					"Minecraft Pro",					50,			60,			codeContainer.quakeProToggle},
+        {ROLLIN,					"Keep Rollin' Rollin' Rollin'",		50,			45,			codeContainer.rollin},
+        {SHRINK_RAY,				"Shrink Ray!",						50,			45,			codeContainer.shrinkRay}
 	};
 
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {NO_WHITELIST};
+    u8 whitelist[] = {SHRINK_RAY};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {

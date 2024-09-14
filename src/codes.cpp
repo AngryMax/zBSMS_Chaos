@@ -1762,3 +1762,112 @@ void CodeContainer::pickUpObj(Code::FuncReset f) {
 	if (isBird) 
         chosenObj.addr->mStateFlags.asU32 &= 0x4;
 }
+
+void CodeContainer::rotateObjs(Code::FuncReset f) {
+
+	static bool execOnce = true;
+
+    if (f == Code::FuncReset::TRUE) {
+        execOnce = true;
+        return;
+    }
+
+    if (execOnce) {		
+
+        for (auto iter = gpConductor->mManagerList.begin(); iter != gpConductor->mManagerList.end();
+             iter++) {
+
+            TLiveManager *manager = *iter;
+            for (int i = 0; i < manager->mObjCount; i++) {
+                TLiveActor *obj = static_cast<TLiveActor *>(manager->mObjAry[i]);
+
+                obj->mRotation.x +=  rand() % 11;
+                obj->mRotation.y +=  rand() % 11;
+                obj->mRotation.z +=  rand() % 11;
+            }
+        }
+        execOnce = false;
+    }
+}
+
+pp::togglable_ppc_bl quakeProPatch(SMS_PORT_REGION(0x8002380c, 0, 0, 0), (void *)codeContainer.quakePro, false);
+void CodeContainer::quakeProToggle(Code::FuncReset f) {
+    if (f == Code::FuncReset::FALSE && !quakeProPatch.is_enabled())
+        quakeProPatch.enable();
+    else if (f == Code::FuncReset::TRUE)
+        quakeProPatch.disable();
+}
+
+void CodeContainer::quakePro() {
+
+	gpCamera->mProjectionFovy = (f32)160;
+}
+
+void CodeContainer::rollin(Code::FuncReset f) {
+
+    static bool execOnce = true;
+	static int numAxis;
+
+    if (f == Code::FuncReset::TRUE) {
+        execOnce = true;
+        return;
+    }
+
+    if (execOnce) {
+
+		numAxis = (rand() % 3) + 1;  
+
+        execOnce = false;
+    }
+
+	for (auto iter = gpConductor->mManagerList.begin(); iter != gpConductor->mManagerList.end();
+         iter++) {
+
+        TLiveManager *manager = *iter;
+        for (int i = 0; i < manager->mObjCount; i++) {
+            TLiveActor *obj = static_cast<TLiveActor *>(manager->mObjAry[i]);
+
+			switch(numAxis) {
+            case 3:
+                obj->mRotation.x += 0.5;
+            case 2:
+                obj->mRotation.y += 0.5;
+            case 1:
+                obj->mRotation.z += 0.5;
+            }
+        }
+    }
+}
+
+void CodeContainer::shrinkRay(Code::FuncReset f) {
+
+    const int RANGE = 300;
+
+    TWaterGun *pTWaterGun = gpMarioOriginal->mFludd;
+
+    OSReport("-> X: %f\n", gpModelWaterManager->mStaticHitActor.mTranslation.x);
+    OSReport("-> Y: %f\n", gpModelWaterManager->mStaticHitActor.mTranslation.y);
+    OSReport("-> Z: %f\n", gpModelWaterManager->mStaticHitActor.mTranslation.z);
+
+    for (auto iter = gpConductor->mManagerList.begin(); iter != gpConductor->mManagerList.end();
+         iter++) {
+
+        TLiveManager *manager = *iter;
+        for (int i = 0; i < manager->mObjCount; i++) {
+            TLiveActor *obj = static_cast<TLiveActor *>(manager->mObjAry[i]);
+
+            TVec3f objPos = obj->mTranslation;
+
+            if (pTWaterGun->mIsEmitWater) {
+                TVec3f waterPos = gpModelWaterManager->mStaticHitActor.mTranslation;
+                if (waterPos.x >= objPos.x - RANGE && waterPos.x <= objPos.x + RANGE &&
+                    waterPos.y >= objPos.y - RANGE && waterPos.y <= objPos.y + RANGE &&
+                    waterPos.z >= objPos.z - RANGE && waterPos.z <= objPos.z + RANGE) {
+                    obj->mScale.x -= 0.01;
+                    obj->mScale.y -= 0.01;
+                    obj->mScale.z -= 0.01;
+                }
+            }
+        }
+    }
+}
