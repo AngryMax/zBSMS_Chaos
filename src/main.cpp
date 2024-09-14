@@ -474,18 +474,15 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {QUAKE_PRO,					"Minecraft Pro",					50,			60,			codeContainer.quakeProToggle},
         {ROLLIN,					"Keep Rollin' Rollin' Rollin'",		50,			45,			codeContainer.rollin},
         {SHRINK_RAY,				"Shrink Ray!",						50,			45,			codeContainer.shrinkRay},
-        {CS_PLAYERS,				"CS Players",						50,			41.2,		codeContainer.csPlayers}
+        {CS_PLAYERS,				"CS Players",						50,			41.2,		codeContainer.csPlayers},
+        {INVERT_MARIO,				"Inversion",						50,			45,		    codeContainer.invertMario},
+        {OFFSET_MARIO,				"Offset",						    50,			45,		    codeContainer.offsetMarioModel}
 	};
-
-	//					 ######################### !!!SUPER IMPORTANT!!! #########################
-	//			TODO: fix bug with *some* code that causes the game to hang in specifically Corona Mountain
-	//				  guesses: it might have to do with pickUpObj, moveShines, or makeMarioObj since Corona doesn't have a Shine Sprite?
-	//				  suggested method for finding: print the name of codes when the get activated.
 
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {PICK_UP_OBJ};
+    u8 whitelist[] = {OFFSET_MARIO};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
@@ -625,7 +622,6 @@ BETTER_SMS_FOR_CALLBACK static void resetCodesOnStageExit(TApplication *tapp) {
     if (codeContainer.isCodeActive(PICK_UP_OBJ))
         codeContainer.resetCode(PICK_UP_OBJ);
 }
-
 
 // Module definition
 

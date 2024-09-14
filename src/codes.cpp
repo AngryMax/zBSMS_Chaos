@@ -608,8 +608,8 @@ void CodeContainer::snakeGame(Code::FuncReset f) {		// TODO: test this w/o fulls
     else if (player_yPos > 465)
         player_yPos = 465;
 
-	OSReport("X: %f\n", player_xPos);
-	OSReport("Y: %f\n", player_yPos);
+	//OSReport("X: %f\n", player_xPos);
+	//OSReport("Y: %f\n", player_yPos);
 
 
 
@@ -1217,8 +1217,8 @@ typedef struct ObjectData {
     
 } ObjectData;
 
-void CodeContainer::makeMarioAnObject(Code::FuncReset f) {					// TODO: fix bug where this code causes inactive shines to suddenly become active(even if they arent chosenObj)
-    static bool execOnce = true;
+void CodeContainer::makeMarioAnObject(Code::FuncReset f) {
+	static bool execOnce = true;
     static ObjectData chosenObj = {nullptr, {}, {}, 0, false, false};
 
     if (f == Code::FuncReset::TRUE) {
@@ -1898,9 +1898,9 @@ void CodeContainer::shrinkRay(Code::FuncReset f) {
 
     TWaterGun *pTWaterGun = gpMarioOriginal->mFludd;
 
-    OSReport("-> X: %f\n", gpModelWaterManager->mStaticHitActor.mTranslation.x);
-    OSReport("-> Y: %f\n", gpModelWaterManager->mStaticHitActor.mTranslation.y);
-    OSReport("-> Z: %f\n", gpModelWaterManager->mStaticHitActor.mTranslation.z);
+    //OSReport("-> X: %f\n", gpModelWaterManager->mStaticHitActor.mTranslation.x);
+    //OSReport("-> Y: %f\n", gpModelWaterManager->mStaticHitActor.mTranslation.y);
+    //OSReport("-> Z: %f\n", gpModelWaterManager->mStaticHitActor.mTranslation.z);
 
     for (auto iter = gpConductor->mManagerList.begin(); iter != gpConductor->mManagerList.end();
          iter++) {
@@ -1949,4 +1949,19 @@ void CodeContainer::csPlayers(Code::FuncReset f) {
     }
 
 	gpCamera->mProjectionAspect = (2.25 * sinf((currentTime - csPlayers.timeCalled - 1.75) / 4)) + 2.75;	// range: .5 - 5
+}
+
+void CodeContainer::invertMario(Code::FuncReset f) {
+
+	if (gpMarioOriginal->mModelData->mModel->mBaseScale.x > 0)
+        gpMarioOriginal->mModelData->mModel->mBaseScale.x *= -1;
+    if (gpMarioOriginal->mModelData->mModel->mBaseScale.y > 0)
+        gpMarioOriginal->mModelData->mModel->mBaseScale.y *= -1;
+    if (gpMarioOriginal->mModelData->mModel->mBaseScale.z > 0)
+        gpMarioOriginal->mModelData->mModel->mBaseScale.z *= -1;
+}
+
+void CodeContainer::offsetMarioModel(Code::FuncReset f) {
+
+	// this was a failed experiment, feel free to turn this func into anything else
 }
