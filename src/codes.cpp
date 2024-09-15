@@ -1961,7 +1961,49 @@ void CodeContainer::invertMario(Code::FuncReset f) {
         gpMarioOriginal->mModelData->mModel->mBaseScale.z *= -1;
 }
 
-void CodeContainer::offsetMarioModel(Code::FuncReset f) {
+void CodeContainer::fireMovement(Code::FuncReset f) {		// TODO: find a way to make mario fire-bounce off of walls like 64. also find a way to increase horizontal momentum?
 
-	// this was a failed experiment, feel free to turn this func into anything else
+	static bool execOnce = true;
+    static u8 mDamage_Orig;
+    static f32 mFireDownForce;
+    static f32 mFireDownControl;
+    static f32 mFireBackVelocity;
+
+	if (f == Code::FuncReset::TRUE)
+	{
+        gpMarioOriginal->mDmgGraffitoFireParams.mDamage.set(mDamage_Orig);
+        gpMarioOriginal->mJumpParams.mFireDownForce.set(mFireDownForce);
+        gpMarioOriginal->mJumpParams.mFireDownControl.set(mFireDownControl);
+        gpMarioOriginal->mJumpParams.mFireBackVelocity.set(mFireBackVelocity);
+
+		execOnce = true;
+        return;
+	}
+
+	if (execOnce)
+	{
+        mDamage_Orig = gpMarioOriginal->mDmgGraffitoFireParams.mDamage.get();
+        mFireDownForce   = gpMarioOriginal->mJumpParams.mFireDownForce.get();
+        mFireDownControl = gpMarioOriginal->mJumpParams.mFireDownControl.get();
+        mFireBackVelocity = gpMarioOriginal->mJumpParams.mFireBackVelocity.get();		
+
+		execOnce = false;
+	}
+
+	gpMarioOriginal->mDmgGraffitoFireParams.mDamage.set(0);
+    gpMarioOriginal->mJumpParams.mFireDownForce.set(60);
+    gpMarioOriginal->mJumpParams.mFireDownControl.set(1);
+    gpMarioOriginal->mJumpParams.mFireBackVelocity.set(20);
+
+    gpMarioOriginal->checkGraffitoFire();
+
+	// when mario "fire-hops" from lower to higher ground, we immediately gets burned instead of rebound bouncing on the ground like normal(for this code).
+	// ideally, we wouldn't want those "rebound" hops to happen at all
+
+
+	// insert code that "re-burns" mario when he touches a wall
+
+
+	// increase horizontal velocity
+
 }

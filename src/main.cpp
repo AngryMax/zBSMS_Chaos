@@ -476,13 +476,13 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {SHRINK_RAY,				"Shrink Ray!",						50,			45,			codeContainer.shrinkRay},
         {CS_PLAYERS,				"CS Players",						50,			41.2,		codeContainer.csPlayers},
         {INVERT_MARIO,				"Inversion",						50,			45,		    codeContainer.invertMario},
-        {OFFSET_MARIO,				"Offset",						    50,			45,		    codeContainer.offsetMarioModel}
+        {FIRE_MOVEMENT,				"MAMA!!",						    50,			45,		    codeContainer.fireMovement}
 	};
 
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {OFFSET_MARIO};
+    u8 whitelist[] = {FIRE_MOVEMENT};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
