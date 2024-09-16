@@ -32,6 +32,8 @@
 #include <SMS/Camera/PolarSubCamera.hxx>
 #include <SMS/NPC/NpcBase.hxx>
 #include <SMS/MapObj/MapObjBase.hxx>
+#include <SMS/MarioUtil/MathUtil.hxx>
+#include <SMS/Manager/MarioParticleManager.hxx>
 
 #include <BetterSMS/game.hxx>
 #include <BetterSMS/module.hxx>

@@ -1263,7 +1263,7 @@ void CodeContainer::makeMarioAnObject(Code::FuncReset f) {
 
     if (execOnce) {
         // loop through manager list to find all npc and bird managers
-        JGadget::TList<TLiveManager *> pickUpMgrList;
+        JGadget::TList<TLiveManager *> mgrList;
         for (auto iter = gpConductor->mManagerList.begin(); iter != gpConductor->mManagerList.end();
              iter++) {
 
@@ -1271,7 +1271,9 @@ void CodeContainer::makeMarioAnObject(Code::FuncReset f) {
             u32 vtable            = *(u32 *)manager;
             switch (vtable) {
                 case 0x803c8d48:  // TMapObjBaseManager
+                case 0x803c8eec:  // TMapObjManager
 
+                // Seagulls
                 case 0x803abc88:  // TMewManager
 
                 // Piantas
@@ -1314,20 +1316,20 @@ void CodeContainer::makeMarioAnObject(Code::FuncReset f) {
                 case 0x803d9228:  // TNPCManager
                     if (manager->mObjCount > 0) {
                         // OSReport("Manager: 0x%x\n", manager);
-                        pickUpMgrList.push_front(manager);
+                        mgrList.push_front(manager);
                     }
             }
         }
 
-        // if no carryable objects are present, just end the code
-        if (pickUpMgrList.size() == 0) {
+        // if no objects are present, just end the code
+        if (mgrList.size() == 0) {
             codeContainer.endCode(MAKE_MARIO_OBJ);
             return;
         }
 
-        u32 randMgrInd = rand() % pickUpMgrList.size();  // pick a random manager from the list
+        u32 randMgrInd = rand() % mgrList.size();  // pick a random manager from the list
         u32 currMgrInd = 0;
-        for (auto iter = pickUpMgrList.begin(); iter != pickUpMgrList.end(); iter++) {
+        for (auto iter = mgrList.begin(); iter != mgrList.end(); iter++) {
             if (currMgrInd != randMgrInd) {
                 currMgrInd++;
                 continue;
@@ -1339,7 +1341,7 @@ void CodeContainer::makeMarioAnObject(Code::FuncReset f) {
 
             chosenObj.addr = obj;
             u32 mgrVtable  = *(u32 *)manager;
-            if (mgrVtable == 0x803c8d48)  // TMapObjBaseManager
+            if (mgrVtable == 0x803c8d48 || mgrVtable == 0x803c8eec)  // TMapObjBaseManager or TMapObjManager
             {
                 chosenObj.isMapObj = true;
                 chosenObj.wasVisible = !chosenObj.addr->mStateFlags.asFlags.mIsObjDead;
@@ -1348,8 +1350,6 @@ void CodeContainer::makeMarioAnObject(Code::FuncReset f) {
             }
 
             OSReport("Manager: 0x%x, Object: 0x%x\n", manager, obj);
-
-            // obj->mTranslation = *gpMarioPos;
 
             break;
         }
@@ -1364,16 +1364,21 @@ void CodeContainer::makeMarioAnObject(Code::FuncReset f) {
     }
 
     if (chosenObj.addr != nullptr) {
-        chosenObj.addr->mObjectType |= 1;
-        chosenObj.addr->mTranslation          = *gpMarioPos;
-        chosenObj.addr->mRotation             = gpMarioAddress->mRotation;
-        chosenObj.addr->mRidingInfo.mHitActor = nullptr;
-
         // this updates the draw location for objects like trees which don't auto update
         if (chosenObj.addr->mActorData != nullptr) {
             chosenObj.addr->calcRootMatrix();
             chosenObj.addr->mActorData->mModel->calc();
+        } else {
+            // if the chosen obj doesn't have a model, reset the code to roll again
+            OSReport("Obj 0x%x didn't have a model! Reseting!\n", chosenObj.addr);
+            codeContainer.resetCode(MAKE_MARIO_OBJ);
+            return;
         }
+
+        chosenObj.addr->mObjectType |= 1;
+        chosenObj.addr->mTranslation          = *gpMarioPos;
+        chosenObj.addr->mRotation             = gpMarioAddress->mRotation;
+        chosenObj.addr->mRidingInfo.mHitActor = nullptr;
     }
 }
 
@@ -2037,13 +2042,14 @@ void CodeContainer::invertMario(Code::FuncReset f) {
         gpMarioOriginal->mModelData->mModel->mBaseScale.z *= -1;
 }
 
-void CodeContainer::fireMovement(Code::FuncReset f) {		// TODO: find a way to make mario fire-bounce off of walls like 64. also find a way to increase horizontal momentum?
+void CodeContainer::fireMovement(Code::FuncReset f) {		// TODO: find a way to make mario fire-bounce off of walls like 64
 
 	static bool execOnce = true;
     static u8 mDamage_Orig;
     static f32 mFireDownForce;
     static f32 mFireDownControl;
     static f32 mFireBackVelocity;
+    static f32 mFireHeight;
 
 	if (f == Code::FuncReset::TRUE)
 	{
@@ -2051,6 +2057,7 @@ void CodeContainer::fireMovement(Code::FuncReset f) {		// TODO: find a way to ma
         gpMarioOriginal->mJumpParams.mFireDownForce.set(mFireDownForce);
         gpMarioOriginal->mJumpParams.mFireDownControl.set(mFireDownControl);
         gpMarioOriginal->mJumpParams.mFireBackVelocity.set(mFireBackVelocity);
+        gpMarioOriginal->mGraffitoParams.mFireHeight.set(mFireHeight);
 
 		execOnce = true;
         return;
@@ -2058,10 +2065,11 @@ void CodeContainer::fireMovement(Code::FuncReset f) {		// TODO: find a way to ma
 
 	if (execOnce)
 	{
-        mDamage_Orig = gpMarioOriginal->mDmgGraffitoFireParams.mDamage.get();
-        mFireDownForce   = gpMarioOriginal->mJumpParams.mFireDownForce.get();
-        mFireDownControl = gpMarioOriginal->mJumpParams.mFireDownControl.get();
-        mFireBackVelocity = gpMarioOriginal->mJumpParams.mFireBackVelocity.get();		
+        mDamage_Orig		= gpMarioOriginal->mDmgGraffitoFireParams.mDamage.get();
+        mFireDownForce		= gpMarioOriginal->mJumpParams.mFireDownForce.get();
+        mFireDownControl	= gpMarioOriginal->mJumpParams.mFireDownControl.get();
+        mFireBackVelocity	= gpMarioOriginal->mJumpParams.mFireBackVelocity.get();		
+        mFireHeight			= gpMarioOriginal->mGraffitoParams.mFireHeight.get();		
 
 		execOnce = false;
 	}
@@ -2069,26 +2077,31 @@ void CodeContainer::fireMovement(Code::FuncReset f) {		// TODO: find a way to ma
 	gpMarioOriginal->mDmgGraffitoFireParams.mDamage.set(0);
     gpMarioOriginal->mJumpParams.mFireDownForce.set(60);
     gpMarioOriginal->mJumpParams.mFireDownControl.set(1);
-    gpMarioOriginal->mJumpParams.mFireBackVelocity.set(20);
+    gpMarioOriginal->mJumpParams.mFireBackVelocity.set(20);		// might not actually be doing anything :p
+	gpMarioOriginal->mGraffitoParams.mFireHeight.set(25);
+    
+    Vec temp;
+    temp.x = gpMarioPos->x + gpMarioOriginal->mSpeed.x;
+    temp.y = gpMarioPos->y + gpMarioOriginal->mSpeed.y;
+    temp.z = gpMarioPos->z + gpMarioOriginal->mSpeed.z;
+	TBGCheckData *wall = gpMarioOriginal->checkWallPlane(&temp, 30, gpMarioOriginal->mCollisionXZSize);
 
-    gpMarioOriginal->checkGraffitoFire();
-
-	// when mario "fire-hops" from lower to higher ground, we immediately gets burned instead of rebound bouncing on the ground like normal(for this code).
-	// ideally, we wouldn't want those "rebound" hops to happen at all
-
-
-	// insert code that "re-burns" mario when he touches a wall
-
-
-	// increase horizontal velocity
-
+    if (gpMarioOriginal->mTranslation.y - gpMarioOriginal->mFloorBelow <= 25) {
+        gpMarioOriginal->changePlayerStatus(TMario::STATE_FIRE_HIT, 1, true);
+        gpMarioParticleManager->emitAndBindToPosPtr(6, gpMarioPos, 0, nullptr);
+    } else if (wall) {
+        gpMarioOriginal->mSpeed.y = 52;
+        gpMarioOriginal->mAngle.y -= 0x8000;
+        gpMarioOriginal->changePlayerStatus(TMario::STATE_FIRE_HIT, 1, true);
+        gpMarioParticleManager->emitAndBindToPosPtr(6, gpMarioPos, 0, nullptr);
+    }
 }
 
 #define atntable ((u32 *)0x803da838)
 void CodeContainer::lol(Code::FuncReset f) {
 
     if (f == Code::FuncReset::TRUE) {
-        // reset it back to an actual Identity Matrix
+       
         atntable[0] = 0x10;
 
         return;

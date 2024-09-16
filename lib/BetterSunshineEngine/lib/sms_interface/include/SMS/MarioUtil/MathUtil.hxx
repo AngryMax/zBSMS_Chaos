@@ -3,6 +3,7 @@
 #include <Dolphin/types.h>
 #include <JSystem/JGeometry/JGMVec.hxx>
 
+s16 matan(f32 y, f32 x);
 template <typename T> T MsClamp(T value, T min, T max);
 f32 MsGetRotFromZaxisY(const TVec3f &);
 bool MsIsInSight(const TVec3f &src, const TVec3f &other, f32 x, f32 y, f32 z);

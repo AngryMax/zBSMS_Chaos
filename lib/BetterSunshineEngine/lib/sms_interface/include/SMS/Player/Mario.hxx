@@ -842,7 +842,7 @@ public:
     bool checkStickRotate(int *out);
     bool checkSwimJump();
     void checkThrowObject();
-    void checkWallPlane(const Vec &pos, f32 width, f32 height);
+    TBGCheckData *checkWallPlane(Vec *pos, f32 height, f32 width);
     void checkWet();
     bool considerJumpRotate();
     bool considerRotateJumpStart();

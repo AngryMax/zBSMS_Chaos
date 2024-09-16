@@ -466,7 +466,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 		{BRAWL,						"brawl lol",						30,			30,			codeContainer.brawl},
 		{NOCLIP,					"Noclip",							 1,			 3,			codeContainer.noclip},		// shoutouts to joshuamk for unintentionally doing all the heavy work for this code
 		{JUMPSCARE,					"Jumpscare",						 1,			 1,			codeContainer.jumpscare},
-		{SMALL_WORLD,				"it's a Small World",				60,			 1,			codeContainer.smallWorld},
+		{SMALL_WORLD,				"it's a Small World",				80,		   0.5,			codeContainer.smallWorld},
 		{RANDOM_SPRAY,				"Precision",						50,			30,			codeContainer.randomSpray},
         {PLAY_SOUNDS,				"epic sfx",							50,			60,			codeContainer.playAllSounds},
         {PICK_UP_OBJ,				"Grab Object",						50,			 5,			codeContainer.pickUpObj},
@@ -478,12 +478,15 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {INVERT_MARIO,				"Inversion",						50,			45,		    codeContainer.invertMario},
         {FIRE_MOVEMENT,				"MAMA!!",						    50,			45,		    codeContainer.fireMovement},
         {LOL,						"lol",								50,			20,		    codeContainer.lol}
+		// idea: code that requires mario to stay above a certain speed, or he'll perish
+		// idea: code that puts a timer on screen
+		// idea: code that pauses all timers
 	};
 
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {SHUFFLE_OBJECTS};
+    u8 whitelist[] = {FIRE_MOVEMENT};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
