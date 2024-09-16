@@ -835,6 +835,17 @@ void CodeContainer::shuffleObjects(Code::FuncReset f) {
         TVec3f temp = objOne->mTranslation;
         objOne->mTranslation = objTwo->mTranslation;
         objTwo->mTranslation = temp;
+
+        // this updates the draw location for objects like trees which don't auto update
+        if (objOne->mActorData != nullptr) {
+            objOne->calcRootMatrix();
+            objOne->mActorData->mModel->calc();
+        }
+        // this updates the draw location for objects like trees which don't auto update
+        if (objTwo->mActorData != nullptr) {
+            objTwo->calcRootMatrix();
+            objTwo->mActorData->mModel->calc();
+        }
     }
 
     
@@ -1042,6 +1053,12 @@ void CodeContainer::objectVortex(Code::FuncReset f) {
 			// Translate point back to its original position
             obj->mTranslation.x += gpMarioPos->x;
             obj->mTranslation.z += gpMarioPos->z;
+
+            // this updates the draw location for objects like trees which don't auto update
+            if (obj->mActorData != nullptr) {
+                obj->calcRootMatrix();
+                obj->mActorData->mModel->calc();
+            }
         }
     }
 }
@@ -1212,7 +1229,7 @@ typedef struct ObjectData {
     TVec3f pos;
     TVec3f rot;
     u32 objectType;
-    bool isShine;
+    bool isMapObj;
     bool wasVisible;
     
 } ObjectData;
@@ -1224,84 +1241,125 @@ void CodeContainer::makeMarioAnObject(Code::FuncReset f) {
     if (f == Code::FuncReset::TRUE) {
         if (chosenObj.addr != nullptr) {
             chosenObj.addr->mTranslation = chosenObj.pos;
-            chosenObj.addr->mRotation = chosenObj.rot;
+            chosenObj.addr->mRotation    = chosenObj.rot;
             chosenObj.addr->mObjectType  = chosenObj.objectType;
-            if (chosenObj.isShine && !chosenObj.wasVisible)
-                static_cast<TShine *>(chosenObj.addr)->kill();
+            if (chosenObj.isMapObj && !chosenObj.wasVisible)
+                static_cast<TMapObjBase *>(chosenObj.addr)->kill();
+
+            // this updates the draw location for objects like trees which don't auto update
+            if (chosenObj.addr->mActorData != nullptr) {
+                chosenObj.addr->calcRootMatrix();
+                chosenObj.addr->mActorData->mModel->calc();
+            }
 
             chosenObj.addr = nullptr;
         }
-        chosenObj.isShine = false;
+        chosenObj.isMapObj = false;
 
-        execOnce = true;
+        execOnce                                = true;
         gpMarioOriginal->mAttributes.mIsVisible = false;
         return;
     }
 
     if (execOnce) {
-        auto iter = gpConductor->mManagerList.begin();
-        u32 loopCount = 0;
-        while (true) {
-            // we want to loop 10 times before breaking and ending
-            if (iter == gpConductor->mManagerList.end()) {
-                loopCount++;
-                if (loopCount == 10) {
-                    codeContainer.endCode(MAKE_MARIO_OBJ);
-                    break;
-                }
-                iter = gpConductor->mManagerList.begin();
+        // loop through manager list to find all npc and bird managers
+        JGadget::TList<TLiveManager *> pickUpMgrList;
+        for (auto iter = gpConductor->mManagerList.begin(); iter != gpConductor->mManagerList.end();
+             iter++) {
+
+            TLiveManager *manager = *iter;
+            u32 vtable            = *(u32 *)manager;
+            switch (vtable) {
+                case 0x803c8d48:  // TMapObjBaseManager
+
+                case 0x803abc88:  // TMewManager
+
+                // Piantas
+                case 0x803d8a98:  // TMonteMAManager
+                case 0x803d8a40:  // TMonteMBManager
+                case 0x803d89e8:  // TMonteMCManager
+                case 0x803d8990:  // TMonteMDManager
+                case 0x803d8938:  // TMonteMEManager
+                case 0x803d9018:  // TMonteMFManager
+                case 0x803d8fc0:  // TMonteMGManager
+                case 0x803d8f68:  // TMonteMHManager
+                case 0x803d8af0:  // TMonteMManager
+                case 0x803d8888:  // TMonteWAManager
+                case 0x803d8830:  // TMonteWBManager
+                case 0x803d8f10:  // TMonteWCManager
+                case 0x803d88e0:  // TMonteWManager
+
+                // Nokis
+                case 0x803d8eb8:  // TMareMAManager
+                case 0x803d8e60:  // TMareMBManager
+                case 0x803d8e08:  // TMareMCManager
+                case 0x803d8db0:  // TMareMDManager
+                case 0x803df920:  // TMareMManager
+                case 0x803d8d58:  // TMareWAManager
+                case 0x803d8d00:  // TMareWBManager
+                case 0x803df8c8:  // TMareWManager
+
+                // Toad, Toadsworth, & Peach
+                case 0x803d8ca8:  // TKinopioManager
+                case 0x803d8c50:  // TKinojiManager
+                case 0x803d8bf8:  // TPeachManager
+
+                // Item Birds
+                case 0x803abe24:  // TAnimalBirdManager
+
+                // Raccoon Dogs
+                case 0x803d8ba0:  // TRaccoonDogManager
+
+                // NPC Manager
+                case 0x803d9228:  // TNPCManager
+                    if (manager->mObjCount > 0) {
+                        // OSReport("Manager: 0x%x\n", manager);
+                        pickUpMgrList.push_front(manager);
+                    }
+            }
+        }
+
+        // if no carryable objects are present, just end the code
+        if (pickUpMgrList.size() == 0) {
+            codeContainer.endCode(MAKE_MARIO_OBJ);
+            return;
+        }
+
+        u32 randMgrInd = rand() % pickUpMgrList.size();  // pick a random manager from the list
+        u32 currMgrInd = 0;
+        for (auto iter = pickUpMgrList.begin(); iter != pickUpMgrList.end(); iter++) {
+            if (currMgrInd != randMgrInd) {
+                currMgrInd++;
+                continue;
             }
 
             TLiveManager *manager = *iter;
-            for (int i = 0; i < manager->mObjCount; i++) {
+            u32 randObjInd        = rand() % manager->mObjCount;
+            TLiveActor *obj       = static_cast<TLiveActor *>(manager->mObjAry[randObjInd]);
 
-                JDrama::TViewObj *obj = manager->mObjAry[i];
-                u32 vtable            = *(u32 *)obj;
-                switch (vtable) {
-                    case (0x803c97ec):  // TShine
-                        chosenObj.addr       = static_cast<TLiveActor *>(obj);
-                        chosenObj.isShine = true;
-                        chosenObj.wasVisible = !chosenObj.addr->mStateFlags.asFlags.mIsObjDead;
-                        if (!chosenObj.wasVisible)
-                            static_cast<TShine *>(chosenObj.addr)->makeObjAppeared();
-
-                    case (0x803d8448): // TBaseNpc
-                    case (0x803abe78): // TAnimalBird
-                    case (0x803abb70): // TAnimalBase
-                    case (0x803cb06c): // TMapObjBillboard
-                        chosenObj.addr = static_cast<TLiveActor *>(obj);
-                        OSReport("Manager: 0x%x, Object: 0x%x\n", manager, obj);
-                        break;
-                }
-
-                if (chosenObj.addr != nullptr) {
-                    // only break some of the time to pick a random object
-                    if (rand() % 10 == 0)
-                        break;
-                    else {
-                        if (chosenObj.isShine && !chosenObj.wasVisible) {
-                            static_cast<TShine *>(chosenObj.addr)->makeObjDead();
-                        }
-                           
-                        chosenObj.addr = nullptr;
-                        chosenObj.isShine = false;
-                    }
-                }
-                //break;
+            chosenObj.addr = obj;
+            u32 mgrVtable  = *(u32 *)manager;
+            if (mgrVtable == 0x803c8d48)  // TMapObjBaseManager
+            {
+                chosenObj.isMapObj = true;
+                chosenObj.wasVisible = !chosenObj.addr->mStateFlags.asFlags.mIsObjDead;
+                if (!chosenObj.wasVisible)
+                    static_cast<TMapObjBase *>(chosenObj.addr)->makeObjAppeared();
             }
 
-            if (chosenObj.addr != nullptr)
-                break;
+            OSReport("Manager: 0x%x, Object: 0x%x\n", manager, obj);
 
-            iter++;
+            // obj->mTranslation = *gpMarioPos;
+
+            break;
         }
 
         gpMarioOriginal->mAttributes.mIsVisible = true;
-        
-        chosenObj.pos = chosenObj.addr->mTranslation;
-        chosenObj.rot = chosenObj.addr->mRotation;
+
+        chosenObj.pos        = chosenObj.addr->mTranslation;
+        chosenObj.rot        = chosenObj.addr->mRotation;
         chosenObj.objectType = chosenObj.addr->mObjectType;
-        
+
         execOnce = false;
     }
 
@@ -1310,6 +1368,12 @@ void CodeContainer::makeMarioAnObject(Code::FuncReset f) {
         chosenObj.addr->mTranslation          = *gpMarioPos;
         chosenObj.addr->mRotation             = gpMarioAddress->mRotation;
         chosenObj.addr->mRidingInfo.mHitActor = nullptr;
+
+        // this updates the draw location for objects like trees which don't auto update
+        if (chosenObj.addr->mActorData != nullptr) {
+            chosenObj.addr->calcRootMatrix();
+            chosenObj.addr->mActorData->mModel->calc();
+        }
     }
 }
 
@@ -1687,7 +1751,7 @@ void CodeContainer::playAllSounds(Code::FuncReset f) {
 
 }
  
-void CodeContainer::pickUpObj(Code::FuncReset f) {		// TODO: fix crash bug where NPCBoards are selected as the grab obj
+void CodeContainer::pickUpObj(Code::FuncReset f) {
 
 	static bool execOnce = true;
 	static bool isBird = false;
@@ -1754,7 +1818,7 @@ void CodeContainer::pickUpObj(Code::FuncReset f) {		// TODO: fix crash bug where
                 // NPC Manager
                 case 0x803d9228:  // TNPCManager
                     if (manager->mObjCount > 0) {
-                        OSReport("Manager: 0x%x\n", manager);
+                        //OSReport("Manager: 0x%x\n", manager);
                         pickUpMgrList.push_front(manager);
                     }
             }
@@ -1783,7 +1847,11 @@ void CodeContainer::pickUpObj(Code::FuncReset f) {		// TODO: fix crash bug where
             if (mgrVtable == 0x803abe24)  // TAnimalBirdManager
                 isBird = true;
 
-            //obj->mTranslation = *gpMarioPos;
+            // this updates the draw location for objects like trees which don't auto update
+            if (chosenObj.addr->mActorData != nullptr) {
+                chosenObj.addr->calcRootMatrix();
+                chosenObj.addr->mActorData->mModel->calc();
+            }
 
             break;
         }

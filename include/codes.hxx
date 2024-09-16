@@ -31,6 +31,7 @@
 #include <SMS/Camera/CameraShake.hxx>
 #include <SMS/Camera/PolarSubCamera.hxx>
 #include <SMS/NPC/NpcBase.hxx>
+#include <SMS/MapObj/MapObjBase.hxx>
 
 #include <BetterSMS/game.hxx>
 #include <BetterSMS/module.hxx>
