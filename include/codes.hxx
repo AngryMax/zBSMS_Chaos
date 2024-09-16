@@ -143,6 +143,7 @@ extern float currentTime;  // unit = seconds
 #define CS_PLAYERS				76
 #define INVERT_MARIO			77
 #define FIRE_MOVEMENT			78
+#define LOL						79
 
 #define NO_WHITELIST		   255		// used to stay in DEV_MODE w/o a whitelist
 
@@ -465,6 +466,7 @@ public:
     static void csPlayers(Code::FuncReset);
     static void invertMario(Code::FuncReset);
     static void fireMovement(Code::FuncReset);
+    static void lol(Code::FuncReset);
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project

@@ -1953,6 +1953,14 @@ void CodeContainer::csPlayers(Code::FuncReset f) {
 
 void CodeContainer::invertMario(Code::FuncReset f) {
 
+	if (f == Code::FuncReset::TRUE)
+	{
+        gpMarioOriginal->mModelData->mModel->mBaseScale.x *= -1;
+        gpMarioOriginal->mModelData->mModel->mBaseScale.y *= -1;
+        gpMarioOriginal->mModelData->mModel->mBaseScale.z *= -1;
+        return;
+	}
+
 	if (gpMarioOriginal->mModelData->mModel->mBaseScale.x > 0)
         gpMarioOriginal->mModelData->mModel->mBaseScale.x *= -1;
     if (gpMarioOriginal->mModelData->mModel->mBaseScale.y > 0)
@@ -2006,4 +2014,17 @@ void CodeContainer::fireMovement(Code::FuncReset f) {		// TODO: find a way to ma
 
 	// increase horizontal velocity
 
+}
+
+#define atntable ((u32 *)0x803da838)
+void CodeContainer::lol(Code::FuncReset f) {
+
+    if (f == Code::FuncReset::TRUE) {
+        // reset it back to an actual Identity Matrix
+        atntable[0] = 0x10;
+
+        return;
+    }
+
+    atntable[0] = NOP;
 }
