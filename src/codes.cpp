@@ -1926,7 +1926,7 @@ void CodeContainer::quakeProToggle(Code::FuncReset f) {
 
 void CodeContainer::quakePro() {
 
-	gpCamera->mProjectionFovy = (f32)160;
+	gpCamera->mProjectionFovy = (f32)140;
 }
 
 void CodeContainer::rollin(Code::FuncReset f) {

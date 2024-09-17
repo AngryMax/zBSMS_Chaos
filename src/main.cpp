@@ -434,7 +434,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 		{GIANT_MARIO,               "GIANT MARIO",					    30,			15,		    codeContainer.scaleMario},
 		{SNAKE,                     "Snake?",						    50,			10,		    codeContainer.snakeGame},		// TODO: prob needs a better display name
 		{MOON_GRAVITY,              "Moon Gravity",					    50,			15,		    codeContainer.moonGravity},
-		{CRAZY_GRAVITY,             "Crazy Gravity",					45,			30,		    codeContainer.crazyGravity},
+		{CRAZY_GRAVITY,             "Crazy Gravity",					40,			30,		    codeContainer.crazyGravity},
 		{CHAOS_CODE,                "Chaos Code",					     1,			60,		    codeContainer.chaosCode},
 		{DISABLE_WATER_COL,         "Disable Water Collision",	        50,			60,		    codeContainer.disableWaterCol},
         {SHUFFLE_OBJECTS,			"Shuffle Objects",					15,			 3,			codeContainer.shuffleObjects},
@@ -471,7 +471,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {PLAY_SOUNDS,				"epic sfx",							50,			60,			codeContainer.playAllSounds},
         {PICK_UP_OBJ,				"Grab Object",						50,			 5,			codeContainer.pickUpObj},
         {ROTATE_OBJS,				"Rotate Objects",					60,			 1,			codeContainer.rotateObjs},
-        {QUAKE_PRO,					"Minecraft Pro",					50,			60,			codeContainer.quakeProToggle},
+        {QUAKE_PRO,					"Minecraft Pro",					50,			40,			codeContainer.quakeProToggle},
         {ROLLIN,					"Keep Rollin' Rollin' Rollin'",		50,			45,			codeContainer.rollin},
         {SHRINK_RAY,				"Shrink Ray!",						50,			45,			codeContainer.shrinkRay},
         {CS_PLAYERS,				"CS Players",						50,			41.2,		codeContainer.csPlayers},
@@ -486,7 +486,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {FIRE_MOVEMENT};
+    u8 whitelist[] = {WHITE_MARIO_SILHOUETTE};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
@@ -609,6 +609,11 @@ BETTER_SMS_FOR_CALLBACK static void resetCodesOnStageExit(TApplication *tapp) {
     if (codeContainer.isCodeActive(NO_MARIO_REDRAW)) {
         codeContainer.endCode(NO_MARIO_REDRAW); 
         codeContainer.resetCode(NO_MARIO_REDRAW);
+    }
+
+    if (codeContainer.isCodeActive(STREEEEETCH)) {
+        codeContainer.endCode(STREEEEETCH);
+        codeContainer.resetCode(STREEEEETCH);
     }
 
     if (codeContainer.isCodeActive(KEEP_ACCELERATING))
