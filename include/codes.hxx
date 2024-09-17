@@ -158,7 +158,7 @@ public:
     char name[CODE_NAME_BUFFER_SIZE];       // unique code display name
     bool isActive;                          // whether the code is active
     bool isGraced;                          // whether the code is in grace period
-    u32 rarity;                             // rarity of code 1-100 (1 = rarest, 100 = most common)
+    u8 rarity;                              // rarity of code 1-100 (1 = rarest, 100 = most common)
     float duration;                         // code duration in seconds
     float timeCalled;                       // var used to store when a code is activated
     
@@ -168,7 +168,7 @@ public:
     Code() {
     }
 
-	Code(u8 c, const char *n, u32 r, float d, void (*pf)(FuncReset)=nullptr) { 
+	Code(u8 c, const char *n, u8 r, float d, void (*pf)(FuncReset)=nullptr) { 
 
         codeID = c;
         strncpy(name, n, CODE_NAME_BUFFER_SIZE);
@@ -183,8 +183,8 @@ public:
 
 class CodeContainer {
 public:
-    Code codeList[CODE_COUNT];
     int currentCodeCount = 0;
+    Code codeList[CODE_COUNT];
 
     float gracePeriod;
     float baseGracePeriod;
@@ -475,7 +475,19 @@ public:
 // Single instance of CodeContainer that's accessed throughout whole project
 extern CodeContainer codeContainer;
 
+// this struct is found and used by the python script to read active codes
+struct ChaosPtrs{
+    const char *uniqueStr = "CHAOS 1.0";
+    const CodeContainer *codeContainerPtr = &codeContainer;
+    const float *currentTimePtr = &currentTime;
+};
+static ChaosPtrs chaosPtrs;
+
 namespace Utils {
+
+    static void printChaosPtrAddr() {
+        OSReport("chaosPtrs: 0x%x\n", &chaosPtrs);
+    }
 
     // plays the sound of soundId as long as the gate is open
     static bool playSound(u32 soundId) {

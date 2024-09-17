@@ -508,7 +508,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #endif
 
     OSReport("Finished initVars!\n");
-    OSReport("0x%x\n", codeContainer.popupSavePrompt);
+    Utils::printChaosPtrAddr();
 }
 
 static OSTime sBaseTime = 0;
