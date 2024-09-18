@@ -147,6 +147,7 @@ extern float currentTime;  // unit = seconds
 #define INVERT_MARIO			77
 #define FIRE_MOVEMENT			78
 #define LOL						79
+#define TILTED					80
 
 #define NO_WHITELIST		   255		// used to stay in DEV_MODE w/o a whitelist
 
@@ -274,7 +275,7 @@ public:
             switch (codeList[rollWinner].codeID) {
 
                 case NO_MARIO_REDRAW:
-                    if (isCodeActive(CHAOS_CODE))
+                    if (isCodeActive(CHAOS_CODE) || isCodeActive(TILTED))
                         return;
                     break;
 
@@ -339,6 +340,11 @@ public:
 
 				case POPUP_SAVE_PROMPT:
                     if (isCodeActive(CHAOS_CODE))
+                        return;
+                    break;
+
+				case TILTED:
+                    if (isCodeActive(NO_MARIO_REDRAW))
                         return;
                     break;
             }
@@ -499,6 +505,7 @@ public:
     static void invertMario(Code::FuncReset);
     static void fireMovement(Code::FuncReset);
     static void lol(Code::FuncReset);
+    static void tilted(Code::FuncReset);
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project

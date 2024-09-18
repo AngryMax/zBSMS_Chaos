@@ -460,7 +460,8 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {CS_PLAYERS,				"CS Players",						50,			41.2,		codeContainer.csPlayers},
         {INVERT_MARIO,				"Inversion",						50,			45,		    codeContainer.invertMario},
         {FIRE_MOVEMENT,				"MAMA!!",						    50,			45,		    codeContainer.fireMovement},
-        {LOL,						"lol",								50,			20,		    codeContainer.lol}
+        {LOL,						"lol",								50,			20,		    codeContainer.lol},
+        {TILTED,					"Tilted",							50,			30,		    codeContainer.tilted}
 		// idea: code that requires mario to stay above a certain speed, or he'll perish
 		// idea: code that puts a timer on screen
 		// idea: code that pauses all timers
@@ -469,7 +470,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {JUMPSCARE};
+    u8 whitelist[] = {TILTED};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {

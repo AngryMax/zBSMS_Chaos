@@ -2125,3 +2125,17 @@ void CodeContainer::lol(Code::FuncReset f) {
 
     atntable[0] = NOP;
 }
+
+void CodeContainer::tilted(Code::FuncReset f) {
+
+	if (f == Code::FuncReset::TRUE)			// TODO? idkk, it might be kinda funny to not reset this code...
+	{
+        *gpMarioAngleX = 0;
+        *gpMarioAngleZ = 0;
+        return;
+	}
+
+	*gpMarioAngleX = *gpMarioAngleY;
+	*gpMarioAngleZ = gpCamera->mHorizontalAngle; 
+
+}
