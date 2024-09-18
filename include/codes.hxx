@@ -186,11 +186,11 @@ public:
     int currentCodeCount = 0;
     Code codeList[CODE_COUNT];
 
-    float gracePeriod;
-    float baseGracePeriod;
+    float gracePeriod;			
+    float baseGracePeriod;		// TODO: see if changing the grace period setting affects this value appropriately
     u32 maxActiveCodes;
     s32 addTo_maxActiveCodes;
-    u32 baseMaxActiveCodes;
+    u32 baseMaxActiveCodes;		// TODO? might be able to deprecate this into addTo_maxActiveCodes, but might require some work in modulateCodeSlots | also TODO: see if changing the grace period setting affects this value appropriately
     u32 activeCodes;
 
     J2DTextBox *codeDisplay;
