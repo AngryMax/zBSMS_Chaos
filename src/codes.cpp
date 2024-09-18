@@ -42,7 +42,7 @@ void CodeContainer::noMActorModels(Code::FuncReset f) {
 }
 
 pp::auto_patch moveTLiveActorDrawPatch(SMS_PORT_REGION(0x80217ec0, 0, 0, 0), BLR, false);
-void CodeContainer::moveTLiveActorDraw(Code::FuncReset f) {
+void CodeContainer::stopTLiveActorPerform(Code::FuncReset f) {
     if (f == Code::FuncReset::FALSE && !moveTLiveActorDrawPatch.is_enabled())
         moveTLiveActorDrawPatch.enable();
     else if (f == Code::FuncReset::TRUE)
@@ -1687,6 +1687,9 @@ void CodeContainer::noclip(Code::FuncReset f) {
 void CodeContainer::jumpscare(Code::FuncReset f) {		// TODO: make the visual part of the jumpscare
 
 	static bool execOnce = true;
+    static TVec3f mTargetPos;
+    static TVec3f mTranslation;
+    int **cameraType = (int **)0x8040D0A8;
 
 	if (f == Code::FuncReset::TRUE)
 	{
@@ -1696,6 +1699,9 @@ void CodeContainer::jumpscare(Code::FuncReset f) {		// TODO: make the visual par
 	
 	if (execOnce)
 	{
+        mTargetPos = gpCamera->mTargetPos;
+        mTranslation = gpCamera->mTranslation;
+
         MS_SOUND_EFFECT soundArray[] = {MSD_SE_BS_MKP_EXPLOSION_S,   MSD_SE_BS_TELESA_DAMAGE,
                                         MSD_SE_EN_GATEKEEPER_APPEAR, MSD_SE_NB_UNG_VOICE_M_CRY,
                                         MSD_SE_NB_UNG_VOICE_W_CRY};
@@ -1704,10 +1710,20 @@ void CodeContainer::jumpscare(Code::FuncReset f) {		// TODO: make the visual par
 
         Utils::playSound(soundArray[randSound]);
 
+		
+
         //char *c = "\x83\x7d\x83\x8a\x83\x49"; // mario in shift-jis
         //gpMarDirector->fireStartDemoCamera(c, gpMarioPos, -1, 0, true, nullptr, 0, 0, 0);
         execOnce = false;
     }
+
+	gpCamera->mTargetPos.set(mTargetPos);
+    gpCamera->mTranslation.set(mTranslation);
+    *gpMarioPos = mTranslation;
+    gpMarioPos->y -= 100;
+    *gpMarioAngleY = gpCamera->mHorizontalAngle;
+    gpMarioOriginal->mState = TMario::State::STATE_STOP;
+    //cameraType[0][0x50 / 4] = 33;  // gpCamera offset 0x50 = camera type. it's technically defined in the header interface, but they're doin something weird with it
 }
 
 void CodeContainer::smallWorld(Code::FuncReset f) {

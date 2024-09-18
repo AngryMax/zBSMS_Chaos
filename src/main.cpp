@@ -386,7 +386,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {NO_MARIO_REDRAW,           "No Mario Redraw",		            60,			15,		    codeContainer.noMarioRedraw},									
         {WHITE_MARIO_SILHOUETTE,    "White Mario Silhouette",           50,			15,		    codeContainer.whiteMarioSilhouette},
         {NO_MACTOR_MODELS,          "The Void Calls...",		        20,			20,		    codeContainer.noMActorModels},
-        {MOVE_TLIVEACTOR_DRAW,      "Untitled",                         20,         20,         codeContainer.moveTLiveActorDraw},
+        {STOP_TLIVEACTOR_PERFORM,      "Untitled",                         20,         20,         codeContainer.stopTLiveActorPerform},
         {STOP_CONTROL_INPUTS,       ":)",                               20,			 1,		    codeContainer.stopControlInputs},
         {SPAM_SPRAY_CENTRAL,        "Spam Spray Central",               65,			20,		    codeContainer.spamSprayCentral},
         {ADD_CODE_SLOT,             "Add Code Slot",                    15,			60,		    codeContainer.addCodeSlot},
@@ -469,7 +469,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {WHITE_MARIO_SILHOUETTE};
+    u8 whitelist[] = {JUMPSCARE};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {

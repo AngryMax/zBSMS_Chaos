@@ -72,7 +72,7 @@ extern float currentTime;  // unit = seconds
 #define NO_MARIO_REDRAW         2
 #define WHITE_MARIO_SILHOUETTE  3
 #define NO_MACTOR_MODELS        4
-#define MOVE_TLIVEACTOR_DRAW    5
+#define STOP_TLIVEACTOR_PERFORM 5
 #define STOP_CONTROL_INPUTS     6
 #define SPAM_SPRAY_CENTRAL      7
 #define ADD_CODE_SLOT           8
@@ -419,7 +419,7 @@ public:
     static void noMarioRedraw(Code::FuncReset);
     static void whiteMarioSilhouette(Code::FuncReset);
     static void noMActorModels(Code::FuncReset);
-    static void moveTLiveActorDraw(Code::FuncReset);
+    static void stopTLiveActorPerform(Code::FuncReset);
     static void stopControlInputs(Code::FuncReset);
     static void spamSprayCentral(Code::FuncReset);
     static void addCodeSlot(Code::FuncReset);
