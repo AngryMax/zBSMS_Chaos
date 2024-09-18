@@ -653,7 +653,7 @@ static void initModule() {
 
     {
         auto &saveInfo        = sSettingsGroup.getSaveInfo();
-        saveInfo.mSaveName    = BetterSMS::Settings::getGroupName(sSettingsGroup);
+        saveInfo.mSaveName    = "SMS Chaos Settings";
         saveInfo.mBlocks      = 1;
         saveInfo.mGameCode    = 'GMSB';
         saveInfo.mCompany     = 0x3031;  // '01'
