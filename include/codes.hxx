@@ -272,45 +272,74 @@ public:
             }
             
             switch (codeList[rollWinner].codeID) {
+
                 case NO_MARIO_REDRAW:
                     if (isCodeActive(CHAOS_CODE))
                         return;
                     break;
+
                 case SCRAMBLE_TEXTURES:
                     if (isCodeActive(SIMON_SAYS) || isCodeActive(SNAKE))
                         return;
                     break;
+
                 case SIMON_SAYS:
                     if (isCodeActive(SCRAMBLE_TEXTURES) || isCodeActive(CHAOS_CODE))
                         return;
                     break;
+
                 case SNAKE:
                     if (isCodeActive(CHAOS_CODE) || isCodeActive(SCRAMBLE_TEXTURES))
                         return;
                     break;
+
                 case MOON_GRAVITY:
                     if (isCodeActive(CRAZY_GRAVITY))
                         return;
                     break;
+
                 case CRAZY_GRAVITY:
                     if (isCodeActive(MOON_GRAVITY))
                         return;
+                    if (isCodeActive(FIRE_MOVEMENT) && rand() % 10 != 0)
+                        return;
                     break;
+
                 case CHAOS_CODE:
                     if (isCodeActive(NOCLIP))
                         return;
                     break;
+
                 case UPSIDEDOWN_CAM:
                     if (isCodeActive(QUAKE_PRO) || isCodeActive(CS_PLAYERS))
                         return;
                     break;
+
                 case QUAKE_PRO:
                     if (isCodeActive(UPSIDEDOWN_CAM) || isCodeActive(CS_PLAYERS))
                         return;
 					break;
+
                 case CS_PLAYERS:
                     if (isCodeActive(QUAKE_PRO) || isCodeActive(UPSIDEDOWN_CAM))
 						return;
+                    break;
+
+				case ASCEND:
+                    if (isCodeActive(FIRE_MOVEMENT) && rand() % 10 != 0)
+                        return;
+                    break;
+
+				case FIRE_MOVEMENT:
+                    if (isCodeActive(ASCEND) && rand() % 10 != 0)
+                        return;
+                    if (isCodeActive(CRAZY_GRAVITY) && rand() % 10 != 0)
+                        return;
+                    break;
+
+				case POPUP_SAVE_PROMPT:
+                    if (isCodeActive(CHAOS_CODE))
+                        return;
                     break;
             }
 
