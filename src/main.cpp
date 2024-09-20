@@ -536,10 +536,10 @@ BETTER_SMS_FOR_CALLBACK static void chaosEngine(TMarDirector *director, const J2
         codeContainer.activateCodes();
         codeContainer.checkCodeTimers();
         codeContainer.iterateThroughCodes();
+    } else if (director->mAreaID == 15) {	// is in option.szs?
+        codeContainer.maxActiveCodes = sMaxActiveCodes;
+        codeContainer.gracePeriod    = sGracePeriodTimer;
     }
-
-	codeContainer.maxActiveCodes = sMaxActiveCodes;
-	codeContainer.gracePeriod = sGracePeriodTimer;
 }
 
 BETTER_SMS_FOR_CALLBACK static void initCodeDisplay(TMarDirector *director) {
