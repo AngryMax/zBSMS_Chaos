@@ -14,6 +14,8 @@ public:
         J2DPicture *mInactivePicture;
     };
 
+	void startAppearTimer(int, s32);
+
     u32 _00[0x24 / 4];    // 0x0000
     s32 mShineCount;      // 0x0024
     s32 mCurWater;        // 0x0028

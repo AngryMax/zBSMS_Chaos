@@ -148,6 +148,7 @@ extern float currentTime;  // unit = seconds
 #define FIRE_MOVEMENT			78
 #define LOL						79
 #define TILTED					80
+#define START_TIMER				81
 
 #define NO_WHITELIST		   255		// used to stay in DEV_MODE w/o a whitelist
 
@@ -407,10 +408,9 @@ private:
         const f32 FREQ_MULT = .01;
         f32 inter;		// basically just a f32 version of addTo_maxActiveCodes
 
-		//addTo_maxActiveCodes = s32(2 * sinf(currentTime * FREQ_MULT));
 		inter = 2 * sinf(currentTime * FREQ_MULT);        
 
-		if (inter < 0)		// this slows down the count to -1, as well as caps the negative side of addTo_maxActiveCodes to 1 (effectively)
+		if (inter < 0)			// this slows down the count to -1, as well as caps the negative side of addTo_maxActiveCodes to 1 (effectively)
             inter = inter / 1.5;
         if (inter <= -1)		// makes addTo_maxActiveCodes spend a bit less time at -1
             inter += 0.1;
@@ -485,7 +485,7 @@ public:
     static void changeScreenColorToggle(Code::FuncReset);
     static void changeScreenColor(TSunGlass *, JDrama::TRect &, JUtility::TColor);
     static void upsideDownCamToggle(Code::FuncReset);
-    static void upsideDownCam();  // this function is split into 2
+    static void upsideDownCam();
     static void joyconDrift(Code::FuncReset);
     static void sineMomentum(Code::FuncReset);
     static void windyDay(Code::FuncReset);
@@ -506,6 +506,7 @@ public:
     static void fireMovement(Code::FuncReset);
     static void lol(Code::FuncReset);
     static void tilted(Code::FuncReset);
+    static void startTimer(Code::FuncReset);
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project
@@ -561,4 +562,14 @@ namespace Utils {
 				codeContainer.endCode(i);
 		}
 	}
+
+    // this updates the draw location for objects like trees which don't auto update
+    static bool updateDrawLocation(TLiveActor *liveActor) {
+        if (liveActor->mActorData != nullptr) {
+            liveActor->calcRootMatrix();
+            liveActor->mActorData->mModel->calc();
+            return true;
+        } else
+            return false;
+    }
 }

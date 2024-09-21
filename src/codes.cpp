@@ -836,16 +836,8 @@ void CodeContainer::shuffleObjects(Code::FuncReset f) {
         objOne->mTranslation = objTwo->mTranslation;
         objTwo->mTranslation = temp;
 
-        // this updates the draw location for objects like trees which don't auto update
-        if (objOne->mActorData != nullptr) {
-            objOne->calcRootMatrix();
-            objOne->mActorData->mModel->calc();
-        }
-        // this updates the draw location for objects like trees which don't auto update
-        if (objTwo->mActorData != nullptr) {
-            objTwo->calcRootMatrix();
-            objTwo->mActorData->mModel->calc();
-        }
+        Utils::updateDrawLocation(objOne);
+        Utils::updateDrawLocation(objTwo);
     }
 
     
@@ -1054,11 +1046,7 @@ void CodeContainer::objectVortex(Code::FuncReset f) {
             obj->mTranslation.x += gpMarioPos->x;
             obj->mTranslation.z += gpMarioPos->z;
 
-            // this updates the draw location for objects like trees which don't auto update
-            if (obj->mActorData != nullptr) {
-                obj->calcRootMatrix();
-                obj->mActorData->mModel->calc();
-            }
+            Utils::updateDrawLocation(obj);
         }
     }
 }
@@ -1246,11 +1234,7 @@ void CodeContainer::makeMarioAnObject(Code::FuncReset f) {
             if (chosenObj.isMapObj && !chosenObj.wasVisible)
                 static_cast<TMapObjBase *>(chosenObj.addr)->kill();
 
-            // this updates the draw location for objects like trees which don't auto update
-            if (chosenObj.addr->mActorData != nullptr) {
-                chosenObj.addr->calcRootMatrix();
-                chosenObj.addr->mActorData->mModel->calc();
-            }
+            Utils::updateDrawLocation(chosenObj.addr);
 
             chosenObj.addr = nullptr;
         }
@@ -1364,13 +1348,9 @@ void CodeContainer::makeMarioAnObject(Code::FuncReset f) {
     }
 
     if (chosenObj.addr != nullptr) {
-        // this updates the draw location for objects like trees which don't auto update
-        if (chosenObj.addr->mActorData != nullptr) {
-            chosenObj.addr->calcRootMatrix();
-            chosenObj.addr->mActorData->mModel->calc();
-        } else {
+        if (!Utils::updateDrawLocation(chosenObj.addr)) {
             // if the chosen obj doesn't have a model, reset the code to roll again
-            OSReport("Obj 0x%x didn't have a model! Reseting!\n", chosenObj.addr);
+            OSReport("Obj 0x%x didn't have a model! Resetting!\n", chosenObj.addr);
             codeContainer.resetCode(MAKE_MARIO_OBJ);
             return;
         }
@@ -1684,23 +1664,35 @@ void CodeContainer::noclip(Code::FuncReset f) {
     }
 }
 
-void CodeContainer::jumpscare(Code::FuncReset f) {		// TODO: make the visual part of the jumpscare
+pp::auto_patch jumpscarePatch(SMS_PORT_REGION(0x80029d5c, 0, 0, 0), BLR, false);
+pp::auto_patch jumpscarePatch2(SMS_PORT_REGION(0x8024de38, 0, 0, 0), BLR, false);
+pp::auto_patch jumpscarePatch3(SMS_PORT_REGION(0x80244800, 0, 0, 0), BLR, false);
+void CodeContainer::jumpscare(Code::FuncReset f) {  // TODO: make the visual part of the jumpscare
 
 	static bool execOnce = true;
     static TVec3f mTargetPos;
     static TVec3f mTranslation;
+    static TVec3f projectedPos;
     int **cameraType = (int **)0x8040D0A8;
 
-	if (f == Code::FuncReset::TRUE)
-	{
+	if (f == Code::FuncReset::TRUE) {
         execOnce = true;
+        jumpscarePatch.disable();
+        jumpscarePatch2.disable();
+        jumpscarePatch3.disable();
         return;
-	}
+    }
 	
 	if (execOnce)
 	{
-        mTargetPos = gpCamera->mTargetPos;
+        mTargetPos = *gpMarioPos;
+        mTargetPos.y += 100;
         mTranslation = gpCamera->mTranslation;
+
+        gpMarioOriginal->mModelData->_24[2] = 62;
+
+		jumpscarePatch.enable();
+        jumpscarePatch2.enable();
 
         MS_SOUND_EFFECT soundArray[] = {MSD_SE_BS_MKP_EXPLOSION_S,   MSD_SE_BS_TELESA_DAMAGE,
                                         MSD_SE_EN_GATEKEEPER_APPEAR, MSD_SE_NB_UNG_VOICE_M_CRY,
@@ -1710,19 +1702,27 @@ void CodeContainer::jumpscare(Code::FuncReset f) {		// TODO: make the visual par
 
         Utils::playSound(soundArray[randSound]);
 
-		
+		projectedPos = *gpMarioPos;
+        f32 yawRadians = (gpMarioOriginal->mAngle.y * M_PI) / 32768.0f;
+       
+
+        projectedPos.x += 200 * sinf(yawRadians);
+        projectedPos.z += 200 * cosf(yawRadians);
 
         //char *c = "\x83\x7d\x83\x8a\x83\x49"; // mario in shift-jis
         //gpMarDirector->fireStartDemoCamera(c, gpMarioPos, -1, 0, true, nullptr, 0, 0, 0);
         execOnce = false;
+        return;
     }
+    jumpscarePatch3.enable();
+
+    gpMarioOriginal->mModelData->_24[2] = 62;
 
 	gpCamera->mTargetPos.set(mTargetPos);
-    gpCamera->mTranslation.set(mTranslation);
-    *gpMarioPos = mTranslation;
-    gpMarioPos->y -= 100;
-    *gpMarioAngleY = gpCamera->mHorizontalAngle;
-    gpMarioOriginal->mState = TMario::State::STATE_STOP;
+    gpCamera->mTranslation.set(projectedPos);
+    //*gpMarioPos = mTranslation;
+    //gpMarioPos->y -= 100;
+    //*gpMarioAngleY = gpCamera->mHorizontalAngle;    
     //cameraType[0][0x50 / 4] = 33;  // gpCamera offset 0x50 = camera type. it's technically defined in the header interface, but they're doin something weird with it
 }
 
@@ -1752,6 +1752,8 @@ void CodeContainer::smallWorld(Code::FuncReset f) {
                     obj->mScale.y -= 0.1;
                 if (obj->mScale.z > 0.1)
                     obj->mScale.z -= 0.1;
+
+                Utils::updateDrawLocation(obj);
             }
         }
         execOnce = false;
@@ -1868,11 +1870,7 @@ void CodeContainer::pickUpObj(Code::FuncReset f) {
             if (mgrVtable == 0x803abe24)  // TAnimalBirdManager
                 isBird = true;
 
-            // this updates the draw location for objects like trees which don't auto update
-            if (chosenObj.addr->mActorData != nullptr) {
-                chosenObj.addr->calcRootMatrix();
-                chosenObj.addr->mActorData->mModel->calc();
-            }
+            Utils::updateDrawLocation(chosenObj.addr);
 
             break;
         }
@@ -1926,6 +1924,7 @@ void CodeContainer::rotateObjs(Code::FuncReset f) {
                 obj->mRotation.x +=  rand() % 11;
                 obj->mRotation.y +=  rand() % 11;
                 obj->mRotation.z +=  rand() % 11;
+                Utils::updateDrawLocation(obj);
             }
         }
         execOnce = false;
@@ -1977,6 +1976,8 @@ void CodeContainer::rollin(Code::FuncReset f) {
             case 1:
                 obj->mRotation.z += 0.5;
             }
+
+            Utils::updateDrawLocation(obj);
         }
     }
 }
@@ -2008,6 +2009,7 @@ void CodeContainer::shrinkRay(Code::FuncReset f) {
                     obj->mScale.x -= 0.01;
                     obj->mScale.y -= 0.01;
                     obj->mScale.z -= 0.01;
+                    Utils::updateDrawLocation(obj);
                 }
             }
         }
@@ -2138,4 +2140,11 @@ void CodeContainer::tilted(Code::FuncReset f) {
 	*gpMarioAngleX = *gpMarioAngleY;
 	*gpMarioAngleZ = gpCamera->mHorizontalAngle; 
 
+}
+
+void CodeContainer::startTimer(Code::FuncReset f) {
+
+	//gpMarDirector->mGCConsole->mIsResetTimer = true;
+
+	gpMarDirector->mGCConsole->startAppearTimer(0, 1);
 }
