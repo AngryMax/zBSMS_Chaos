@@ -1053,9 +1053,9 @@ void CodeContainer::objectVortex(Code::FuncReset f) {
 																			// li r0, 1
 pp::auto_patch doublePerspectivePatch(SMS_PORT_REGION(0x802def34, 0, 0, 0), 0x38000001, false);
 void CodeContainer::doublePerspective(Code::FuncReset f) {
-    if (f == Code::FuncReset::FALSE && !doublePerspectivePatch.is_enabled())
+    if (f == Code::FuncReset::FALSE && !doublePerspectivePatch.is_enabled() && (int)currentTime % 5)
         doublePerspectivePatch.enable();
-    else if (f == Code::FuncReset::TRUE)
+    else if (f == Code::FuncReset::TRUE || !((int)currentTime % 5))
         doublePerspectivePatch.disable();
 }
 
