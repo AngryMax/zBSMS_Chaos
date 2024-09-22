@@ -2193,7 +2193,7 @@ void CodeContainer::superposition(Code::FuncReset f) {		// how tf did we do this
 
 void CodeContainer::wideMario(Code::FuncReset f) {
 
-	float xAdd;
+	float xAdd;		// these var overcomplicate this func to hell. at first, it was to originally make this code and scaleMario not mutually exclusive(which they now are), but now it's b/c of the below comment
 	float yAdd;
     static float xTotal;
     static float yTotal;
@@ -2216,4 +2216,64 @@ void CodeContainer::wideMario(Code::FuncReset f) {
 	gpMarioOriginal->mModelData->mModel->mBaseScale.x += xAdd;
 	gpMarioOriginal->mModelData->mModel->mBaseScale.z += yAdd;
 
+}
+
+void CodeContainer::sightseer(Code::FuncReset f) {
+
+	TVec3f airstrip   = {-6600, 3360, -600};
+    TVec3f plaza      = {0, 4500, -7500};
+    TVec3f bianco     = {8250, 10620, -12900};
+    TVec3f ricco      = {-3900, 3950, -1100};
+    TVec3f gelato     = {-4160, 6860, -4200};
+    TVec3f pinnaBeach = {13800, 375, 1160};
+    TVec3f pinnaPark  = {6500, 10200, -7850};
+    TVec3f sirena     = {-50, 2250, -2600};
+    TVec3f delfino    = {-2150, 1870, -330};
+    TVec3f casino     = {2910, 91, -1960};
+    TVec3f noki       = {1485, 9210, 7370};
+    TVec3f pianta     = {-990, 455, -5900};
+
+	switch (gpMarDirector->mAreaID) {
+
+		case 0:
+			*gpMarioPos = airstrip;
+            break;
+        case 1:
+            *gpMarioPos = plaza;
+            break;
+        case 2:
+            *gpMarioPos = bianco;
+            break;
+        case 3:
+            *gpMarioPos = ricco;
+            break;
+        case 4:
+            *gpMarioPos = gelato;
+            break;
+        case 5:
+            *gpMarioPos = pinnaBeach;
+            break;
+        case 6:
+            *gpMarioPos = sirena;
+            break;
+        case 7:
+            *gpMarioPos = delfino;
+            break;
+        case 8:
+            *gpMarioPos = pianta;
+            break;
+        case 9:
+            *gpMarioPos = noki;
+            break;
+        case 13:
+            *gpMarioPos = pinnaPark;
+            break;
+        case 14:
+            *gpMarioPos = casino;
+            break;
+	}
+		
+	
+
+	codeContainer.endCode(SIGHTSEER);
 }

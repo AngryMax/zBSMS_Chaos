@@ -151,6 +151,7 @@ extern float currentTime;  // unit = seconds
 #define START_TIMER				81
 #define SUPERPOSITION			82
 #define WIDE_MARIO				83
+#define SIGHTSEER				84
 
 #define NO_WHITELIST		   255		// used to stay in DEV_MODE w/o a whitelist
 
@@ -358,6 +359,10 @@ public:
                     if (isCodeActive(GIANT_MARIO))
                         return;
                     break;
+                case SIGHTSEER:
+                    if (isCodeActive(PING_LAG))
+                        return;
+                    break;
             }
 
             codeList[rollWinner].isActive = true;
@@ -519,6 +524,7 @@ public:
     static void startTimer(Code::FuncReset);
     static void superposition(Code::FuncReset);
     static void wideMario(Code::FuncReset);
+    static void sightseer(Code::FuncReset);
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project

@@ -464,7 +464,8 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {TILTED,					"Tilted",							50,			30,		    codeContainer.tilted},
         {START_TIMER,				"Start Timer",						50,			 1,		    codeContainer.startTimer},		//TODO: finish/modify this code
         {SUPERPOSITION,				"Superposition",					50,			20,		    codeContainer.superposition},
-        {WIDE_MARIO,				"Elastic Mario",					50,			20,		    codeContainer.wideMario}
+        {WIDE_MARIO,				"Elastic Mario",					50,			20,		    codeContainer.wideMario},
+        {SIGHTSEER,					"Delfino Sightseer",                50,			1,			codeContainer.sightseer}
 		// idea: code that requires mario to stay above a certain speed, or he'll perish
 		// idea: code that puts a timer on screen
 		// idea: code that pauses all timers
@@ -478,7 +479,6 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         // idea: code that changes the music
         // idea: selfie stick code
         // idea: freeze all animations
-        // idea: "landmark" code which tps you to a landmark in each stage
         // idea: top down camera code
         // idea: bouncy surface code (make npcs or something bouncy to the touch)
         // idea: tall mario or wide mario
@@ -491,7 +491,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {SUPERPOSITION};
+    u8 whitelist[] = {SIGHTSEER};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
