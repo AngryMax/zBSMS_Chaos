@@ -2148,3 +2148,72 @@ void CodeContainer::startTimer(Code::FuncReset f) {
 
 	gpMarDirector->mGCConsole->startAppearTimer(0, 1);
 }
+
+void CodeContainer::superposition(Code::FuncReset f) {		// how tf did we do this with one marPrevPos
+
+	static TVec3f marPrevPos1;
+	static TVec3f marPrevPos2;
+    static bool execOnce    = true;
+    static bool posOne		= true;
+    static bool execPos     = true;
+
+    if (f == Code::FuncReset::TRUE) {
+        posOne		= true;
+        execOnce    = true;
+        execPos     = true;
+        return;
+    }
+
+    if (execOnce) {
+        marPrevPos1 = *gpMarioPos;
+        marPrevPos2 = *gpMarioPos;        
+        execOnce    = false;
+    }
+
+    if ((int)currentTime % 3) {
+
+		if (!execPos)
+            return;
+
+		if (posOne)
+		{
+            marPrevPos2 = *gpMarioPos;
+            *gpMarioPos = marPrevPos1;
+            posOne      = false;
+        } else {
+
+            marPrevPos1  = *gpMarioPos;
+            *gpMarioPos = marPrevPos2;
+            posOne       = true;
+		}
+
+		execPos = false;        
+    } else execPos = true;
+}
+
+void CodeContainer::wideMario(Code::FuncReset f) {
+
+	float xAdd;
+	float yAdd;
+    static float xTotal;
+    static float yTotal;
+
+	if (f == Code::FuncReset::TRUE)
+	{
+        gpMarioOriginal->mModelData->mModel->mBaseScale.x -= xTotal;		// i think b/c of precision loss, mario ends up being slightly the wrong size? thats ok tbh
+        gpMarioOriginal->mModelData->mModel->mBaseScale.z -= yTotal;
+
+		xTotal = 0;
+		yTotal = 0;
+	}
+
+	xAdd = sinf(currentTime) / 2;
+    yAdd = sinf(currentTime * 1.3) / 2;
+
+	xTotal += xAdd;
+	yTotal += yAdd;
+
+	gpMarioOriginal->mModelData->mModel->mBaseScale.x += xAdd;
+	gpMarioOriginal->mModelData->mModel->mBaseScale.z += yAdd;
+
+}

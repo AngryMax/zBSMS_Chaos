@@ -462,7 +462,9 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {FIRE_MOVEMENT,				"MAMA!!",						    50,			45,		    codeContainer.fireMovement},
         {LOL,						"lol",								50,			20,		    codeContainer.lol},
         {TILTED,					"Tilted",							50,			30,		    codeContainer.tilted},
-        {START_TIMER,				"Start Timer",						50,			 1,		    codeContainer.startTimer}
+        {START_TIMER,				"Start Timer",						50,			 1,		    codeContainer.startTimer},		//TODO: finish/modify this code
+        {SUPERPOSITION,				"Superposition",					50,			20,		    codeContainer.superposition},
+        {WIDE_MARIO,				"Elastic Mario",					50,			20,		    codeContainer.wideMario}
 		// idea: code that requires mario to stay above a certain speed, or he'll perish
 		// idea: code that puts a timer on screen
 		// idea: code that pauses all timers
@@ -474,7 +476,6 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 		// idea: code that offsets mario's model/hitbox
         // idea: star power up that makes you invicible for a short period
         // idea: code that changes the music
-		// idea: "failed" execution of pingLag that gave mario a "super position" (like death swap)
         // idea: selfie stick code
         // idea: freeze all animations
         // idea: "landmark" code which tps you to a landmark in each stage
@@ -490,7 +491,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {DOUBLE_PERSPECTIVE};
+    u8 whitelist[] = {SUPERPOSITION};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {

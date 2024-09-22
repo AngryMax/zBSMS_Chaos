@@ -45,7 +45,7 @@
 #include <Kuribo/sdk/kuribo_sdk.h>
 
 const static int CODE_NAME_BUFFER_SIZE = 30;
-const static int CODE_COUNT            = 80;
+const static int CODE_COUNT            = 100;
 
 extern float currentTime;  // unit = seconds
 
@@ -149,6 +149,8 @@ extern float currentTime;  // unit = seconds
 #define LOL						79
 #define TILTED					80
 #define START_TIMER				81
+#define SUPERPOSITION			82
+#define WIDE_MARIO				83
 
 #define NO_WHITELIST		   255		// used to stay in DEV_MODE w/o a whitelist
 
@@ -348,6 +350,14 @@ public:
                     if (isCodeActive(NO_MARIO_REDRAW))
                         return;
                     break;
+                case GIANT_MARIO:
+                    if (isCodeActive(WIDE_MARIO))
+                        return;
+                    break;
+                case WIDE_MARIO:
+                    if (isCodeActive(GIANT_MARIO))
+                        return;
+                    break;
             }
 
             codeList[rollWinner].isActive = true;
@@ -507,6 +517,8 @@ public:
     static void lol(Code::FuncReset);
     static void tilted(Code::FuncReset);
     static void startTimer(Code::FuncReset);
+    static void superposition(Code::FuncReset);
+    static void wideMario(Code::FuncReset);
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project
