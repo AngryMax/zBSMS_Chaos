@@ -3,6 +3,7 @@
 #include <JDrama/JDRViewObj.hxx>
 #include <JGeometry/JGMVec.hxx>
 #include <JUtility/JUTColor.hxx>
+#include <JDrama/JDRLighting.hxx>
 
 class TLightCommon : public JDrama::TViewObj {
 public:
@@ -29,7 +30,7 @@ public:
     bool _41;
     TVec3f mLightPosAry[4];  // _44
 
-    static void *mAmbAry;
-    static void *mLightAry;
+    static JDrama::TAmbAry *mAmbAry;
+    static JDrama::TLightAry *mLightAry;
     static void *mLightPos;
 } /*__attribute__((packed))*/;

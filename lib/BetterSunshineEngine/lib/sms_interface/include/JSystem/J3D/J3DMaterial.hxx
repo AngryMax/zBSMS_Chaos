@@ -11,12 +11,40 @@
 
 class J3DTevBlock;
 
+class J3DFogInfo {
+public:
+    u8 _00[0x14];
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+    u8 _18[0x14];
+};
+
 class J3DPEBlock {
 public:
-    virtual void reset(J3DPEBlock *);
-    // virtual void setFog(J3DFog *);
-
     virtual ~J3DPEBlock();
+
+    virtual void reset(J3DPEBlock *);
+    virtual void setFog(J3DFogInfo *);
+    virtual void replaceFog(J3DFogInfo *);
+    virtual J3DFogInfo *getFog();
+    virtual void setAlphaComp(void *);
+    virtual void setAlphaComp(void **);
+    virtual void getAlphaComp(void **);
+};
+
+class J3DPEBlockFull : public J3DPEBlock {
+public:
+    virtual ~J3DPEBlockFull();
+
+    virtual void reset(J3DPEBlock *);
+    virtual void setFog(J3DFogInfo *);
+    virtual void replaceFog(J3DFogInfo *);
+    virtual J3DFogInfo *getFog();
+    virtual void setAlphaComp(void *);
+    virtual void setAlphaComp(void **);
+    virtual void getAlphaComp(void **);
 };
 
 struct J3DTevOrder {
@@ -323,7 +351,7 @@ public:
     u32 *_24;  // *TItemManager
     u32 *_28;
     u32 _2C;  // *TItemManager
-    u32 _30;
+    J3DPEBlockFull *mPEBlockFull; // *J3DPEBlockFull
     u32 *_34;
     u32 _38;
     J3DDisplayListObj dispListObj;  // _3C

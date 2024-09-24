@@ -465,23 +465,23 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {START_TIMER,				"Start Timer",						50,			 1,		    codeContainer.startTimer},		//TODO: finish/modify this code
         {SUPERPOSITION,				"Superposition",					50,			20,		    codeContainer.superposition},
         {WIDE_MARIO,				"Elastic Mario",					50,			20,		    codeContainer.wideMario},
-        {SIGHTSEER,					"Delfino Sightseer",                50,			1,			codeContainer.sightseer}
+        {SIGHTSEER,					"Delfino Sightseer",                50,			1,			codeContainer.sightseer},
+        {STAR_POWER,				"Star Power",						50,			10,			codeContainer.starPower},
+        {TRIPPY_TEXTURES,			"Trippy",							50,			40,			codeContainer.trippyTextures},
+        {IMA_TIRED,					"I'ma Tired!",						50,			 1,			codeContainer.imaTired},
+        {FREEZE_ANIMS,				"Freeze!",							50,			30,			codeContainer.freezeAnims}
 		// idea: code that requires mario to stay above a certain speed, or he'll perish
 		// idea: code that puts a timer on screen
 		// idea: code that pauses all timers
         // idea: code that adds companion (maybe companion can pick you up and throw you)
         // idea: wildcard code that does something different depending on each stage
         // idea: inception code which does something with the mirrow version of stage bmds
-        // idea: a code which makes mario fall asleep and wake up somewhere else
         // idea: a code which draws the collision triangles in a radius (the matrix)
 		// idea: code that offsets mario's model/hitbox
-        // idea: star power up that makes you invicible for a short period
         // idea: code that changes the music
         // idea: selfie stick code
-        // idea: freeze all animations
         // idea: top down camera code
         // idea: bouncy surface code (make npcs or something bouncy to the touch)
-        // idea: tall mario or wide mario
         // idea: tiny mario
         // idea: rainbow water
 		// idea: a code that sets the camera to focus on the nearest object to mario
@@ -491,7 +491,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {SIGHTSEER};
+    u8 whitelist[] = {STAR_POWER};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
@@ -514,6 +514,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 
     OSReport("Finished initVars!\n");
     Utils::printChaosPtrAddr();
+    OSReport("starPower addr: 0x%x\n", &codeContainer.starPower);
 }
 
 static OSTime sBaseTime = 0;

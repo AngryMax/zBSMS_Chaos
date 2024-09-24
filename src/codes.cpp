@@ -120,7 +120,7 @@ void CodeContainer::forceTurbo(Code::FuncReset f) {
         forceTurboPatch.disable();
 }
 
-void CodeContainer::setMusicVol(Code::FuncReset f) {
+void CodeContainer::setMusicVol(Code::FuncReset f) {		// TODO: actually finish this code lol
     /*float vol = 0.75;    
 
     if (f == Code::FuncReset::TRUE) {
@@ -2151,44 +2151,34 @@ void CodeContainer::startTimer(Code::FuncReset f) {
 
 void CodeContainer::superposition(Code::FuncReset f) {		// how tf did we do this with one marPrevPos
 
-	static TVec3f marPrevPos1;
-	static TVec3f marPrevPos2;
+	static TVec3f marPrevPos;
+    static f32 timeToWait   = 0;
+    static f32 timeStarted  = 0;
     static bool execOnce    = true;
-    static bool posOne		= true;
-    static bool execPos     = true;
 
     if (f == Code::FuncReset::TRUE) {
-        posOne		= true;
+        timeToWait  = 0;
         execOnce    = true;
-        execPos     = true;
         return;
     }
 
     if (execOnce) {
-        marPrevPos1 = *gpMarioPos;
-        marPrevPos2 = *gpMarioPos;        
-        execOnce    = false;
+        marPrevPos = *gpMarioPos;
+        execOnce   = false;
     }
 
-    if ((int)currentTime % 3) {
+    if (timeToWait == 0) {
+        timeToWait  = ((rand() % 10) + 1) / 10.0;
+        timeStarted = currentTime;
+    }
 
-		if (!execPos)
-            return;
-
-		if (posOne)
-		{
-            marPrevPos2 = *gpMarioPos;
-            *gpMarioPos = marPrevPos1;
-            posOne      = false;
-        } else {
-
-            marPrevPos1  = *gpMarioPos;
-            *gpMarioPos = marPrevPos2;
-            posOne       = true;
-		}
-
-		execPos = false;        
-    } else execPos = true;
+    // get marios position before teleporting him to his last position
+    if ((currentTime - timeStarted) >= timeToWait) {
+        TVec3f temp = marPrevPos;
+        marPrevPos  = *gpMarioPos;
+        *gpMarioPos = temp;
+        timeToWait = 0;
+    }
 }
 
 void CodeContainer::wideMario(Code::FuncReset f) {
@@ -2271,9 +2261,114 @@ void CodeContainer::sightseer(Code::FuncReset f) {
         case 14:
             *gpMarioPos = casino;
             break;
-	}
-		
-	
+	}	
 
 	codeContainer.endCode(SIGHTSEER);
+}
+//                                                                   li r3, 1
+pp::auto_patch starPowerPatch(SMS_PORT_REGION(0x80255f50, 0, 0, 0), 0x38600001, false);
+void CodeContainer::starPower(Code::FuncReset f) {
+
+    /*if (f == Code::FuncReset::TRUE) {
+        starPowerPatch.disable();
+        return;
+    }
+    else if (!starPowerPatch.is_enabled())
+        starPowerPatch.enable();
+
+    u8 sinVal = (sinf(currentTime) + 1) * 127;
+    u8 cosVal = (cosf(currentTime) + 1) * 127;
+
+    for (int i = 0; i < TLightCommon::mAmbAry->mAmbColorCount; i++) {
+        JDrama::TAmbColor *currAmbColor = &TLightCommon::mAmbAry->mAmbColorAry[i];
+        currAmbColor->r = sinVal;
+        currAmbColor->g = cosVal;
+        currAmbColor->b = sinVal;
+        currAmbColor->a = cosVal;
+    }
+
+    for (int i = 0; i < TLightCommon::mLightAry->mLightColorCount; i++) {
+        JDrama::TIdxLight *currIdxLight = &TLightCommon::mLightAry->mLightColorAry[i];
+        currIdxLight->r = sinVal;
+        currIdxLight->g = cosVal;
+        currIdxLight->b = sinVal;
+        currIdxLight->a = cosVal;
+    }*/
+
+    for (int i = 0; i < gpMarioOriginal->mModelData->mModel->mModelData->mMaterialNum; i++) {
+        J3DFogInfo *currFog =
+            gpMarioOriginal->mModelData->mModel->mModelData->mMaterials[i]->mPEBlockFull->getFog();
+
+        currFog->r = 0;
+        currFog->g = 0;
+        currFog->b = 0;
+        currFog->a = 255;
+    }
+}
+
+pp::auto_patch trippyPatch1(SMS_PORT_REGION(0x802f4260, 0, 0, 0), BLR, false);
+pp::auto_patch trippyPatch2(SMS_PORT_REGION(0x802f417c, 0, 0, 0), BLR, false);
+void CodeContainer::trippyTextures(Code::FuncReset f) {
+
+	static bool execOnce = true;
+    static u8 rng        = 0;
+
+	if (execOnce)
+	{
+        rng = rand() % 3;
+        execOnce = false;
+	}
+
+    if (f == Code::FuncReset::FALSE && !trippyPatch1.is_enabled() && !trippyPatch2.is_enabled()) {
+		switch (rng)
+		{ 
+			case 0:
+				trippyPatch1.enable();
+            case 1:
+                trippyPatch2.enable();
+                break;
+            case 2:
+                trippyPatch1.enable();
+		}
+    } else if (f == Code::FuncReset::TRUE) {
+        trippyPatch1.disable();
+        trippyPatch2.disable();
+        execOnce = true;
+    }
+
+}
+
+pp::auto_patch imaTiredPatch(SMS_PORT_REGION(0x80251494, 0, 0, 0), BLR, false);
+void CodeContainer::imaTired(Code::FuncReset f) {
+
+	gpMarioOriginal->sleeping();
+    gpMarioOriginal->mState = 0xC000203;	// sleep
+
+	if (f == Code::FuncReset::FALSE && !imaTiredPatch.is_enabled())
+        imaTiredPatch.enable();
+    else if (f == Code::FuncReset::TRUE)
+        imaTiredPatch.disable();
+
+}
+
+pp::auto_patch freezeAnimsPatch(SMS_PORT_REGION(0x802e1730, 0, 0, 0), BLR, false);
+void CodeContainer::freezeAnims(Code::FuncReset f) {
+	if (f == Code::FuncReset::FALSE && !freezeAnimsPatch.is_enabled())
+        freezeAnimsPatch.enable();
+    else if (f == Code::FuncReset::TRUE ||
+             gpMarioOriginal->mState == TMario::State::STATE_G_POUND_RECOVER ||
+             gpMarioOriginal->mState == TMario::State::STATE_SLAM ||
+             gpMarioOriginal->mState == TMario::State::STATE_KNCK_GND ||
+             gpMarioOriginal->mState == TMario::State::STATE_KNCK_LND ||
+             gpMarioOriginal->mState == TMario::State::STATE_HANGCLIMB ||
+             gpMarioOriginal->mState == TMario::State::STATE_GRABBING_EMPTY ||
+             gpMarioOriginal->mState == TMario::State::STATE_GRABBING ||
+             gpMarioOriginal->mState == TMario::State::STATE_NPC_PUTDOWN ||
+             gpMarioOriginal->mState == TMario::State::STATE_NPC_THROW ||
+             gpMarioOriginal->mState == TMario::State::STATE_GRATE_GRAB ||
+             gpMarioOriginal->mState == TMario::State::STATE_GRATE_PUNCH ||
+             gpMarioOriginal->mState == TMario::State::STATE_GRATE_TRANSITION ||
+             gpMarioOriginal->mState == TMario::State::STATE_GRATE_KICK ||
+             gpMarioOriginal->mState == TMario::State::STATE_HANGCLIMB_DOWN)
+        freezeAnimsPatch.disable();		// im leaving the stuck in sand animation as a softlock bc fuck it
 }

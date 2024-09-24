@@ -41,8 +41,8 @@ public:
     u16 _1A;
     u16 _1C;
     J3DJoint **mJoints;
-    u16 mJointNum;
-    J3DTevStage **mStages;     // ?
+    u16 mMaterialNum;          // I think this is a material count
+    J3DMaterial **mMaterials;  // I think this is a J3DMaterial ptr
     u16 mStageNum;             // ?
     JUTNameTab **mJointNames;  // JUTNameTab (joints)
     u16 mJointNameNum;

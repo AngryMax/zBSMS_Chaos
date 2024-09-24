@@ -34,6 +34,7 @@
 #include <SMS/MapObj/MapObjBase.hxx>
 #include <SMS/MarioUtil/MathUtil.hxx>
 #include <SMS/Manager/MarioParticleManager.hxx>
+#include <SMS/MarioUtil/LightUtil.hxx>
 
 #include <BetterSMS/game.hxx>
 #include <BetterSMS/module.hxx>
@@ -152,6 +153,10 @@ extern float currentTime;  // unit = seconds
 #define SUPERPOSITION			82
 #define WIDE_MARIO				83
 #define SIGHTSEER				84
+#define STAR_POWER				85
+#define TRIPPY_TEXTURES			86
+#define IMA_TIRED				87
+#define FREEZE_ANIMS			88
 
 #define NO_WHITELIST		   255		// used to stay in DEV_MODE w/o a whitelist
 
@@ -525,6 +530,10 @@ public:
     static void superposition(Code::FuncReset);
     static void wideMario(Code::FuncReset);
     static void sightseer(Code::FuncReset);
+    static void starPower(Code::FuncReset);
+    static void trippyTextures(Code::FuncReset);
+    static void imaTired(Code::FuncReset);
+    static void freezeAnims(Code::FuncReset);
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project
