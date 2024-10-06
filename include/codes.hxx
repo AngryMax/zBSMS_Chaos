@@ -164,6 +164,7 @@ extern float alt_currentTime;  // unit = seconds
 #define FAST_N_FURIOUS			89
 #define DIVING_MODE				90
 #define PAUSE_TIMERS			91
+#define CHANGE_MUSIC			92
 
 #define NO_WHITELIST		   255		// used to stay in DEV_MODE w/o a whitelist
 
@@ -545,6 +546,7 @@ public:
     static void fastNFurious(Code::FuncReset);
     static void divingMode(Code::FuncReset);
     static void pauseTimers(Code::FuncReset);
+    static void changeMusic(Code::FuncReset);
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project

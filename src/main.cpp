@@ -472,8 +472,8 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {FREEZE_ANIMS,				"Freeze!",							50,			30,			codeContainer.freezeAnims},
         {FAST_N_FURIOUS,			"Furiously Fast",					50,			30,			codeContainer.fastNFurious},	// TODO: mutal exclusives
         {DIVING_MODE,				"CAMERA BAD",						50,			30,			codeContainer.divingMode},
-        {PAUSE_TIMERS,				"Pause Codes",						50,			30,			codeContainer.pauseTimers}
-		// idea: code that pauses all timers
+        {PAUSE_TIMERS,				"Pause Codes",						50,			30,			codeContainer.pauseTimers},		// TODO: finish code, it seems to be buggy
+        {CHANGE_MUSIC,				"Change Music",						50,			 1,			codeContainer.changeMusic}		// TODO: look into some tracks not playing/certain intruments not playing. maybe all instruments aren't always loaded?
         // idea: code that adds companion (maybe companion can pick you up and throw you)
         // idea: wildcard code that does something different depending on each stage
         // idea: inception code which does something with the mirrow version of stage bmds
@@ -491,7 +491,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {PAUSE_TIMERS, DIVING_MODE};
+    u8 whitelist[] = {CHANGE_MUSIC};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {

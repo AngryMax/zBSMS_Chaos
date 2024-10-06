@@ -2451,3 +2451,28 @@ void CodeContainer::pauseTimers(Code::FuncReset f) {
         codeContainer.endCode(PAUSE_TIMERS);
 
 }
+
+void CodeContainer::changeMusic(Code::FuncReset f) {
+
+	static bool execOnce = true;
+
+	if (f == Code::FuncReset::TRUE) {
+        execOnce = true;
+        return;
+	}
+
+	if (execOnce) {
+		
+		for (int i = 0; i < 3; i++) {
+            MSBgm::stopTrackBGM(i, 0);
+            //OSReport("-> %d\n", i);
+        }
+
+		u32 track = 0x80010000 + (rand() % 0x2e) + 1;
+        //OSReport("-> %x\n", track);
+
+		MSBgm::startBGM(track);
+
+		execOnce = false;
+	}
+}
