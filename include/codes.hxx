@@ -49,6 +49,7 @@ const static int CODE_NAME_BUFFER_SIZE = 30;
 const static int CODE_COUNT            = 100;
 
 extern float currentTime;  // unit = seconds
+extern float alt_currentTime;  // unit = seconds
 
 #define NORMAL_BUF 144
 #define MAX_BUF 410 // the string buffer is this large for smsWiki
@@ -162,6 +163,7 @@ extern float currentTime;  // unit = seconds
 #define FREEZE_ANIMS			88
 #define FAST_N_FURIOUS			89
 #define DIVING_MODE				90
+#define PAUSE_TIMERS			91
 
 #define NO_WHITELIST		   255		// used to stay in DEV_MODE w/o a whitelist
 
@@ -394,6 +396,7 @@ public:
     void checkCodeTimers() {
         for (auto &c : codeList) {
             float elapsedTime = currentTime - c.timeCalled;
+
             if (c.isActive && c.duration <= elapsedTime) {
                 if (c.pFunc != nullptr)
                     c.pFunc(Code::FuncReset::TRUE);
@@ -541,6 +544,7 @@ public:
     static void freezeAnims(Code::FuncReset);
     static void fastNFurious(Code::FuncReset);
     static void divingMode(Code::FuncReset);
+    static void pauseTimers(Code::FuncReset);
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project

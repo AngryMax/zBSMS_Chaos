@@ -471,7 +471,8 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {IMA_TIRED,					"I'ma Tired!",						50,			 1,			codeContainer.imaTired},
         {FREEZE_ANIMS,				"Freeze!",							50,			30,			codeContainer.freezeAnims},
         {FAST_N_FURIOUS,			"Furiously Fast",					50,			30,			codeContainer.fastNFurious},	// TODO: mutal exclusives
-        {DIVING_MODE,				"CAMERA BAD",						50,			30,			codeContainer.divingMode}
+        {DIVING_MODE,				"CAMERA BAD",						50,			30,			codeContainer.divingMode},
+        {PAUSE_TIMERS,				"Pause Codes",						50,			30,			codeContainer.pauseTimers}
 		// idea: code that pauses all timers
         // idea: code that adds companion (maybe companion can pick you up and throw you)
         // idea: wildcard code that does something different depending on each stage
@@ -490,7 +491,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {DIVING_MODE};
+    u8 whitelist[] = {PAUSE_TIMERS, DIVING_MODE};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
@@ -527,10 +528,14 @@ BETTER_SMS_FOR_CALLBACK static void updateTime(TApplication *tapp) {
     if (marDirector->mCurState == TMarDirector::Status::STATE_NORMAL) {
         OSTime diff   = OSGetTime() - sBaseTime;
         float seconds = OSTicksToSeconds(float(u32(diff)));
-        currentTime += seconds;
+        if (!codeContainer.isCodeActive(PAUSE_TIMERS))
+			currentTime += seconds;
+        else alt_currentTime += seconds;
 
         if (codeContainer.isCodeActive(DOUBLE_TIME)) {
-            currentTime += seconds;
+            if (!codeContainer.isCodeActive(PAUSE_TIMERS))
+				currentTime += seconds;
+			else alt_currentTime += seconds;
         }
     }
 
@@ -597,12 +602,20 @@ BETTER_SMS_FOR_CALLBACK static void drawCodeDisplay(TMarDirector *director,  con
         for (Code c : codeContainer.codeList) {
         #if DEV_MODE
             if (c.isActive || c.isGraced) {
-                snprintf(displayBuffer, NORMAL_BUF, "%s%s: %.0f%s\n", displayBuffer, c.name,
+                if (c.codeID == PAUSE_TIMERS)
+                    snprintf(displayBuffer, NORMAL_BUF, "%s%s: %.0f%s\n", displayBuffer, c.name,
+                         c.duration - (alt_currentTime - c.timeCalled), "s");
+                else
+					snprintf(displayBuffer, NORMAL_BUF, "%s%s: %.0f%s\n", displayBuffer, c.name,
                          c.duration - (currentTime - c.timeCalled), "s");
             }
         #else
             if (c.isActive) {
-                snprintf(displayBuffer, NORMAL_BUF, "%s%s: %.0f%s\n", displayBuffer, c.name,
+				if (c.codeID == PAUSE_TIMERS)
+                    snprintf(displayBuffer, NORMAL_BUF, "%s%s: %.0f%s\n", displayBuffer, c.name,
+                        c.duration - (alt_currentTime - c.timeCalled), "s");
+                else
+					snprintf(displayBuffer, NORMAL_BUF, "%s%s: %.0f%s\n", displayBuffer, c.name,
                          c.duration - (currentTime - c.timeCalled), "s");
             }
         #endif

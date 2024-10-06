@@ -2403,18 +2403,18 @@ void CodeContainer::fastNFurious(Code::FuncReset f) {
         codeContainer.endCode(FAST_N_FURIOUS);        
     }
 
-    // draw mario's speed as a bar on the bottom of the screen, change it's color depeninding on if he's going fast enough. red = too slow, yellow = about right, green = safe
+    // speed meter
     J2DFillBox(speed_meterX - 6, speed_meterY - 4, 100 * 3 + 12, 18, GRAY_TRANSP);
     J2DFillBox(speed_meterX, speed_meterY, (int)mForwardSpeed * 3, 10, {(u8)(mForwardSpeed * -2.5), (u8)(mForwardSpeed * 2.5), 0, 0xff});
 
-    // this meter depletes when mario is going below the speed minimum. when fully depleted, kill mario.
+    // depletion meter
     J2DFillBox(depletion_meterX, depletion_meterY, 28, 100 * 2 + 6, GRAY_TRANSP);
     J2DFillBox(depletion_meterX + 4, depletion_meterY + 203, 20, depletionHP, {(u8)(depletionHP * 1.275), (u8)(depletionHP * -1.275), 0, 0xff});
 
 	// target speed notch
     J2DFillBox(speed_meterX + 116, speed_meterY - 7, 8, 24, BLACK_TRANSP);
 
-	// label speed meter
+	// labels
     char *displayBuffer = codeContainer.codeDisplay->getStringPtr();
     memset(displayBuffer, 0, NORMAL_BUF);
 
@@ -2433,4 +2433,21 @@ void CodeContainer::divingMode(Code::FuncReset f) {
     }
 
 	gpMarioOriginal->mAttributes.mGainHelmetFlwCamera = true;
+}
+
+void CodeContainer::pauseTimers(Code::FuncReset f) {
+
+    static int execOnce = true;
+    static float timeCalled;
+
+	Code pauseTimers;
+    if (!(codeContainer.getCodeFromID(PAUSE_TIMERS, pauseTimers))) {
+        OSReport("[pauseTimers] -> Could not find code with code id %d!\n", PAUSE_TIMERS);
+        return;
+    }
+    f32 timeLeft = pauseTimers.duration - (alt_currentTime - pauseTimers.timeCalled);
+
+	if (timeLeft <= 0)
+        codeContainer.endCode(PAUSE_TIMERS);
+
 }

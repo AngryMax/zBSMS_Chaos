@@ -29,3 +29,4 @@
 
 CodeContainer codeContainer;
 float currentTime;
+float alt_currentTime;
