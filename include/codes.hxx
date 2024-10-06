@@ -60,12 +60,15 @@ extern float currentTime;  // unit = seconds
 // colors
 #define RED {0xff, 0, 0, 0xff}
 #define GRAY {0x77, 0x77, 0x77, 0xff}
+#define GRAY_TRANSP {0x77, 0x77, 0x77, 0x88}
 #define PURPLE {0xff, 0x00, 0xff, 0xff}
 #define GREEN {0, 0xff, 0, 0xff}
 #define GREEN_TOP {0, 0xff, 0, 0xff}
 #define GREEN_BOTTOM {100, 0xff, 100, 0xff}
 #define BLACK {0, 0, 0, 0xff}
+#define BLACK_TRANSP {0, 0, 0, 0x88}
 #define WHITE {0xff, 0xff, 0xff, 0xff}
+#define ORANGE {0xff, 0x77, 0x00, 0xff}
 
 // code ids
 #define PAUSE_WATER             0
@@ -157,6 +160,7 @@ extern float currentTime;  // unit = seconds
 #define TRIPPY_TEXTURES			86
 #define IMA_TIRED				87
 #define FREEZE_ANIMS			88
+#define FAST_N_FURIOUS			89
 
 #define NO_WHITELIST		   255		// used to stay in DEV_MODE w/o a whitelist
 
@@ -534,6 +538,7 @@ public:
     static void trippyTextures(Code::FuncReset);
     static void imaTired(Code::FuncReset);
     static void freezeAnims(Code::FuncReset);
+    static void fastNFurious(Code::FuncReset);
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project

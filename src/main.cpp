@@ -469,7 +469,8 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {STAR_POWER,				"Star Power",						50,			10,			codeContainer.starPower},
         {TRIPPY_TEXTURES,			"Trippy",							50,			40,			codeContainer.trippyTextures},
         {IMA_TIRED,					"I'ma Tired!",						50,			 1,			codeContainer.imaTired},
-        {FREEZE_ANIMS,				"Freeze!",							50,			30,			codeContainer.freezeAnims}
+        {FREEZE_ANIMS,				"Freeze!",							50,			30,			codeContainer.freezeAnims},
+        {FAST_N_FURIOUS,			"Furiously Fast",					50,			30,			codeContainer.fastNFurious}
 		// idea: code that requires mario to stay above a certain speed, or he'll perish
 		// idea: code that puts a timer on screen
 		// idea: code that pauses all timers
@@ -491,7 +492,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {STAR_POWER};
+    u8 whitelist[] = {FAST_N_FURIOUS};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {

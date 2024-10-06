@@ -2372,3 +2372,55 @@ void CodeContainer::freezeAnims(Code::FuncReset f) {
              gpMarioOriginal->mState == TMario::State::STATE_HANGCLIMB_DOWN)
         freezeAnimsPatch.disable();		// im leaving the stuck in sand animation as a softlock bc fuck it
 }
+
+void CodeContainer::fastNFurious(Code::FuncReset f) {
+
+    const f32 SPEED_MIN = 40;
+    f32 mForwardSpeed   = gpMarioOriginal->mForwardSpeed;
+    static f32 depletionHP = -200;  // depletionHP starts at -200, if it hits 0 you die.
+    u8 speed_meterX  = 150;
+    u16 speed_meterY = 400;
+	u16 depletion_meterX  = 465;
+    u16 depletion_meterY   = 208;
+
+
+    if (f == Code::FuncReset::TRUE) {
+        depletionHP = -200;
+        return;
+    }
+
+	if (gpMarDirector->mGameState &= 0x40)	// return if mario is in a cutscene bc that's hella unfair
+        return;	
+
+    if (mForwardSpeed <= 0)
+        mForwardSpeed = 1;
+
+    if (mForwardSpeed < SPEED_MIN)
+        depletionHP += 0.5;   
+
+	if (depletionHP >= 0) {
+        gpMarioOriginal->loserExec();
+        codeContainer.endCode(FAST_N_FURIOUS);        
+    }
+
+    // draw mario's speed as a bar on the bottom of the screen, change it's color depeninding on if he's going fast enough. red = too slow, yellow = about right, green = safe
+    J2DFillBox(speed_meterX - 6, speed_meterY - 4, 100 * 3 + 12, 18, GRAY_TRANSP);
+    J2DFillBox(speed_meterX, speed_meterY, (int)mForwardSpeed * 3, 10, {(u8)(mForwardSpeed * -2.5), (u8)(mForwardSpeed * 2.5), 0, 0xff});
+
+    // this meter depletes when mario is going below the speed minimum. when fully depleted, kill mario.
+    J2DFillBox(depletion_meterX, depletion_meterY, 28, 100 * 2 + 6, GRAY_TRANSP);
+    J2DFillBox(depletion_meterX + 4, depletion_meterY + 203, 20, depletionHP, {(u8)(depletionHP * 1.275), (u8)(depletionHP * -1.275), 0, 0xff});
+
+	// target speed notch
+    J2DFillBox(speed_meterX + 116, speed_meterY - 7, 8, 24, BLACK_TRANSP);
+
+	// label speed meter
+    char *displayBuffer = codeContainer.codeDisplay->getStringPtr();
+    memset(displayBuffer, 0, NORMAL_BUF);
+
+    snprintf(displayBuffer, NORMAL_BUF, "Speed:");
+    Utils::drawCodeDisplay(WHITE, GRAY, 32, speed_meterX - 10, speed_meterY - 10);
+
+	snprintf(displayBuffer, NORMAL_BUF, "HP:");
+    Utils::drawCodeDisplay(WHITE, GRAY, 32, depletion_meterX - 12, depletion_meterY - 5);
+}
