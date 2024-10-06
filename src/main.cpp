@@ -415,7 +415,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 		{SIMON_SAYS,                "Angry_Max Says",				    55,			 5,		    codeContainer.simonSays},
 		{DOOR_STUCK,                "DOOR STUCK",					    55,			20,		    codeContainer.lockMarioAnim},
 		{GIANT_MARIO,               "GIANT MARIO",					    30,			15,		    codeContainer.scaleMario},
-		{SNAKE,                     "Snake?",						    50,			10,		    codeContainer.snakeGame},		// TODO: prob needs a better display name
+		{SNAKE,                     "MAR.IO",						    50,			10,		    codeContainer.snakeGame},
 		{MOON_GRAVITY,              "Moon Gravity",					    50,			15,		    codeContainer.moonGravity},
 		{CRAZY_GRAVITY,             "Crazy Gravity",					40,			30,		    codeContainer.crazyGravity},
 		{CHAOS_CODE,                "Chaos Code",					     1,			60,		    codeContainer.chaosCode},
@@ -470,9 +470,8 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {TRIPPY_TEXTURES,			"Trippy",							50,			40,			codeContainer.trippyTextures},
         {IMA_TIRED,					"I'ma Tired!",						50,			 1,			codeContainer.imaTired},
         {FREEZE_ANIMS,				"Freeze!",							50,			30,			codeContainer.freezeAnims},
-        {FAST_N_FURIOUS,			"Furiously Fast",					50,			30,			codeContainer.fastNFurious}
-		// idea: code that requires mario to stay above a certain speed, or he'll perish
-		// idea: code that puts a timer on screen
+        {FAST_N_FURIOUS,			"Furiously Fast",					50,			30,			codeContainer.fastNFurious},	// TODO: mutal exclusives
+        {DIVING_MODE,				"CAMERA BAD",						50,			30,			codeContainer.divingMode}
 		// idea: code that pauses all timers
         // idea: code that adds companion (maybe companion can pick you up and throw you)
         // idea: wildcard code that does something different depending on each stage
@@ -481,7 +480,6 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 		// idea: code that offsets mario's model/hitbox
         // idea: code that changes the music
         // idea: selfie stick code
-        // idea: top down camera code
         // idea: bouncy surface code (make npcs or something bouncy to the touch)
         // idea: tiny mario
         // idea: rainbow water
@@ -492,7 +490,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {FAST_N_FURIOUS};
+    u8 whitelist[] = {DIVING_MODE};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {

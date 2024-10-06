@@ -161,6 +161,7 @@ extern float currentTime;  // unit = seconds
 #define IMA_TIRED				87
 #define FREEZE_ANIMS			88
 #define FAST_N_FURIOUS			89
+#define DIVING_MODE				90
 
 #define NO_WHITELIST		   255		// used to stay in DEV_MODE w/o a whitelist
 
@@ -539,6 +540,7 @@ public:
     static void imaTired(Code::FuncReset);
     static void freezeAnims(Code::FuncReset);
     static void fastNFurious(Code::FuncReset);
+    static void divingMode(Code::FuncReset);
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project

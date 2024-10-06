@@ -2424,3 +2424,13 @@ void CodeContainer::fastNFurious(Code::FuncReset f) {
 	snprintf(displayBuffer, NORMAL_BUF, "HP:");
     Utils::drawCodeDisplay(WHITE, GRAY, 32, depletion_meterX - 12, depletion_meterY - 5);
 }
+
+void CodeContainer::divingMode(Code::FuncReset f) {
+
+	if (f == Code::FuncReset::TRUE) {
+        gpMarioOriginal->mAttributes.mGainHelmetFlwCamera = false;		// its not a bug, it's a feature ;^)
+        return;
+    }
+
+	gpMarioOriginal->mAttributes.mGainHelmetFlwCamera = true;
+}
