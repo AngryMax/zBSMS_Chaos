@@ -2449,7 +2449,6 @@ void CodeContainer::pauseTimers(Code::FuncReset f) {
 
 	if (timeLeft <= 0)
         codeContainer.endCode(PAUSE_TIMERS);
-
 }
 
 void CodeContainer::changeMusic(Code::FuncReset f) {
@@ -2474,5 +2473,13 @@ void CodeContainer::changeMusic(Code::FuncReset f) {
 		MSBgm::startBGM(track);
 
 		execOnce = false;
-	}
+	}	
+}
+
+void CodeContainer::offsetMario(Code::FuncReset f) {
+
+	OSReport("-> %x\n", &gpMarioOriginal->mModelData->mModel->_10);
+
+
+
 }

@@ -465,15 +465,16 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {START_TIMER,				"Start Timer",						50,			 1,		    codeContainer.startTimer},		//TODO: finish/modify this code
         {SUPERPOSITION,				"Superposition",					50,			20,		    codeContainer.superposition},
         {WIDE_MARIO,				"Elastic Mario",					50,			20,		    codeContainer.wideMario},
-        {SIGHTSEER,					"Delfino Sightseer",                50,			1,			codeContainer.sightseer},
+        {SIGHTSEER,					"Delfino Sightseer",                50,			 1,			codeContainer.sightseer},
         {STAR_POWER,				"Star Power",						50,			10,			codeContainer.starPower},
         {TRIPPY_TEXTURES,			"Trippy",							50,			40,			codeContainer.trippyTextures},
         {IMA_TIRED,					"I'ma Tired!",						50,			 1,			codeContainer.imaTired},
         {FREEZE_ANIMS,				"Freeze!",							50,			30,			codeContainer.freezeAnims},
-        {FAST_N_FURIOUS,			"Furiously Fast",					50,			30,			codeContainer.fastNFurious},	// TODO: mutal exclusives
+        {FAST_N_FURIOUS,			"Furiously Fast",					50,			30,			codeContainer.fastNFurious},
         {DIVING_MODE,				"CAMERA BAD",						50,			30,			codeContainer.divingMode},
         {PAUSE_TIMERS,				"Pause Codes",						50,			30,			codeContainer.pauseTimers},		// TODO: finish code, it seems to be buggy
-        {CHANGE_MUSIC,				"Change Music",						50,			 1,			codeContainer.changeMusic}		// TODO: look into some tracks not playing/certain intruments not playing. maybe all instruments aren't always loaded?
+        {CHANGE_MUSIC,				"Change Music",						50,			 1,			codeContainer.changeMusic},		// TODO: look into some tracks/certain intruments not playing. maybe all instruments aren't always loaded?
+        {OFFSET_MARIO,				"Offset Mario",						50,			 1,			codeContainer.offsetMario}
         // idea: code that adds companion (maybe companion can pick you up and throw you)
         // idea: wildcard code that does something different depending on each stage
         // idea: inception code which does something with the mirrow version of stage bmds
@@ -491,7 +492,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {CHANGE_MUSIC};
+    u8 whitelist[] = {OFFSET_MARIO};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {

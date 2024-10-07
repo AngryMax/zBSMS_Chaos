@@ -165,6 +165,7 @@ extern float alt_currentTime;  // unit = seconds
 #define DIVING_MODE				90
 #define PAUSE_TIMERS			91
 #define CHANGE_MUSIC			92
+#define OFFSET_MARIO			93
 
 #define NO_WHITELIST		   255		// used to stay in DEV_MODE w/o a whitelist
 
@@ -297,7 +298,7 @@ public:
                     break;
 
                 case SCRAMBLE_TEXTURES:
-                    if (isCodeActive(SIMON_SAYS) || isCodeActive(SNAKE))
+                    if (isCodeActive(SIMON_SAYS) || isCodeActive(SNAKE) || isCodeActive(FAST_N_FURIOUS))
                         return;
                     break;
 
@@ -324,7 +325,7 @@ public:
                     break;
 
                 case CHAOS_CODE:
-                    if (isCodeActive(NOCLIP))
+                    if (isCodeActive(NOCLIP) || isCodeActive(FAST_N_FURIOUS))
                         return;
                     break;
 
@@ -375,6 +376,18 @@ public:
                 case SIGHTSEER:
                     if (isCodeActive(PING_LAG))
                         return;
+                    break;
+                case WINDY_DAY:
+                    if (isCodeActive(FAST_N_FURIOUS))
+                        return;
+                    break;
+                case TANK_CONTROLS:
+                    if (isCodeActive(FAST_N_FURIOUS) && rand() % 10 != 0)
+                        return;
+                    break;
+                case FAST_N_FURIOUS:
+                    if ((isCodeActive(FAST_N_FURIOUS) && rand() % 10 != 0) || isCodeActive(CHAOS_CODE) || isCodeActive(SCRAMBLE_TEXTURES) || isCodeActive(WINDY_DAY))
+						return;
                     break;
             }
 
@@ -547,6 +560,7 @@ public:
     static void divingMode(Code::FuncReset);
     static void pauseTimers(Code::FuncReset);
     static void changeMusic(Code::FuncReset);
+    static void offsetMario(Code::FuncReset);
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project
