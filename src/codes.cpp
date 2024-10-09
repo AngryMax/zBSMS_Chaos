@@ -565,7 +565,7 @@ void CodeContainer::lockMarioAnim(Code::FuncReset f) {
 
 }
 
-void CodeContainer::scaleMario(Code::FuncReset f) {
+void CodeContainer::giantMario(Code::FuncReset f) {
 
     if (f == Code::FuncReset::TRUE) {
         gpMarioOriginal->mModelData->mModel->mBaseScale.x = 1.0;
@@ -2566,4 +2566,42 @@ void CodeContainer::fakeDeath(Code::FuncReset f) {
     }
 
     gpMarioOriginal->loserExec();
+}
+
+pp::auto_patch tinyMarioPatch1(SMS_PORT_REGION(0x802557ac, 0, 0, 0), NOP, false);
+pp::auto_patch tinyMarioPatch2(SMS_PORT_REGION(0x802557bc, 0, 0, 0), NOP, false);
+void CodeContainer::tinyMario(Code::FuncReset f) {
+
+	if (f == Code::FuncReset::TRUE) {
+        gpMarioOriginal->mModelData->mModel->mBaseScale.x = 1.0;
+        gpMarioOriginal->mModelData->mModel->mBaseScale.y = 1.0;
+        gpMarioOriginal->mModelData->mModel->mBaseScale.z = 1.0;
+
+		tinyMarioPatch1.disable();
+        tinyMarioPatch2.disable();
+
+		gpMarioOriginal->mAttackRadius = 80;
+		gpMarioOriginal->mAttackHeight = 50;
+		gpMarioOriginal->mAttackHeight = 42;
+		gpMarioOriginal->mAttackHeight = 130;
+
+
+
+        return;
+    }
+
+	if (!tinyMarioPatch1.is_enabled()) {
+        tinyMarioPatch1.enable();
+        tinyMarioPatch2.enable();
+    }
+
+    gpMarioOriginal->mModelData->mModel->mBaseScale.x = 0.5;
+    gpMarioOriginal->mModelData->mModel->mBaseScale.y = 0.5;
+    gpMarioOriginal->mModelData->mModel->mBaseScale.z = 0.5;
+
+	gpMarioOriginal->mAttackRadius = 40;
+    gpMarioOriginal->mAttackHeight = 25;
+    gpMarioOriginal->mAttackHeight = 21;
+    gpMarioOriginal->mAttackHeight = 65;
+
 }

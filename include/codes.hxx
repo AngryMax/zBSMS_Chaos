@@ -170,6 +170,7 @@ extern float currentTime;  // unit = seconds
 #define OFFSET_MARIO			93
 #define REVERSE_MARIO			94
 #define FAKE_DEATH				95
+#define TINY_MARIO				96
 
 #define NO_WHITELIST		   255		// used to stay in DEV_MODE w/o a whitelist
 
@@ -371,7 +372,7 @@ public:
                     break;
 
                 case GIANT_MARIO:
-                    if (isCodeActive(WIDE_MARIO))
+                    if (isCodeActive(WIDE_MARIO) || isCodeActive(TINY_MARIO))
                         return;
                     break;
 
@@ -407,6 +408,11 @@ public:
 
                 case REVERSE_MARIO:
                     if (isCodeActive(OFFSET_MARIO))
+                        return;
+                    break;
+
+				case TINY_MARIO:
+                    if (isCodeActive(GIANT_MARIO) || isCodeActive(WIDE_MARIO))
                         return;
                     break;
             }
@@ -516,7 +522,7 @@ public:
     static void reverseInputs();
     static void simonSays(Code::FuncReset);
     static void lockMarioAnim(Code::FuncReset);
-    static void scaleMario(Code::FuncReset);
+    static void giantMario(Code::FuncReset);
     static void snakeGame(Code::FuncReset);
     static void moonGravity(Code::FuncReset);
     static void crazyGravity(Code::FuncReset);
@@ -586,6 +592,7 @@ public:
     static void fakeDeath(Code::FuncReset);
     static void reverseMarioToggle(Code::FuncReset);
     static void reverseMario(J3DTransformInfo &, Mtx);
+    static void tinyMario(Code::FuncReset);
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project

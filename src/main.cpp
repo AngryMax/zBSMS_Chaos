@@ -414,7 +414,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 		{REVERSE_INPUTS,            "Confusion",						30,			20,		    codeContainer.reverseInputsToggle},
 		{SIMON_SAYS,                "Angry_Max Says",				    55,			 5,		    codeContainer.simonSays},
 		{DOOR_STUCK,                "DOOR STUCK",					    55,			20,		    codeContainer.lockMarioAnim},
-		{GIANT_MARIO,               "GIANT MARIO",					    30,			15,		    codeContainer.scaleMario},
+		{GIANT_MARIO,               "GIANT MARIO",					    30,			15,		    codeContainer.giantMario},
 		{SNAKE,                     "MAR.IO",						    50,			10,		    codeContainer.snakeGame},
 		{MOON_GRAVITY,              "Moon Gravity",					    50,			15,		    codeContainer.moonGravity},
 		{CRAZY_GRAVITY,             "Crazy Gravity",					40,			30,		    codeContainer.crazyGravity},
@@ -476,13 +476,13 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {CHANGE_MUSIC,				"Change Music",						50,			 1,			codeContainer.changeMusic},
         {OFFSET_MARIO,				"Offset Mario",						50,			30,			codeContainer.offsetMarioToggle},
         {REVERSE_MARIO,				"Reverse Mario",					50,			30,			codeContainer.reverseMarioToggle},
-        {FAKE_DEATH,				"Kill Mario",						50,			 5,			codeContainer.fakeDeath}
+        {FAKE_DEATH,				"Kill Mario",						50,			 5,			codeContainer.fakeDeath},
+        {TINY_MARIO,				"Tiny Mario",						50,			30,			codeContainer.tinyMario}
         // idea: code that adds companion (maybe companion can pick you up and throw you)
         // idea: inception code which does something with the mirrow version of stage bmds
         // idea: a code which draws the collision triangles in a radius (the matrix)
         // idea: selfie stick code
         // idea: bouncy surface code (make npcs or something bouncy to the touch)
-        // idea: tiny mario
         // idea: rainbow water
 		// idea: a code that sets the camera to focus on the nearest object to mario
         // idea: out of body code (blr out calcAnim)
@@ -491,7 +491,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {STAR_POWER};
+    u8 whitelist[] = {TINY_MARIO};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
