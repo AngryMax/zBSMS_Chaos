@@ -466,7 +466,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {SUPERPOSITION,				"Superposition",					50,			20,		    codeContainer.superposition},
         {WIDE_MARIO,				"Elastic Mario",					50,			20,		    codeContainer.wideMario},
         {SIGHTSEER,					"Delfino Sightseer",                50,			 1,			codeContainer.sightseer},
-        {STAR_POWER,				"Star Power",						50,			10,			codeContainer.starPower},
+        {STAR_POWER,				"Star Power",						50,			10,			codeContainer.starPowerToggle},
         {TRIPPY_TEXTURES,			"Trippy",							50,			40,			codeContainer.trippyTextures},
         {IMA_TIRED,					"I'ma Tired!",						50,			 1,			codeContainer.imaTired},
         {FREEZE_ANIMS,				"Freeze!",							50,			30,			codeContainer.freezeAnims},
@@ -491,7 +491,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {FAKE_DEATH};
+    u8 whitelist[] = {STAR_POWER};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {

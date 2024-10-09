@@ -2265,45 +2265,84 @@ void CodeContainer::sightseer(Code::FuncReset f) {
 
 	codeContainer.endCode(SIGHTSEER);
 }
-//                                                                   li r3, 1
-pp::auto_patch starPowerPatch(SMS_PORT_REGION(0x80255f50, 0, 0, 0), 0x38600001, false);
-void CodeContainer::starPower(Code::FuncReset f) {
-
-    /*if (f == Code::FuncReset::TRUE) {
-        starPowerPatch.disable();
+//                                                                    li r3, 1
+pp::auto_patch starPowerPatch1(SMS_PORT_REGION(0x80255f50, 0, 0, 0), 0x38600001, false);
+pp::togglable_ppc_b starPowerPatch2(SMS_PORT_REGION(0x8024db08, 0, 0, 0), (void *)codeContainer.starPower, false);
+void CodeContainer::starPowerToggle(Code::FuncReset f) {
+    if (f == Code::FuncReset::TRUE) {
+        starPowerPatch1.disable();
+        starPowerPatch2.disable();
         return;
+    } else {
+        starPowerPatch1.enable();
+        starPowerPatch2.enable();
     }
-    else if (!starPowerPatch.is_enabled())
-        starPowerPatch.enable();
+}
+
+void CodeContainer::starPower() {
 
     u8 sinVal = (sinf(currentTime) + 1) * 127;
     u8 cosVal = (cosf(currentTime) + 1) * 127;
 
-    for (int i = 0; i < TLightCommon::mAmbAry->mAmbColorCount; i++) {
-        JDrama::TAmbColor *currAmbColor = &TLightCommon::mAmbAry->mAmbColorAry[i];
-        currAmbColor->r = sinVal;
-        currAmbColor->g = cosVal;
-        currAmbColor->b = sinVal;
-        currAmbColor->a = cosVal;
+    JDrama::TGraphics *graphics;
+    SMS_FROM_GPR(30, graphics);
+
+    // add rainbow damage fog to body
+    J3DModel *bodyModel = gpMarioOriginal->mModelData->mModel;
+    for (int i = 0; i < bodyModel->mModelData->mMaterialNum; i++) {
+        J3DFogInfo *currFog = bodyModel->mModelData->mMaterials[i]->mPEBlockFull->getFog();
+
+        currFog->r = sinVal;
+        currFog->g = cosVal;
+        currFog->b = sinVal;
+        currFog->a = cosVal;
+    }
+    SMS_AddDamageFogEffect(bodyModel->mModelData, *gpMarioPos, graphics);
+
+    // add rainbow damage fog to cap
+    if (gpMarioOriginal->mCap != 0) {
+        J3DModel *capModel = gpMarioOriginal->mCap->mCurrentCapModel;
+        for (int i = 0; i < capModel->mModelData->mMaterialNum; i++) {
+            J3DFogInfo *currFog = capModel->mModelData->mMaterials[i]->mPEBlockFull->getFog();
+
+            currFog->r = sinVal;
+            currFog->g = cosVal;
+            currFog->b = sinVal;
+            currFog->a = cosVal;
+        }
+        SMS_AddDamageFogEffect(capModel->mModelData, *gpMarioPos, graphics);
     }
 
-    for (int i = 0; i < TLightCommon::mLightAry->mLightColorCount; i++) {
-        JDrama::TIdxLight *currIdxLight = &TLightCommon::mLightAry->mLightColorAry[i];
-        currIdxLight->r = sinVal;
-        currIdxLight->g = cosVal;
-        currIdxLight->b = sinVal;
-        currIdxLight->a = cosVal;
+    // add rainbow damage fog to hands
+    if (gpMarioOriginal->mHandModel2R != 0) {
+        J3DModel **handModelPtrs = &gpMarioOriginal->mHandModel2R;
+        for (int i = 0; i < 5; i++) {
+            J3DModel *handModel = handModelPtrs[i];
+            for (int i = 0; i < handModel->mModelData->mMaterialNum; i++) {
+                J3DFogInfo *currFog = handModel->mModelData->mMaterials[i]->mPEBlockFull->getFog();
+
+                currFog->r = sinVal;
+                currFog->g = cosVal;
+                currFog->b = sinVal;
+                currFog->a = cosVal;
+            }
+            SMS_AddDamageFogEffect(handModel->mModelData, *gpMarioPos, graphics);
+        }
+    }
+
+    // add rainbow damage fog to fludd
+    /*if (gpMarioOriginal->mFludd != 0) {
+        J3DModel *fluddModel = gpMarioOriginal->mFludd->mMActor->mModel;
+        for (int i = 0; i < fluddModel->mModelData->mMaterialNum; i++) {
+            J3DFogInfo *currFog = fluddModel->mModelData->mMaterials[i]->mPEBlockFull->getFog();
+
+            currFog->r = sinVal;
+            currFog->g = cosVal;
+            currFog->b = sinVal;
+            currFog->a = cosVal;
+        }
+        SMS_AddDamageFogEffect(fluddModel->mModelData, *gpMarioPos, graphics);
     }*/
-
-    for (int i = 0; i < gpMarioOriginal->mModelData->mModel->mModelData->mMaterialNum; i++) {
-        J3DFogInfo *currFog =
-            gpMarioOriginal->mModelData->mModel->mModelData->mMaterials[i]->mPEBlockFull->getFog();
-
-        currFog->r = 0;
-        currFog->g = 0;
-        currFog->b = 0;
-        currFog->a = 255;
-    }
 }
 
 pp::auto_patch trippyPatch1(SMS_PORT_REGION(0x802f4260, 0, 0, 0), BLR, false);

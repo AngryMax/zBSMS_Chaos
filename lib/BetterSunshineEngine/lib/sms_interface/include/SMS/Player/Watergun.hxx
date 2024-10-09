@@ -6,6 +6,7 @@
 #include <SMS/Player/NozzleBase.hxx>
 #include <SMS/Player/NozzleTrigger.hxx>
 #include <SMS/System/Params.hxx>
+#include <SMS/M3DUtil/MActor.hxx>
 
 class TMario;
 class TMarioControllerWork;
@@ -57,14 +58,16 @@ public:
     bool mIsEmitWater;                      // 0x1C86
     u8 _13;                                 // 0x1C87
     u32 _14[0x8 / 4];                       // 0x1C88
-    TVec3f mGeometry[10];                   // 0x1C90
-    u32 _15;                                // 0x1D08
+    TVec3f mGeometry[5];                    // 0x1C90
+    u32 _15[0x8 / 4];                       // 0x1CCC
+    MActor *mMActor;                        // 0x1CD4
+    u32 _16[0x34 / 4];                      // 0x1CD8
     TWaterEmitInfo *mEmitInfo;              // 0x1D0C
-    u32 _16;                                // 0x1D10
+    u32 _17;                                // 0x1D10
     char *mPrmPath;                         // 0x1D14
     char *mRocketPath;                      // 0x1D18
-    u32 _17[0x24 / 4];                      // 0x1D1C
+    u32 _18[0x24 / 4];                      // 0x1D1C
     float mHoverMaxHeight;                  // 0x1D40
-    u32 _18[0x78 / 4];                      // 0x1D44
+    u32 _19[0x78 / 4];                      // 0x1D44
                                             // 1DBC
 };

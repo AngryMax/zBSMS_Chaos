@@ -23,28 +23,62 @@ public:
 
 class J3DPEBlock {
 public:
-    virtual ~J3DPEBlock();
-
+    // most of these functions aren't accurately documented.
+    // i just added them to align the vtable correctly
     virtual void reset(J3DPEBlock *);
+    virtual void countDLSize();
+    virtual void getType();
     virtual void setFog(J3DFogInfo *);
     virtual void replaceFog(J3DFogInfo *);
     virtual J3DFogInfo *getFog();
     virtual void setAlphaComp(void *);
     virtual void setAlphaComp(void **);
     virtual void getAlphaComp(void **);
+    virtual void setBlend(void *);
+    virtual void setBlend(void **);
+    virtual void getBlend(void **);
+    virtual void setZMode(void *);
+    virtual void setZMode(void **);
+    virtual void getZMode(void **);
+    virtual void setZCompLoc(void *);
+    virtual void setZCompLoc(void **);
+    virtual void getZCompLoc(void **);
+    virtual void setDither(void *);
+    virtual void setDither(void **);
+    virtual void getDither(void **);
+
+    virtual ~J3DPEBlock();
 };
 
 class J3DPEBlockFull : public J3DPEBlock {
 public:
-    virtual ~J3DPEBlockFull();
-
+    // most of these functions aren't accurately documented.
+    // i just added them to align the vtable correctly
     virtual void reset(J3DPEBlock *);
+    virtual void countDLSize();
+    virtual void getType();
     virtual void setFog(J3DFogInfo *);
     virtual void replaceFog(J3DFogInfo *);
     virtual J3DFogInfo *getFog();
     virtual void setAlphaComp(void *);
     virtual void setAlphaComp(void **);
     virtual void getAlphaComp(void **);
+    virtual void setBlend(void *);
+    virtual void setBlend(void **);
+    virtual void getBlend(void **);
+    virtual void setZMode(void *);
+    virtual void setZMode(void **);
+    virtual void getZMode(void **);
+    virtual void setZCompLoc(void *);
+    virtual void setZCompLoc(void **);
+    virtual void getZCompLoc(void **);
+    virtual void setDither(void *);
+    virtual void setDither(void **);
+    virtual void getDither(void **);
+
+    virtual ~J3DPEBlockFull();
+    virtual void load();
+
 };
 
 struct J3DTevOrder {

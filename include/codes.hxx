@@ -37,6 +37,7 @@
 #include <SMS/MarioUtil/MathUtil.hxx>
 #include <SMS/Manager/MarioParticleManager.hxx>
 #include <SMS/MarioUtil/LightUtil.hxx>
+#include <SMS/MarioUtil/DrawUtil.hxx>
 
 #include <BetterSMS/game.hxx>
 #include <BetterSMS/module.hxx>
@@ -571,7 +572,8 @@ public:
     static void superposition(Code::FuncReset);
     static void wideMario(Code::FuncReset);
     static void sightseer(Code::FuncReset);
-    static void starPower(Code::FuncReset);
+    static void starPowerToggle(Code::FuncReset);
+    static void starPower();
     static void trippyTextures(Code::FuncReset);
     static void imaTired(Code::FuncReset);
     static void freezeAnims(Code::FuncReset);
