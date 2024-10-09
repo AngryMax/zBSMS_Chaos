@@ -477,11 +477,11 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {OFFSET_MARIO,				"Offset Mario",						50,			30,			codeContainer.offsetMarioToggle},
         {REVERSE_MARIO,				"Reverse Mario",					50,			30,			codeContainer.reverseMarioToggle},
         {FAKE_DEATH,				"Kill Mario",						50,			 5,			codeContainer.fakeDeath},
-        {TINY_MARIO,				"Tiny Mario",						50,			30,			codeContainer.tinyMario}
+        {TINY_MARIO,				"Tiny Mario",						50,			30,			codeContainer.tinyMario},
+        {SELFIE_STICK,				"Selfie Stick",						50,			30,			codeContainer.selfieStick}
         // idea: code that adds companion (maybe companion can pick you up and throw you)
         // idea: inception code which does something with the mirrow version of stage bmds
         // idea: a code which draws the collision triangles in a radius (the matrix)
-        // idea: selfie stick code
         // idea: bouncy surface code (make npcs or something bouncy to the touch)
         // idea: rainbow water
 		// idea: a code that sets the camera to focus on the nearest object to mario
@@ -491,7 +491,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {TINY_MARIO};
+    u8 whitelist[] = {SELFIE_STICK};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {

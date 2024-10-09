@@ -171,6 +171,7 @@ extern float currentTime;  // unit = seconds
 #define REVERSE_MARIO			94
 #define FAKE_DEATH				95
 #define TINY_MARIO				96
+#define SELFIE_STICK			97
 
 #define NO_WHITELIST		   255		// used to stay in DEV_MODE w/o a whitelist
 
@@ -593,6 +594,7 @@ public:
     static void reverseMarioToggle(Code::FuncReset);
     static void reverseMario(J3DTransformInfo &, Mtx);
     static void tinyMario(Code::FuncReset);
+    static void selfieStick(Code::FuncReset);
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project

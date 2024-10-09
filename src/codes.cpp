@@ -1667,7 +1667,7 @@ void CodeContainer::noclip(Code::FuncReset f) {
 pp::auto_patch jumpscarePatch(SMS_PORT_REGION(0x80029d5c, 0, 0, 0), BLR, false);
 pp::auto_patch jumpscarePatch2(SMS_PORT_REGION(0x8024de38, 0, 0, 0), BLR, false);
 pp::auto_patch jumpscarePatch3(SMS_PORT_REGION(0x80244800, 0, 0, 0), BLR, false);
-void CodeContainer::jumpscare(Code::FuncReset f) {  // TODO: make the visual part of the jumpscare
+void CodeContainer::jumpscare(Code::FuncReset f) {
 
 	static bool execOnce = true;
     static TVec3f mTargetPos;
@@ -2585,8 +2585,6 @@ void CodeContainer::tinyMario(Code::FuncReset f) {
 		gpMarioOriginal->mAttackHeight = 42;
 		gpMarioOriginal->mAttackHeight = 130;
 
-
-
         return;
     }
 
@@ -2603,5 +2601,26 @@ void CodeContainer::tinyMario(Code::FuncReset f) {
     gpMarioOriginal->mAttackHeight = 25;
     gpMarioOriginal->mAttackHeight = 21;
     gpMarioOriginal->mAttackHeight = 65;
+}
 
+void CodeContainer::selfieStick(Code::FuncReset f) {
+
+    static TVec3f mTargetPos;
+    static TVec3f mTranslation;
+    static TVec3f projectedPos;
+
+    
+    mTargetPos = *gpMarioPos;
+    mTargetPos.y += 100;
+    mTranslation = gpCamera->mTranslation;
+
+    projectedPos   = *gpMarioPos;
+    f32 yawRadians = (gpMarioOriginal->mAngle.y * M_PI) / 32768.0f;
+
+    projectedPos.x += 400 * sinf(yawRadians);
+    projectedPos.z += 400 * cosf(yawRadians);
+    
+
+    gpCamera->mTargetPos.set(mTargetPos);
+    gpCamera->mTranslation.set(projectedPos);
 }
