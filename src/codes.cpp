@@ -2493,7 +2493,8 @@ void CodeContainer::reverseMario(J3DTransformInfo &transformInfo, Mtx mtx) {
     J3DGetTranslateRotateMtx(transformInfo, mtx);
 }
 
-pp::auto_patch fakeDeathPatch(SMS_PORT_REGION(0x8024314c, 0, 0, 0), NOP, false);
+pp::auto_patch fakeDeathPatch1(SMS_PORT_REGION(0x8024314c, 0, 0, 0), NOP, false);
+pp::auto_patch fakeDeathPatch2(SMS_PORT_REGION(0x80032630, 0, 0, 0), 0x38600001, false);
 void CodeContainer::fakeDeath(Code::FuncReset f) {
 
 	static bool execOnce = true;
@@ -2501,23 +2502,26 @@ void CodeContainer::fakeDeath(Code::FuncReset f) {
 
 	if (f == Code::FuncReset::TRUE) {		
         execOnce = true;
+        gpMarioOriginal->mState = TMario::STATE_IDLE;
+        fakeDeathPatch1.disable();
+        fakeDeathPatch2.disable();
         gpApplication.mFader->setFadeStatus(TSMSFader::EFadeStatus::FADE_OFF);
         MSBgm::startBGM(stageMusic);
-        gpMarioOriginal->mState = TMario::STATE_IDLE;
         gpMarioOriginal->mHealth = gpMarioOriginal->mDeParams.mHPMax.get();
-        fakeDeathPatch.disable();
         return;
 	}
 
 
     if (execOnce) {     
-        fakeDeathPatch.enable();
+        fakeDeathPatch1.enable();
+        fakeDeathPatch2.enable();
 
         gpMarDirector->mGCConsole->mConsoleStr->startAppearMiss();
         gpApplication.mFader->startWipe(TSMSFader::WipeRequest::FADE_UP_DOWN_OUT, 0.0f, 2.2f);
         MSBgm::startBGM(MSStageInfo::BGM_MISS);
 
 		stageMusic = gStageBGM;
+        ((u16 *)gpCamera->_21C)[0x62 / 2] = 1; // _27E this value triggers the fov zoom
 
         execOnce = false;
     }
