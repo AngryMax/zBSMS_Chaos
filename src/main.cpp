@@ -447,7 +447,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 		{SINE_MOMENTUM,				"Whacky Momentum",					15,			30,			codeContainer.sineMomentum},
 		{WINDY_DAY,					"Windy Day",						15,			30,			codeContainer.windyDay},
 		{BRAWL,						"brawl lol",						30,			30,			codeContainer.brawl},
-		{NOCLIP,					"Noclip",							 1,			 3,			codeContainer.noclip},		// shoutouts to joshuamk for unintentionally doing all the heavy work for this code
+		{NOCLIP,					"Noclip",							 1,			 3,			codeContainer.noclip},			// shoutouts to joshuamk for unintentionally doing all the heavy work for this code
 		{JUMPSCARE,					"Jumpscare",						 5,			 1,			codeContainer.jumpscare},
 		{SMALL_WORLD,				"It's a Small World",				80,		   0.5,			codeContainer.smallWorld},
 		{RANDOM_SPRAY,				"Precision",						50,			30,			codeContainer.randomSpray},
@@ -462,7 +462,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {FIRE_MOVEMENT,				"MAMA!!",						    50,			45,		    codeContainer.fireMovement},
         {LOL,						"lol",								50,			20,		    codeContainer.lol},
         {TILTED,					"Tilted",							50,			30,		    codeContainer.tilted},
-        {START_TIMER,				"Start Timer",						50,			 1,		    codeContainer.startTimer},		//TODO: finish/modify this code
+        {START_TIMER,				"Start Timer",						50,			 1,		    codeContainer.startTimer},		// TODO: finish/modify this code
         {SUPERPOSITION,				"Superposition",					50,			20,		    codeContainer.superposition},
         {WIDE_MARIO,				"Elastic Mario",					50,			20,		    codeContainer.wideMario},
         {SIGHTSEER,					"Delfino Sightseer",                50,			 1,			codeContainer.sightseer},
@@ -470,17 +470,16 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {TRIPPY_TEXTURES,			"Trippy",							50,			40,			codeContainer.trippyTextures},
         {IMA_TIRED,					"I'ma Tired!",						50,			 1,			codeContainer.imaTired},
         {FREEZE_ANIMS,				"Freeze!",							50,			30,			codeContainer.freezeAnims},
-        {FAST_N_FURIOUS,			"Furiously Fast",					50,			30,			codeContainer.fastNFurious},
+        {FAST_N_FURIOUS,			"Move or... DIE!!!",				50,			30,			codeContainer.fastNFurious},
         {DIVING_MODE,				"CAMERA BAD",						50,			30,			codeContainer.divingMode},
-        {PAUSE_TIMERS,				"Pause Codes",						50,			30,			codeContainer.pauseTimers},		// TODO: finish code, it seems to be buggy
-        {CHANGE_MUSIC,				"Change Music",						50,			 1,			codeContainer.changeMusic},		// TODO: look into some tracks/certain intruments not playing. maybe all instruments aren't always loaded?
-        {OFFSET_MARIO,				"Offset Mario",						50,			 1,			codeContainer.offsetMario}
+        {PAUSE_TIMERS,				"Pause Codes",						50,			30,			codeContainer.pauseTimers},	
+        {CHANGE_MUSIC,				"Change Music",						50,			 1,			codeContainer.changeMusic},
+        {OFFSET_MARIO,				"Offset Mario",						50,			30,			codeContainer.offsetMarioToggle},
+        {REVERSE_MARIO,				"Reverse Mario",					50,			30,			codeContainer.reverseMarioToggle},
+        {FAKE_DEATH,				"Kill Mario",						50,			 5,			codeContainer.fakeDeath}
         // idea: code that adds companion (maybe companion can pick you up and throw you)
-        // idea: wildcard code that does something different depending on each stage
         // idea: inception code which does something with the mirrow version of stage bmds
         // idea: a code which draws the collision triangles in a radius (the matrix)
-		// idea: code that offsets mario's model/hitbox
-        // idea: code that changes the music
         // idea: selfie stick code
         // idea: bouncy surface code (make npcs or something bouncy to the touch)
         // idea: tiny mario
@@ -492,7 +491,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {OFFSET_MARIO};
+    u8 whitelist[] = {FAKE_DEATH};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
@@ -529,15 +528,20 @@ BETTER_SMS_FOR_CALLBACK static void updateTime(TApplication *tapp) {
     if (marDirector->mCurState == TMarDirector::Status::STATE_NORMAL) {
         OSTime diff   = OSGetTime() - sBaseTime;
         float seconds = OSTicksToSeconds(float(u32(diff)));
-        if (!codeContainer.isCodeActive(PAUSE_TIMERS))
-			currentTime += seconds;
-        else alt_currentTime += seconds;
+        currentTime += seconds;
 
-        if (codeContainer.isCodeActive(DOUBLE_TIME)) {
-            if (!codeContainer.isCodeActive(PAUSE_TIMERS))
-				currentTime += seconds;
-			else alt_currentTime += seconds;
+        // stop codes other than pauseTimers from counting down
+        if (codeContainer.isCodeActive(PAUSE_TIMERS)) {
+            for (Code &c : codeContainer.codeList) {
+                if (c.isActive && c.codeID != PAUSE_TIMERS) {
+                    c.timeCalled += seconds;
+                }
+            }
         }
+			
+
+        if (codeContainer.isCodeActive(DOUBLE_TIME))
+			currentTime += seconds;
     }
 
     sBaseTime = OSGetTime();
@@ -603,12 +607,8 @@ BETTER_SMS_FOR_CALLBACK static void drawCodeDisplay(TMarDirector *director,  con
         for (Code c : codeContainer.codeList) {
         #if DEV_MODE
             if (c.isActive || c.isGraced) {
-                if (c.codeID == PAUSE_TIMERS)
-                    snprintf(displayBuffer, NORMAL_BUF, "%s%s: %.0f%s\n", displayBuffer, c.name,
-                         c.duration - (alt_currentTime - c.timeCalled), "s");
-                else
-					snprintf(displayBuffer, NORMAL_BUF, "%s%s: %.0f%s\n", displayBuffer, c.name,
-                         c.duration - (currentTime - c.timeCalled), "s");
+                snprintf(displayBuffer, NORMAL_BUF, "%s%s: %.0f%s\n", displayBuffer, c.name,
+                    c.duration - (currentTime - c.timeCalled), "s");
             }
         #else
             if (c.isActive) {

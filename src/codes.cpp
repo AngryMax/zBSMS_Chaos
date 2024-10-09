@@ -2436,19 +2436,7 @@ void CodeContainer::divingMode(Code::FuncReset f) {
 }
 
 void CodeContainer::pauseTimers(Code::FuncReset f) {
-
-    static int execOnce = true;
-    static float timeCalled;
-
-	Code pauseTimers;
-    if (!(codeContainer.getCodeFromID(PAUSE_TIMERS, pauseTimers))) {
-        OSReport("[pauseTimers] -> Could not find code with code id %d!\n", PAUSE_TIMERS);
-        return;
-    }
-    f32 timeLeft = pauseTimers.duration - (alt_currentTime - pauseTimers.timeCalled);
-
-	if (timeLeft <= 0)
-        codeContainer.endCode(PAUSE_TIMERS);
+    // all the logic for this is in the chaos engine itself
 }
 
 void CodeContainer::changeMusic(Code::FuncReset f) {
@@ -2468,7 +2456,7 @@ void CodeContainer::changeMusic(Code::FuncReset f) {
         }
 
 		u32 track = 0x80010000 + (rand() % 0x2e) + 1;
-        //OSReport("-> %x\n", track);
+        OSReport("-> Track: %x\n", track);
 
 		MSBgm::startBGM(track);
 
@@ -2476,10 +2464,63 @@ void CodeContainer::changeMusic(Code::FuncReset f) {
 	}	
 }
 
-void CodeContainer::offsetMario(Code::FuncReset f) {
 
-	OSReport("-> %x\n", &gpMarioOriginal->mModelData->mModel->_10);
+pp::togglable_ppc_bl offsetMarioPatch(SMS_PORT_REGION(0x80245b14, 0, 0, 0), (void *)codeContainer.offsetMario, false);
+void CodeContainer::offsetMarioToggle(Code::FuncReset f) {
+    if (f == Code::FuncReset::FALSE && !offsetMarioPatch.is_enabled())
+        offsetMarioPatch.enable();
+    else if (f == Code::FuncReset::TRUE)
+        offsetMarioPatch.disable();
+}
+
+void CodeContainer::offsetMario(J3DTransformInfo &transformInfo, Mtx mtx) {
+    transformInfo.tx += 250;
+    transformInfo.ty += 50;
+    transformInfo.tz += 250;
+    J3DGetTranslateRotateMtx(transformInfo, mtx);
+}
+
+pp::togglable_ppc_bl reverseMarioPatch(SMS_PORT_REGION(0x80245b14, 0, 0, 0), (void *)codeContainer.reverseMario, false);
+void CodeContainer::reverseMarioToggle(Code::FuncReset f) {
+    if (f == Code::FuncReset::FALSE && !reverseMarioPatch.is_enabled())
+        reverseMarioPatch.enable();
+    else if (f == Code::FuncReset::TRUE)
+        reverseMarioPatch.disable();
+}
+
+void CodeContainer::reverseMario(J3DTransformInfo &transformInfo, Mtx mtx) {
+    transformInfo.ry += 32768;
+    J3DGetTranslateRotateMtx(transformInfo, mtx);
+}
+
+pp::auto_patch fakeDeathPatch(SMS_PORT_REGION(0x8024314c, 0, 0, 0), NOP, false);
+void CodeContainer::fakeDeath(Code::FuncReset f) {
+
+	static bool execOnce = true;
+    static u32 stageMusic;
+
+	if (f == Code::FuncReset::TRUE) {		
+        execOnce = true;
+        gpApplication.mFader->setFadeStatus(TSMSFader::EFadeStatus::FADE_OFF);
+        MSBgm::startBGM(stageMusic);
+        gpMarioOriginal->mState = TMario::STATE_IDLE;
+        gpMarioOriginal->mHealth = gpMarioOriginal->mDeParams.mHPMax.get();
+        fakeDeathPatch.disable();
+        return;
+	}
 
 
+    if (execOnce) {     
+        fakeDeathPatch.enable();
 
+        gpMarDirector->mGCConsole->mConsoleStr->startAppearMiss();
+        gpApplication.mFader->startWipe(TSMSFader::WipeRequest::FADE_UP_DOWN_OUT, 0.0f, 2.2f);
+        MSBgm::startBGM(MSStageInfo::BGM_MISS);
+
+		stageMusic = gStageBGM;
+
+        execOnce = false;
+    }
+
+    gpMarioOriginal->loserExec();
 }

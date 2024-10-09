@@ -10,6 +10,7 @@
 #include <Dolphin/PAD.h>
 
 #include <JSystem/JDrama/JDRRect.hxx>
+#include <JSystem/J3D/J3DTransform.hxx>
 
 #include <SMS/System/Application.hxx>
 #include <SMS/macros.h>
@@ -28,6 +29,7 @@
 #include <SMS/MoveBG/Shine.hxx>
 #include <SMS/GC2D/CardSave.hxx>
 #include <SMS/GC2D/SunGlass.hxx>
+#include <SMS/GC2D/SMSFader.hxx>
 #include <SMS/Camera/CameraShake.hxx>
 #include <SMS/Camera/PolarSubCamera.hxx>
 #include <SMS/NPC/NpcBase.hxx>
@@ -49,7 +51,6 @@ const static int CODE_NAME_BUFFER_SIZE = 30;
 const static int CODE_COUNT            = 100;
 
 extern float currentTime;  // unit = seconds
-extern float alt_currentTime;  // unit = seconds
 
 #define NORMAL_BUF 144
 #define MAX_BUF 410 // the string buffer is this large for smsWiki
@@ -166,6 +167,8 @@ extern float alt_currentTime;  // unit = seconds
 #define PAUSE_TIMERS			91
 #define CHANGE_MUSIC			92
 #define OFFSET_MARIO			93
+#define REVERSE_MARIO			94
+#define FAKE_DEATH				95
 
 #define NO_WHITELIST		   255		// used to stay in DEV_MODE w/o a whitelist
 
@@ -365,29 +368,45 @@ public:
                     if (isCodeActive(NO_MARIO_REDRAW))
                         return;
                     break;
+
                 case GIANT_MARIO:
                     if (isCodeActive(WIDE_MARIO))
                         return;
                     break;
+
                 case WIDE_MARIO:
                     if (isCodeActive(GIANT_MARIO))
                         return;
                     break;
+
                 case SIGHTSEER:
                     if (isCodeActive(PING_LAG))
                         return;
                     break;
+
                 case WINDY_DAY:
                     if (isCodeActive(FAST_N_FURIOUS))
                         return;
                     break;
+
                 case TANK_CONTROLS:
                     if (isCodeActive(FAST_N_FURIOUS) && rand() % 10 != 0)
                         return;
                     break;
+
                 case FAST_N_FURIOUS:
-                    if ((isCodeActive(FAST_N_FURIOUS) && rand() % 10 != 0) || isCodeActive(CHAOS_CODE) || isCodeActive(SCRAMBLE_TEXTURES) || isCodeActive(WINDY_DAY))
+                    if ((isCodeActive(TANK_CONTROLS) && rand() % 10 != 0) || isCodeActive(CHAOS_CODE) || isCodeActive(SCRAMBLE_TEXTURES) || isCodeActive(WINDY_DAY))
 						return;
+                    break;
+
+                case OFFSET_MARIO:
+                    if (isCodeActive(REVERSE_MARIO))
+                        return;
+                    break;
+
+                case REVERSE_MARIO:
+                    if (isCodeActive(OFFSET_MARIO))
+                        return;
                     break;
             }
 
@@ -560,7 +579,11 @@ public:
     static void divingMode(Code::FuncReset);
     static void pauseTimers(Code::FuncReset);
     static void changeMusic(Code::FuncReset);
-    static void offsetMario(Code::FuncReset);
+    static void offsetMarioToggle(Code::FuncReset);
+    static void offsetMario(J3DTransformInfo &, Mtx);
+    static void fakeDeath(Code::FuncReset);
+    static void reverseMarioToggle(Code::FuncReset);
+    static void reverseMario(J3DTransformInfo &, Mtx);
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project
