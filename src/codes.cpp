@@ -26,11 +26,26 @@ void CodeContainer::noMarioRedraw(Code::FuncReset f) {
 }
 
 pp::auto_patch whiteMarioSilhouettePatch(SMS_PORT_REGION(0x8024da58, 0, 0, 0), NOP, false);
-void CodeContainer::whiteMarioSilhouette(Code::FuncReset f) {
-    if (f == Code::FuncReset::FALSE && !whiteMarioSilhouettePatch.is_enabled())
+pp::togglable_ppc_bl holdCapPatch(SMS_PORT_REGION(0x80244c48, 0, 0, 0), (void *)codeContainer.holdCap, false);
+void CodeContainer::holdCapToggle(Code::FuncReset f) {
+    if (f == Code::FuncReset::FALSE && !whiteMarioSilhouettePatch.is_enabled()) {
         whiteMarioSilhouettePatch.enable();
-    else if (f == Code::FuncReset::TRUE)
+        holdCapPatch.enable();
+    } else if (f == Code::FuncReset::TRUE) {
         whiteMarioSilhouettePatch.disable();
+        holdCapPatch.disable();
+    }
+}
+
+void CodeContainer::holdCap() {
+    TMario *mario;
+    SMS_FROM_GPR(30, mario);
+
+    if (Utils::isRegularMario(mario)) {
+        SMS_TO_GPR(0, 0x12d);
+    } else {
+        SMS_TO_GPR(0, mario->mAnimationID);
+    }
 }
 
 pp::auto_patch noMActorModelsPatch(SMS_PORT_REGION(0x802391bc, 0, 0, 0), BLR, false);
@@ -120,51 +135,10 @@ void CodeContainer::forceTurbo(Code::FuncReset f) {
         forceTurboPatch.disable();
 }
 
-void CodeContainer::setMusicVol(Code::FuncReset f) {		// TODO: actually finish this code lol
-    /*float vol = 0.75;    
-
-    if (f == Code::FuncReset::TRUE) {
-        vol = 0.75;
-        OSReport("-> FuncReset is TRUE!\n");
-    } else if (f == Code::FuncReset::FALSE) {
-        vol = 5;
-        OSReport("-> FuncReset is FALSE!\n");
-    }
-
-    u32 *trackOne = static_cast<u32 *>(MSBgm::smBgmInTrack[0]);
-    if ((u32)trackOne > 0x80000000)
-        trackOne = (u32 *)((trackOne + 0x5)[0]);
-    if ((u32)trackOne > 0x80000000)
-        trackOne = (u32 *)((trackOne + 0xE)[0]);
-
-    u32 *trackTwo = static_cast<u32 *>(MSBgm::smBgmInTrack[1]);
-    if ((u32)trackTwo > 0x80000000)
-        trackTwo = (u32 *)((trackTwo + 0x5)[0]);
-    if ((u32)trackTwo > 0x80000000)
-        trackTwo = (u32 *)((trackTwo + 0xE)[0]);
-
-    u32 *trackThree = static_cast<u32 *>(MSBgm::smBgmInTrack[2]);
-    if ((u32)trackThree > 0x80000000)
-        trackThree = (u32 *)((trackThree + 0x5)[0]);
-    if ((u32)trackThree > 0x80000000)
-        trackThree = (u32 *)((trackThree + 0xE)[0]);
-
-    if ((u32)trackOne > 0x80000000)
-        if ((trackOne[0]) > 0x80000000)
-            ((float *)trackOne[0] + 0x66)[0] = vol;
-    if ((u32)trackTwo > 0x80000000)
-        if ((trackTwo[0]) > 0x80000000)
-            ((float *)trackTwo[0] + 0x66)[0] = vol;
-    if ((u32)trackThree > 0x80000000)
-        if ((trackThree[0]) > 0x80000000)
-            ((float *)trackThree[0] + 0x66)[0] = vol;
-
-    MSBgm::smMainVolume = vol;
-
+void CodeContainer::setMusicVol(Code::FuncReset f) {
     for (int i = 0; i < 3; i++) {
-        MSBgm::setTrackVolume(i, 10, 3, vol);
-    }*/
-
+        MSBgm::setTrackVolume(i, (sinf(currentTime) + 1) * 1.5, 12, 3); // dunno what the 12 or 3 do tbh
+    }
 }
 
 pp::auto_patch SPEENPatch(SMS_PORT_REGION(0x8025C39C, 0, 0, 0), NOP, false);
@@ -581,7 +555,7 @@ void CodeContainer::giantMario(Code::FuncReset f) {
 
 }
 
-void CodeContainer::snakeGame(Code::FuncReset f) {		// TODO: test this w/o fullscreen
+void CodeContainer::snakeGame(Code::FuncReset f) {
 
 	static bool execOnce;
     static bool wasCodeInterrupted = true;
@@ -2060,7 +2034,7 @@ void CodeContainer::invertMario(Code::FuncReset f) {
         gpMarioOriginal->mModelData->mModel->mBaseScale.z *= -1;
 }
 
-void CodeContainer::fireMovement(Code::FuncReset f) {		// TODO: find a way to make mario fire-bounce off of walls like 64
+void CodeContainer::fireMovement(Code::FuncReset f) {
 
 	static bool execOnce = true;
     static u8 mDamage_Orig;
@@ -2142,11 +2116,45 @@ void CodeContainer::tilted(Code::FuncReset f) {
 
 }
 
-void CodeContainer::startTimer(Code::FuncReset f) {
+void CodeContainer::popUpUX(Code::FuncReset f) {
 
 	//gpMarDirector->mGCConsole->mIsResetTimer = true;
 
-	gpMarDirector->mGCConsole->startAppearTimer(0, 1);
+	int randAppear = rand() % 7;
+
+	switch (randAppear) {
+		case 0:
+			gpMarDirector->mGCConsole->startAppearCoin();
+			break;
+
+        case 1:
+            gpMarDirector->mGCConsole->startAppearJetBalloon(1, 10);
+			break;
+
+        case 2:
+            gpMarDirector->mGCConsole->startAppearLife(1);
+            break;
+
+        case 3:
+            gpMarDirector->mGCConsole->startAppearMario(false);
+            break;
+
+        case 4:
+            gpMarDirector->mGCConsole->startAppearRedCoin();
+            break;
+
+        case 5:
+            gpMarDirector->mGCConsole->startAppearStar();
+            break;
+
+        case 6:
+            gpMarDirector->mGCConsole->startAppearTank();
+            break;
+
+        case 7:
+            gpMarDirector->mGCConsole->startAppearTelop(true);
+            break;
+	}
 }
 
 void CodeContainer::superposition(Code::FuncReset f) {		// how tf did we do this with one marPrevPos
@@ -2608,7 +2616,6 @@ void CodeContainer::selfieStick(Code::FuncReset f) {
     static TVec3f mTargetPos;
     static TVec3f mTranslation;
     static TVec3f projectedPos;
-
     
     mTargetPos = *gpMarioPos;
     mTargetPos.y += 100;
@@ -2618,9 +2625,112 @@ void CodeContainer::selfieStick(Code::FuncReset f) {
     f32 yawRadians = (gpMarioOriginal->mAngle.y * M_PI) / 32768.0f;
 
     projectedPos.x += 400 * sinf(yawRadians);
-    projectedPos.z += 400 * cosf(yawRadians);
-    
+    projectedPos.z += 400 * cosf(yawRadians);    
 
     gpCamera->mTargetPos.set(mTargetPos);
     gpCamera->mTranslation.set(projectedPos);
+}
+
+void CodeContainer::rainbowWater(Code::FuncReset f) {
+    static u8 newColor[4] = {0xB0, 0x10, 0x50, 0xFF};
+    static bool rCountUp  = true;
+    static bool gCountUp  = true;
+    static bool bCountUp  = true;
+
+    if (rCountUp && newColor[0] >= 249)
+        rCountUp = false;
+    else if (!rCountUp && newColor[0] <= 6)
+        rCountUp = true;
+
+    if (gCountUp && newColor[1] >= 249)
+        gCountUp = false;
+    else if (!gCountUp && newColor[1] <= 6)
+        gCountUp = true;
+
+    if (bCountUp && newColor[2] >= 249)
+        bCountUp = false;
+    else if (!bCountUp && newColor[2] <= 6)
+        bCountUp = true;
+
+    u8 val = rand() % 6;
+    if (rCountUp)
+        newColor[0] += val;
+    else
+        newColor[0] -= val;
+
+    val = rand() % 6;
+    if (gCountUp)
+        newColor[1] += val;
+    else
+        newColor[1] -= val;
+
+    val = rand() % 6;
+    if (bCountUp)
+        newColor[2] += val;
+    else
+        newColor[2] -= val;
+
+    waterColor->r = newColor[0];
+    waterColor->g = newColor[1];
+    waterColor->b = newColor[2];
+    waterColor->a = newColor[3];
+}
+
+bool isMarioInCam = true;
+TVec3f currentCoords;
+
+pp::auto_patch outOfBodyPatch(SMS_PORT_REGION(0x8023793c, 0, 0, 0), NOP, false);
+pp::togglable_ppc_b outOfBodyViewCheckPatch(SMS_PORT_REGION(0x80217fc4, 0, 0, 0), (void *)codeContainer.outOfBodyViewCheck, false);
+void CodeContainer::outOfBody(Code::FuncReset f) { 
+    static bool execOnce = true;
+
+	if (f == Code::FuncReset::TRUE) {
+        outOfBodyPatch.disable();
+        outOfBodyViewCheckPatch.disable();
+        execOnce = true;
+        return;
+	}
+
+    if (execOnce) {
+        currentCoords = *gpMarioPos;
+        execOnce = false;
+    }
+
+    if (!isMarioInCam) {
+        TVec3f dif = *gpMarioPos;
+        dif.sub(currentCoords);
+        dif.normalize();
+        dif.scale(30.0);
+        currentCoords.add(dif);
+
+        dif = *gpMarioPos;
+        dif.sub(currentCoords);
+        s16 yaw = ((atan2f(dif.x, dif.z) * 32768.0f) / M_PI);
+        f32 horizontalDistance = sqrtf(dif.x * dif.x + dif.z * dif.z);
+        s16 pitch = ((atan2f(horizontalDistance, dif.y) * 32768.0f) / M_PI) - 16384.0f;
+
+        Mtx newMtx;
+        J3DTransformInfo transformInfo = {1.0, 1.0, 1.0, pitch, yaw, 
+            gpMarioOriginal->mAngle.z, currentCoords.x, currentCoords.y, currentCoords.z};
+        J3DGetTranslateRotateMtx(transformInfo, newMtx);
+        PSMTXCopy(newMtx, gpMarioOriginal->mModelData->mModel->mBaseMtx);
+        gpMarioOriginal->mModelData->mModel->calc();
+    }
+
+	outOfBodyPatch.enable();
+    outOfBodyViewCheckPatch.enable();
+}
+
+void CodeContainer::outOfBodyViewCheck() {
+    JDrama::TGraphics *graphics;
+    SMS_FROM_GPR(31, graphics);
+
+    SetViewFrustumClipCheckPerspective(gpCamera->mProjectionFovy, gpCamera->mProjectionAspect,
+                                       ((f32 *)graphics)[0xe8 / 4], 10000.0);
+
+    if (ViewFrustumClipCheck(graphics, (Vec *)(&currentCoords), 200.0f)) {
+        isMarioInCam = true;
+    }
+    else
+        isMarioInCam = false;
 }

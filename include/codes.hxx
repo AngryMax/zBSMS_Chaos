@@ -38,6 +38,7 @@
 #include <SMS/Manager/MarioParticleManager.hxx>
 #include <SMS/MarioUtil/LightUtil.hxx>
 #include <SMS/MarioUtil/DrawUtil.hxx>
+#include <SMS/Manager/ModelWaterManager.hxx>
 
 #include <BetterSMS/game.hxx>
 #include <BetterSMS/module.hxx>
@@ -77,7 +78,7 @@ extern float currentTime;  // unit = seconds
 #define PAUSE_WATER             0
 #define DUMMY_THICC_MARIO       1
 #define NO_MARIO_REDRAW         2
-#define WHITE_MARIO_SILHOUETTE  3
+#define HOLD_CAP				3
 #define NO_MACTOR_MODELS        4
 #define STOP_TLIVEACTOR_PERFORM 5
 #define STOP_CONTROL_INPUTS     6
@@ -155,7 +156,7 @@ extern float currentTime;  // unit = seconds
 #define FIRE_MOVEMENT			78
 #define LOL						79
 #define TILTED					80
-#define START_TIMER				81
+#define POPUP_UX				81
 #define SUPERPOSITION			82
 #define WIDE_MARIO				83
 #define SIGHTSEER				84
@@ -172,6 +173,8 @@ extern float currentTime;  // unit = seconds
 #define FAKE_DEATH				95
 #define TINY_MARIO				96
 #define SELFIE_STICK			97
+#define RAINBOW_WATER			98
+#define OUT_OF_BODY				99
 
 #define NO_WHITELIST		   255		// used to stay in DEV_MODE w/o a whitelist
 
@@ -215,7 +218,7 @@ public:
     float baseGracePeriod;		// TODO: see if changing the grace period setting affects this value appropriately
     u32 maxActiveCodes;
     s32 addTo_maxActiveCodes;
-    u32 baseMaxActiveCodes;		// TODO? might be able to deprecate this into addTo_maxActiveCodes, but might require some work in modulateCodeSlots | also TODO: see if changing the grace period setting affects this value appropriately
+    u32 baseMaxActiveCodes;		// TODO: see if changing the grace period setting affects this value appropriately
     u32 activeCodes;
 
     J2DTextBox *codeDisplay;
@@ -492,7 +495,8 @@ public:
     static void pauseWater(Code::FuncReset);        
     static void dummyThiccMario(Code::FuncReset);   
     static void noMarioRedraw(Code::FuncReset);
-    static void whiteMarioSilhouette(Code::FuncReset);
+    static void holdCapToggle(Code::FuncReset);	 // this function is split into 2
+    static void holdCap();
     static void noMActorModels(Code::FuncReset);
     static void stopTLiveActorPerform(Code::FuncReset);
     static void stopControlInputs(Code::FuncReset);
@@ -575,7 +579,7 @@ public:
     static void fireMovement(Code::FuncReset);
     static void lol(Code::FuncReset);
     static void tilted(Code::FuncReset);
-    static void startTimer(Code::FuncReset);
+    static void popUpUX(Code::FuncReset);
     static void superposition(Code::FuncReset);
     static void wideMario(Code::FuncReset);
     static void sightseer(Code::FuncReset);
@@ -595,6 +599,9 @@ public:
     static void reverseMario(J3DTransformInfo &, Mtx);
     static void tinyMario(Code::FuncReset);
     static void selfieStick(Code::FuncReset);
+    static void rainbowWater(Code::FuncReset);
+    static void outOfBody(Code::FuncReset);
+    static void outOfBodyViewCheck();
 };
 
 // Single instance of CodeContainer that's accessed throughout whole project
@@ -658,6 +665,15 @@ namespace Utils {
             liveActor->mActorData->mModel->calc();
             return true;
         } else
+            return false;
+    }
+
+    // this returns whether this is a regualar mario as opposed to shadow mario or piantissimo
+    static bool isRegularMario(TMario *mario) {
+        u32 vtable = *(u32 *)mario;
+        if (vtable == 0x803DD660)
+            return true;
+        else
             return false;
     }
 }

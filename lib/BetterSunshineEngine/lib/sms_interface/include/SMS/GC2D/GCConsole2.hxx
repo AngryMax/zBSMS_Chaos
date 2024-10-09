@@ -14,7 +14,16 @@ public:
         J2DPicture *mInactivePicture;
     };
 
+    void startAppearCoin();
+    void startAppearJetBalloon(int, int); // 1, 10
+    void startAppearLife(int); // 1
+    void startAppearMario(bool);
+    void startAppearRedCoin();
+    void startAppearStar();
+    void startAppearTank();
+    void startAppearTelop(bool);
 	void startAppearTimer(int, s32);
+    void startMoveTimer(int);
 
     u32 _00[0x24 / 4];    // 0x0000
     s32 mShineCount;      // 0x0024

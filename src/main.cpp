@@ -384,7 +384,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {PAUSE_WATER,               "Pause Water",			            50,			 5,	        codeContainer.pauseWater},
         {DUMMY_THICC_MARIO,         "Dummy Thicc Mario",		        40,			15,		    codeContainer.dummyThiccMario},	
         {NO_MARIO_REDRAW,           "No Mario Redraw",		            60,			15,		    codeContainer.noMarioRedraw},									
-        {WHITE_MARIO_SILHOUETTE,    "White Mario Silhouette",           50,			15,		    codeContainer.whiteMarioSilhouette},
+        {HOLD_CAP,                  "Cappy?",                           50,			45,		    codeContainer.holdCapToggle},
         {NO_MACTOR_MODELS,          "The Void Calls...",		        20,			20,		    codeContainer.noMActorModels},
         {STOP_TLIVEACTOR_PERFORM,   "Untitled",                         20,         20,         codeContainer.stopTLiveActorPerform},
         {STOP_CONTROL_INPUTS,       ":)",                               20,			 1,		    codeContainer.stopControlInputs},
@@ -395,7 +395,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {PATHETIC_FLUDD,            "Pathetic FLUDD",                   70,			30,		    codeContainer.sadFLUDD},
         {LAND_MOVEMENT_LOCK,        "Landing Movement Lock",            40,			30,		    codeContainer.landMovementLock},
         {UNLIMITED_TURBO,           "Unlimited Turbo but no Turbo",     25,			30,		    codeContainer.forceTurbo},
-        {CRESCENDO,                 "Crescendo",                        30,         10,         codeContainer.setMusicVol},
+        {CRESCENDO,                 "Crescendo",                        30,         30,         codeContainer.setMusicVol},
         {SPEEN_ID,                  "S P E E N",                        40,         10,         codeContainer.SPEEN},
         {NOZZLE_ROLL,               "Nozzle Roll",				        35,          7,         codeContainer.changeNozzleRandom},
         {GIVE_COINS,                "We're Rich!",                       5,          5,         codeContainer.giveCoins},
@@ -462,7 +462,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {FIRE_MOVEMENT,				"MAMA!!",						    50,			45,		    codeContainer.fireMovement},
         {LOL,						"lol",								50,			20,		    codeContainer.lol},
         {TILTED,					"Tilted",							50,			30,		    codeContainer.tilted},
-        {START_TIMER,				"Start Timer",						50,			 1,		    codeContainer.startTimer},		// TODO: finish/modify this code
+        {POPUP_UX,				    "Popups",						    50,			 1,		    codeContainer.popUpUX},
         {SUPERPOSITION,				"Superposition",					50,			20,		    codeContainer.superposition},
         {WIDE_MARIO,				"Elastic Mario",					50,			20,		    codeContainer.wideMario},
         {SIGHTSEER,					"Delfino Sightseer",                50,			 1,			codeContainer.sightseer},
@@ -478,20 +478,20 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {REVERSE_MARIO,				"Reverse Mario",					50,			30,			codeContainer.reverseMarioToggle},
         {FAKE_DEATH,				"Kill Mario",						50,			 5,			codeContainer.fakeDeath},
         {TINY_MARIO,				"Tiny Mario",						50,			30,			codeContainer.tinyMario},
-        {SELFIE_STICK,				"Selfie Stick",						50,			30,			codeContainer.selfieStick}
+        {SELFIE_STICK,				"Selfie Stick",						50,			30,			codeContainer.selfieStick},
+        {RAINBOW_WATER,				"Rainbow Water!",					50,			30,			codeContainer.rainbowWater},
+        {OUT_OF_BODY,				"Lucid Dream",					    50,			30,			codeContainer.outOfBody}
         // idea: code that adds companion (maybe companion can pick you up and throw you)
         // idea: inception code which does something with the mirrow version of stage bmds
         // idea: a code which draws the collision triangles in a radius (the matrix)
         // idea: bouncy surface code (make npcs or something bouncy to the touch)
-        // idea: rainbow water
 		// idea: a code that sets the camera to focus on the nearest object to mario
-        // idea: out of body code (blr out calcAnim)
 	};
 
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {SELFIE_STICK};
+    u8 whitelist[] = {POPUP_UX};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
@@ -612,11 +612,7 @@ BETTER_SMS_FOR_CALLBACK static void drawCodeDisplay(TMarDirector *director,  con
             }
         #else
             if (c.isActive) {
-				if (c.codeID == PAUSE_TIMERS)
-                    snprintf(displayBuffer, NORMAL_BUF, "%s%s: %.0f%s\n", displayBuffer, c.name,
-                        c.duration - (alt_currentTime - c.timeCalled), "s");
-                else
-					snprintf(displayBuffer, NORMAL_BUF, "%s%s: %.0f%s\n", displayBuffer, c.name,
+				snprintf(displayBuffer, NORMAL_BUF, "%s%s: %.0f%s\n", displayBuffer, c.name,
                          c.duration - (currentTime - c.timeCalled), "s");
             }
         #endif
@@ -657,6 +653,9 @@ BETTER_SMS_FOR_CALLBACK static void resetCodesOnStageExit(TApplication *tapp) {
 
     if (codeContainer.isCodeActive(PICK_UP_OBJ))
         codeContainer.resetCode(PICK_UP_OBJ);
+
+    if (codeContainer.isCodeActive(OUT_OF_BODY))
+        codeContainer.resetCode(OUT_OF_BODY);
 }
 
 // Module definition
