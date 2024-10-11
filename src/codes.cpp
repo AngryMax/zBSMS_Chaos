@@ -2157,7 +2157,7 @@ void CodeContainer::popUpUX(Code::FuncReset f) {
 	}
 }
 
-void CodeContainer::superposition(Code::FuncReset f) {		// TODO: make this code reset on stage change
+void CodeContainer::superposition(Code::FuncReset f) {
 
 	static TVec3f marPrevPos;
     static f32 timeToWait   = 0;
@@ -2176,7 +2176,7 @@ void CodeContainer::superposition(Code::FuncReset f) {		// TODO: make this code 
     }
 
     if (timeToWait == 0) {
-        timeToWait  = ((rand() % 8) + 3) / 10.0;
+        timeToWait  = 3;
         timeStarted = currentTime;
     }
 

@@ -397,13 +397,13 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {UNLIMITED_TURBO,           "Unlimited Turbo but no Turbo",     25,			30,		    codeContainer.forceTurbo},
         {CRESCENDO,                 "Crescendo",                        50,         30,         codeContainer.setMusicVol},
         {SPEEN_ID,                  "S P E E N",                        45,         10,         codeContainer.SPEEN},
-        {NOZZLE_ROLL,               "Nozzle Roll",				        40,          7,         codeContainer.changeNozzleRandom},
+        {NOZZLE_ROLL,               "Nozzle Roulette",			        40,          7,         codeContainer.changeNozzleRandom},
         {GIVE_COINS,                "We're Rich!",                       5,          5,         codeContainer.giveCoins},
         {SPAWN_YOSHI,               "Spawn Yoshi",                      25,         30,         codeContainer.spawnYoshi},
         {SUN_DRIP,                  "Sun Drip",					        55,			30,		    codeContainer.sunglassesAndShineShirt},
 		{SPEED_UP_TEMPO,            "Affrettando",				        60,			 5,		    codeContainer.speedUpTempo},
         {TP_MARIO_BACK,             "Return to Sender",			        10,			15,		    codeContainer.tpMarioBack},
-        {HP_ROULETTE,               "High Stakes Goomba",		        35,			10,		    codeContainer.hpRoulette},		// TODO: make better name
+        {HP_ROULETTE,               "HP Roulette",				        40,			10,		    codeContainer.hpRoulette},
         {LUIGI_SLIDE,               "Luigi Slide",				        50,			20,		    codeContainer.luigiSlide},
         {FIREBALL,                  "FIREBALL!!!",		                50,			25,		    codeContainer.emitFireball},
 		{ASCEND,                    "a s c e n d",				        25,			30,		    codeContainer.ascend},
@@ -491,7 +491,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {POPUP_UX};
+    u8 whitelist[] = {SUPERPOSITION};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
@@ -656,6 +656,9 @@ BETTER_SMS_FOR_CALLBACK static void resetCodesOnStageExit(TApplication *tapp) {
 
     if (codeContainer.isCodeActive(OUT_OF_BODY))
         codeContainer.resetCode(OUT_OF_BODY);
+
+    if (codeContainer.isCodeActive(SUPERPOSITION))
+        codeContainer.resetCode(SUPERPOSITION);
 }
 
 // Module definition
