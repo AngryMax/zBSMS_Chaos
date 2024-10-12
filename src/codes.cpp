@@ -26,14 +26,17 @@ void CodeContainer::noMarioRedraw(Code::FuncReset f) {
 }
 
 pp::auto_patch whiteMarioSilhouettePatch(SMS_PORT_REGION(0x8024da58, 0, 0, 0), NOP, false);
-pp::togglable_ppc_bl holdCapPatch(SMS_PORT_REGION(0x80244c48, 0, 0, 0), (void *)codeContainer.holdCap, false);
+pp::togglable_ppc_bl holdCapPatch1(SMS_PORT_REGION(0x80244c48, 0, 0, 0), (void *)codeContainer.holdCap, false);
+pp::auto_patch holdCapPatch2(SMS_PORT_REGION(0x80244d5c, 0, 0, 0), NOP, false);
 void CodeContainer::holdCapToggle(Code::FuncReset f) {
     if (f == Code::FuncReset::FALSE && !whiteMarioSilhouettePatch.is_enabled()) {
         whiteMarioSilhouettePatch.enable();
-        holdCapPatch.enable();
+        holdCapPatch1.enable();
+        holdCapPatch2.enable();
     } else if (f == Code::FuncReset::TRUE) {
         whiteMarioSilhouettePatch.disable();
-        holdCapPatch.disable();
+        holdCapPatch1.disable();
+        holdCapPatch2.disable();
     }
 }
 

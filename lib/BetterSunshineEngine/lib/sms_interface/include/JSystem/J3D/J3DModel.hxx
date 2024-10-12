@@ -43,9 +43,9 @@ public:
     J3DJoint **mJoints;
     u16 mMaterialNum;          // I think this is a material count
     J3DMaterial **mMaterials;  // I think this is a J3DMaterial ptr
-    u16 mStageNum;             // ?
+    u16 mJointNameNum;             
     JUTNameTab **mJointNames;  // JUTNameTab (joints)
-    u16 mJointNameNum;
+    u16 _34;
     u32 _38;
     J3DVertexData mVertexData;  // _3C
     u32 _80;
