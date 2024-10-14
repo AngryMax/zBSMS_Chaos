@@ -469,7 +469,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {STAR_POWER,				"Star Power",						40,			10,			codeContainer.starPowerToggle},
         {TRIPPY_TEXTURES,			"Trippy",							50,			40,			codeContainer.trippyTextures},
         {IMA_TIRED,					"I'ma Tired!",						50,			 1,			codeContainer.imaTired},
-        {FREEZE_ANIMS,				"Freeze!",							60,			30,			codeContainer.freezeAnims},
+        {FREEZE_ANIMS,				"Stop Motion",						60,			30,			codeContainer.freezeAnims},
         {FAST_N_FURIOUS,			"Move or... DIE!!!",				25,			30,			codeContainer.fastNFurious},
         {DIVING_MODE,				"CAMERA BAD",						50,			30,			codeContainer.divingMode},
         {PAUSE_TIMERS,				"Pause Codes",						20,			30,			codeContainer.pauseTimers},	
@@ -491,7 +491,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {CHAOS_CODE};
+    u8 whitelist[] = {DIVING_MODE};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
@@ -561,6 +561,10 @@ BETTER_SMS_FOR_CALLBACK static void requestEndAllCodes(TMarDirector *director) {
 #endif
 
 BETTER_SMS_FOR_CALLBACK static void chaosEngine(TMarDirector *director, const J2DOrthoGraph *ortho) {
+    static bool shouldUpdateChaos = true;
+    f32 frameRate = BetterSMS::getFrameRate();
+    frameRate == 60 ? shouldUpdateChaos ^= 1 : shouldUpdateChaos = true;
+    if (!shouldUpdateChaos) return;
 
     if (director->mCurState == TMarDirector::Status::STATE_NORMAL) {
         float timeSinceLastRoll = currentTime - codeContainer.lastRollTime;
@@ -568,6 +572,9 @@ BETTER_SMS_FOR_CALLBACK static void chaosEngine(TMarDirector *director, const J2
             codeContainer.lastRollTime = currentTime;
         codeContainer.checkCodeTimers();
         codeContainer.iterateThroughCodes();
+
+        if (gpMarioOriginal->mController->mButtons.mInput & TMarioGamePad::DPAD_UP)
+            gpMarioOriginal->loserExec();
     }
 }
 
@@ -609,11 +616,13 @@ BETTER_SMS_FOR_CALLBACK static void drawCodeDisplay(TMarDirector *director,  con
         }
     }
 
+    bool isWidescreen = BetterSMS::getScreenRenderWidth() != 600;
+
     // draw drop shadow
-    Utils::drawCodeDisplay(BLACK, 16, -83, 202);
+    Utils::drawCodeDisplay(BLACK, 16, (-93 * isWidescreen) + 10, 202);
 
     // draw regular text
-    Utils::drawCodeDisplay(GREEN_TOP, GREEN_BOTTOM, 16, -85, 200);
+    Utils::drawCodeDisplay(GREEN_TOP, GREEN_BOTTOM, 16, (-95 * isWidescreen) + 10, 200);
 }
 
 // resets and/or ends codes in between stages if need be
@@ -623,6 +632,12 @@ BETTER_SMS_FOR_CALLBACK static void resetCodesOnStageExit(TApplication *tapp) {
         codeContainer.endCode(NO_MARIO_REDRAW); 
         codeContainer.resetCode(NO_MARIO_REDRAW);
     }
+
+    if (codeContainer.isCodeActive(SPAWN_YOSHI))
+        codeContainer.resetCode(SPAWN_YOSHI);
+
+    if (codeContainer.isCodeActive(TP_MARIO_BACK))
+        codeContainer.resetCode(TP_MARIO_BACK);
 
     if (codeContainer.isCodeActive(STREEEEETCH)) {
         codeContainer.endCode(STREEEEETCH);
@@ -649,6 +664,9 @@ BETTER_SMS_FOR_CALLBACK static void resetCodesOnStageExit(TApplication *tapp) {
 
     if (codeContainer.isCodeActive(SUPERPOSITION))
         codeContainer.resetCode(SUPERPOSITION);
+
+    if (codeContainer.isCodeActive(SIGHTSEER))
+        codeContainer.resetCode(SIGHTSEER);
 }
 
 BETTER_SMS_FOR_CALLBACK static void applyChaosSettings(TMarDirector *director) {

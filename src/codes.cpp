@@ -734,9 +734,9 @@ void CodeContainer::chaosCode(Code::FuncReset f) {
         char *displayBuffer = codeContainer.codeDisplay->getStringPtr();
         memset(displayBuffer, 0, NORMAL_BUF);
         snprintf(displayBuffer, NORMAL_BUF, "Prepare for");
-        Utils::drawCodeDisplay(RED, WHITE, 48, 155, 150);
+        Utils::drawCodeDisplay(RED, WHITE, 48, 145, 150);
         snprintf(displayBuffer, NORMAL_BUF, "CHAOS");
-        Utils::drawCodeDisplay(RED, 60, 180, 220);
+        Utils::drawCodeDisplay(RED, 60, 170, 220);
     } else
         codeContainer.rollTime = 0;
 }
@@ -2429,29 +2429,19 @@ void CodeContainer::imaTired(Code::FuncReset f) {
 
 pp::auto_patch freezeAnimsPatch(SMS_PORT_REGION(0x802e1730, 0, 0, 0), BLR, false);
 void CodeContainer::freezeAnims(Code::FuncReset f) {
+    static int calledNum = 0;
 	if (f == Code::FuncReset::FALSE && !freezeAnimsPatch.is_enabled())
         freezeAnimsPatch.enable();
-    else if (f == Code::FuncReset::TRUE ||
-             gpMarioOriginal->mState == TMario::State::STATE_G_POUND_RECOVER ||
-             gpMarioOriginal->mState == TMario::State::STATE_SLAM ||
-             gpMarioOriginal->mState == TMario::State::STATE_KNCK_GND ||
-             gpMarioOriginal->mState == TMario::State::STATE_KNCK_LND ||
-             gpMarioOriginal->mState == TMario::State::STATE_HANGCLIMB ||
-             gpMarioOriginal->mState == TMario::State::STATE_GRABBING_EMPTY ||
-             gpMarioOriginal->mState == TMario::State::STATE_GRABBING ||
-             gpMarioOriginal->mState == TMario::State::STATE_NPC_PUTDOWN ||
-             gpMarioOriginal->mState == TMario::State::STATE_NPC_THROW ||
-             gpMarioOriginal->mState == TMario::State::STATE_GRATE_GRAB ||
-             gpMarioOriginal->mState == TMario::State::STATE_GRATE_PUNCH ||
-             gpMarioOriginal->mState == TMario::State::STATE_GRATE_TRANSITION ||
-             gpMarioOriginal->mState == TMario::State::STATE_GRATE_KICK ||
-             gpMarioOriginal->mState == TMario::State::STATE_HANGCLIMB_DOWN)
-        freezeAnimsPatch.disable();		// im leaving the stuck in sand animation as a softlock bc fuck it
+    else if (f == Code::FuncReset::TRUE || calledNum % 4 == 0)
+        freezeAnimsPatch.disable();
+
+	calledNum++;
 }
 
 void CodeContainer::fastNFurious(Code::FuncReset f) {
 
     const f32 SPEED_MIN = 40;
+    const f32 SPEED_ADD = 85;
     f32 mForwardSpeed   = gpMarioOriginal->mForwardSpeed;
     static f32 depletionHP = -200;  // depletionHP starts at -200, if it hits 0 you die.
     u8 speed_meterX  = 150;
@@ -2472,7 +2462,9 @@ void CodeContainer::fastNFurious(Code::FuncReset f) {
         mForwardSpeed = 1;
 
     if (mForwardSpeed < SPEED_MIN)
-        depletionHP += 0.5;   
+        depletionHP += 0.425;   
+	else if (mForwardSpeed > SPEED_ADD && depletionHP > -200)
+        depletionHP -= 0.1;   
 
 	if (depletionHP >= 0) {
         gpMarioOriginal->loserExec();
@@ -2501,13 +2493,16 @@ void CodeContainer::fastNFurious(Code::FuncReset f) {
     Utils::drawCodeDisplay(WHITE, GRAY, 32, depletion_meterX - 12, depletion_meterY - 5);
 }
 
+pp::auto_patch divingModePatch(SMS_PORT_REGION(0x80140cd0, 0, 0, 0), NOP, false);
 void CodeContainer::divingMode(Code::FuncReset f) {
 
 	if (f == Code::FuncReset::TRUE) {
         gpMarioOriginal->mAttributes.mGainHelmetFlwCamera = false;		// its not a bug, it's a feature ;^)
+        divingModePatch.disable();
         return;
-    }
+    } 
 
+    divingModePatch.enable();
 	gpMarioOriginal->mAttributes.mGainHelmetFlwCamera = true;
 }
 
