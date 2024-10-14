@@ -491,7 +491,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {DIVING_MODE};
+    u8 whitelist[] = {NO_WHITELIST};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
@@ -680,6 +680,26 @@ BETTER_SMS_FOR_CALLBACK static void applyChaosSettings(TMarDirector *director) {
 	OSReport("-> %f\n", codeContainer.rollTime);
 }
 
+BETTER_SMS_FOR_CALLBACK static void titleScreenEngine(TMarDirector *director) {
+
+	if (director->mAreaID != 15)
+        return;
+
+	static bool shouldUpdateChaos = true;
+    f32 frameRate                 = BetterSMS::getFrameRate();
+    frameRate == 60 ? shouldUpdateChaos ^= 1 : shouldUpdateChaos = true;
+    if (!shouldUpdateChaos)
+        return;
+
+    if (director->mCurState == TMarDirector::Status::STATE_NORMAL) {
+        float timeSinceLastRoll = currentTime - codeContainer.lastRollTime;
+        if (timeSinceLastRoll >= codeContainer.rollTime && codeContainer.optionSZSActivateCode())
+            codeContainer.lastRollTime = currentTime;
+        codeContainer.checkCodeTimers();
+        codeContainer.iterateThroughCodes();
+    }
+}
+
 // Module definition
 
 static void initModule() {
@@ -693,6 +713,7 @@ static void initModule() {
     BetterSMS::Stage::addDraw2DCallback(drawCodeDisplay);
     BetterSMS::Stage::addExitCallback(resetCodesOnStageExit);
     BetterSMS::Stage::addInitCallback(applyChaosSettings);
+    BetterSMS::Stage::addUpdateCallback(titleScreenEngine);
 
 	#if DEV_MODE
     BetterSMS::Stage::addUpdateCallback(requestEndAllCodes);

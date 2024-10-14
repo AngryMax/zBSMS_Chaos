@@ -287,6 +287,23 @@ public:
         return true;
     }
 
+	bool optionSZSActivateCode() {
+        int rollWinner = getWeightedRand();
+
+        if (codeList[rollWinner].isActive)
+            return false;
+
+        if (isConflictingCodeActive(codeList[rollWinner].codeID))
+            return false;
+
+		if (!isOptionSZSCode(codeList[rollWinner].codeID))
+            return false;
+
+        codeList[rollWinner].isActive   = true;
+        codeList[rollWinner].timeCalled = currentTime;
+        return true;
+    }
+
     void iterateThroughCodes() {
         for (auto c : codeList) {
             if (c.isActive && c.pFunc != nullptr) {
@@ -450,6 +467,37 @@ public:
         }
 
 		return false;
+	}
+
+	bool isOptionSZSCode(int codeID) {
+
+		switch (codeID) {
+            case PAUSE_WATER:
+            case SPAM_SPRAY_CENTRAL:
+            case PATHETIC_FLUDD:
+            case SPEEN_ID:
+            case HP_ROULETTE:
+            case SIMON_SAYS:
+            case SNAKE:
+            case CHAOS_CODE:
+            case DISABLE_WATER_COL:
+            case CRAZY_COLLISION:
+            case INV_WATER_MOMENTUM:
+            case MOVE_SHINES:
+            case TANK_CONTROLS:
+            case PAINT_RANDOM_COLLISION:
+            case SOMETIMES_DOUBLE_COINS:
+            case NOCLIP:
+            case JUMPSCARE:
+            case RANDOM_SPRAY:
+            case SHRINK_RAY:
+            case LOL:
+            case FAST_N_FURIOUS:
+			case DIVING_MODE:
+                return false;
+		}
+
+		return true;
 	}
 
 private:
