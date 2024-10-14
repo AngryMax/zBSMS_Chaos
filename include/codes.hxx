@@ -83,7 +83,7 @@ extern float currentTime;  // unit = seconds
 #define STOP_TLIVEACTOR_PERFORM 5
 #define STOP_CONTROL_INPUTS     6
 #define SPAM_SPRAY_CENTRAL      7
-#define ADD_CODE_SLOT           8
+#define ROLL_EXTRA_CODE          8
 #define SMALL_JUMPS             9
 #define CLUMSY_JUMPS            10
 #define PATHETIC_FLUDD          11
@@ -131,7 +131,7 @@ extern float currentTime;  // unit = seconds
 #define MAKE_MARIO_OBJ			53
 #define POPUP_SAVE_PROMPT		54
 #define PING_LAG				55
-#define NO_GRACE				56
+#define HALVE_ROLL_TIME			56
 #define EARTHQUAKE				57
 #define SOMETIMES_DOUBLE_COINS  58
 #define REVERSE_RARITIES	    59
@@ -185,7 +185,6 @@ public:
     u8 codeID;                              // unique code id
     char name[CODE_NAME_BUFFER_SIZE];       // unique code display name
     bool isActive;                          // whether the code is active
-    bool isGraced;                          // whether the code is in grace period
     u8 rarity;                              // rarity of code 1-100 (1 = rarest, 100 = most common)
     float duration;                         // code duration in seconds
     float timeCalled;                       // var used to store when a code is activated
@@ -201,7 +200,6 @@ public:
         codeID = c;
         strncpy(name, n, CODE_NAME_BUFFER_SIZE);
         isActive			= false;
-        isGraced            = false;
         rarity              = r;
         duration            = d;
         timeCalled          = 0;
@@ -213,22 +211,17 @@ class CodeContainer {
 public:
     int currentCodeCount = 0;
     Code codeList[CODE_COUNT];
-
-    float gracePeriod;			
-    float baseGracePeriod;		// TODO: see if changing the grace period setting affects this value appropriately
-    u32 maxActiveCodes;
-    s32 addTo_maxActiveCodes;
-    u32 baseMaxActiveCodes;		// TODO: see if changing the grace period setting affects this value appropriately
-    u32 activeCodes;
+		
+    float rollTime;			
+    float baseRollTime;
+    float lastRollTime;
 
     J2DTextBox *codeDisplay;
 
     CodeContainer() {
-        activeCodes     = 0; 
-        maxActiveCodes  = 4;
-        baseMaxActiveCodes = maxActiveCodes;
-        gracePeriod     = 7;
-        baseGracePeriod    = gracePeriod;
+        rollTime           = 8;
+        baseRollTime = rollTime;
+        lastRollTime       = -rollTime;
         codeDisplay = nullptr;
     }
 
@@ -248,16 +241,6 @@ public:
                 return true;
         }
         
-        return false;
-    }
-
-    // checks if code with specified id is in grace period
-    bool isCodeGraced(u8 id) {
-        for (Code c : codeList) {
-            if (c.codeID == id && c.isGraced == true)
-                return true;
-        }
-
         return false;
     }
 
@@ -290,143 +273,18 @@ public:
         return false;
     }
 
-    void activateCodes() {
-        while (activeCodes < (addTo_maxActiveCodes + maxActiveCodes) && activeCodes < currentCodeCount) {
+    bool activateCode() {
+        int rollWinner = getWeightedRand();
 
-            int rollWinner = getWeightedRand();
-            
-            if (codeList[rollWinner].isActive || codeList[rollWinner].isGraced) {
-                continue;
-            }
-            
-            switch (codeList[rollWinner].codeID) {
+        if (codeList[rollWinner].isActive)
+            return false;
 
-                case NO_MARIO_REDRAW:
-                    if (isCodeActive(CHAOS_CODE) || isCodeActive(TILTED))
-                        return;
-                    break;
+        if (isConflictingCodeActive(codeList[rollWinner].codeID))
+            return false;
 
-                case SCRAMBLE_TEXTURES:
-                    if (isCodeActive(SIMON_SAYS) || isCodeActive(SNAKE) || isCodeActive(FAST_N_FURIOUS))
-                        return;
-                    break;
-
-                case SIMON_SAYS:
-                    if (isCodeActive(SCRAMBLE_TEXTURES) || isCodeActive(CHAOS_CODE))
-                        return;
-                    break;
-
-                case SNAKE:
-                    if (isCodeActive(CHAOS_CODE) || isCodeActive(SCRAMBLE_TEXTURES))
-                        return;
-                    break;
-
-                case MOON_GRAVITY:
-                    if (isCodeActive(CRAZY_GRAVITY))
-                        return;
-                    break;
-
-                case CRAZY_GRAVITY:
-                    if (isCodeActive(MOON_GRAVITY))
-                        return;
-                    if (isCodeActive(FIRE_MOVEMENT) && rand() % 10 != 0)
-                        return;
-                    break;
-
-                case CHAOS_CODE:
-                    if (isCodeActive(NOCLIP) || isCodeActive(FAST_N_FURIOUS))
-                        return;
-                    break;
-
-                case UPSIDEDOWN_CAM:
-                    if (isCodeActive(QUAKE_PRO) || isCodeActive(CS_PLAYERS))
-                        return;
-                    break;
-
-                case QUAKE_PRO:
-                    if (isCodeActive(UPSIDEDOWN_CAM) || isCodeActive(CS_PLAYERS))
-                        return;
-					break;
-
-                case CS_PLAYERS:
-                    if (isCodeActive(QUAKE_PRO) || isCodeActive(UPSIDEDOWN_CAM))
-						return;
-                    break;
-
-				case ASCEND:
-                    if (isCodeActive(FIRE_MOVEMENT) && rand() % 10 != 0)
-                        return;
-                    break;
-
-				case FIRE_MOVEMENT:
-                    if (isCodeActive(ASCEND) && rand() % 10 != 0)
-                        return;
-                    if (isCodeActive(CRAZY_GRAVITY) && rand() % 10 != 0)
-                        return;
-                    break;
-
-				case POPUP_SAVE_PROMPT:
-                    if (isCodeActive(CHAOS_CODE))
-                        return;
-                    break;
-
-				case TILTED:
-                    if (isCodeActive(NO_MARIO_REDRAW))
-                        return;
-                    break;
-
-                case GIANT_MARIO:
-                    if (isCodeActive(WIDE_MARIO) || isCodeActive(TINY_MARIO))
-                        return;
-                    break;
-
-                case WIDE_MARIO:
-                    if (isCodeActive(GIANT_MARIO))
-                        return;
-                    break;
-
-                case SIGHTSEER:
-                    if (isCodeActive(PING_LAG))
-                        return;
-                    break;
-
-                case WINDY_DAY:
-                    if (isCodeActive(FAST_N_FURIOUS))
-                        return;
-                    break;
-
-                case TANK_CONTROLS:
-                    if (isCodeActive(FAST_N_FURIOUS) && rand() % 10 != 0)
-                        return;
-                    break;
-
-                case FAST_N_FURIOUS:
-                    if ((isCodeActive(TANK_CONTROLS) && rand() % 10 != 0) || isCodeActive(CHAOS_CODE) || isCodeActive(SCRAMBLE_TEXTURES) || isCodeActive(WINDY_DAY))
-						return;
-                    break;
-
-                case OFFSET_MARIO:
-                    if (isCodeActive(REVERSE_MARIO))
-                        return;
-                    break;
-
-                case REVERSE_MARIO:
-                    if (isCodeActive(OFFSET_MARIO))
-                        return;
-                    break;
-
-				case TINY_MARIO:
-                    if (isCodeActive(GIANT_MARIO) || isCodeActive(WIDE_MARIO))
-                        return;
-                    break;
-            }
-
-            codeList[rollWinner].isActive = true;
-            codeList[rollWinner].timeCalled = currentTime;
-            activeCodes++;
-        }
-
-		modulateCodeSlots();
+        codeList[rollWinner].isActive   = true;
+        codeList[rollWinner].timeCalled = currentTime;
+        return true;
     }
 
     void iterateThroughCodes() {
@@ -446,13 +304,153 @@ public:
                     c.pFunc(Code::FuncReset::TRUE);
 				
                 c.isActive = false;
-                c.isGraced = true;
-            } else if (c.isGraced && c.duration - elapsedTime <= -gracePeriod) {
-                activeCodes--;
-                c.isGraced = false;
             }
         }
     }
+
+	bool isConflictingCodeActive(int codeID) {
+        switch (codeID) {
+
+            case NO_MARIO_REDRAW:
+                if (isCodeActive(CHAOS_CODE) || isCodeActive(TILTED))
+                    return true;
+                break;
+
+            case SCRAMBLE_TEXTURES:
+                if (isCodeActive(SIMON_SAYS) || isCodeActive(SNAKE) || isCodeActive(FAST_N_FURIOUS))
+                    return true;
+                if (isCodeActive(CHAOS_CODE) && rand() % 100 != 0)
+                    return true;
+                break;
+
+            case SIMON_SAYS:
+                if (isCodeActive(SCRAMBLE_TEXTURES) || isCodeActive(CHAOS_CODE))
+                    return true;
+                break;
+
+            case SNAKE:
+                if (isCodeActive(CHAOS_CODE) || isCodeActive(SCRAMBLE_TEXTURES))
+                    return true;
+                break;
+
+            case MOON_GRAVITY:
+                if (isCodeActive(CRAZY_GRAVITY))
+                    return true;
+                break;
+
+            case CRAZY_GRAVITY:
+                if (isCodeActive(MOON_GRAVITY))
+                    return true;
+                if (isCodeActive(FIRE_MOVEMENT) && rand() % 10 != 0)
+                    return true;
+                break;
+
+            case UPSIDEDOWN_CAM:
+                if (isCodeActive(QUAKE_PRO) || isCodeActive(CS_PLAYERS))
+                    return true;
+                break;
+
+            case QUAKE_PRO:
+                if (isCodeActive(UPSIDEDOWN_CAM) || isCodeActive(CS_PLAYERS))
+                    return true;
+                break;
+
+            case CS_PLAYERS:
+                if (isCodeActive(QUAKE_PRO) || isCodeActive(UPSIDEDOWN_CAM))
+                    return true;
+                break;
+
+            case ASCEND:
+                if (isCodeActive(FIRE_MOVEMENT) && rand() % 10 != 0)
+                    return true;
+                break;
+
+            case FIRE_MOVEMENT:
+                if (isCodeActive(ASCEND) && rand() % 10 != 0)
+                    return true;
+                if (isCodeActive(CRAZY_GRAVITY) && rand() % 10 != 0)
+                    return true;
+                break;
+
+            case POPUP_SAVE_PROMPT:
+                if (isCodeActive(CHAOS_CODE))
+                    return true;
+                break;
+
+            case TILTED:
+                if (isCodeActive(NO_MARIO_REDRAW))
+                    return true;
+                break;
+
+            case GIANT_MARIO:
+                if (isCodeActive(WIDE_MARIO) || isCodeActive(TINY_MARIO))
+                    return true;
+                break;
+
+            case WIDE_MARIO:
+                if (isCodeActive(GIANT_MARIO))
+                    return true;
+                break;
+
+            case SIGHTSEER:
+                if (isCodeActive(PING_LAG))
+                    return true;
+                break;
+
+            case WINDY_DAY:
+                if (isCodeActive(FAST_N_FURIOUS))
+                    return true;
+                break;
+
+            case TANK_CONTROLS:
+                if (isCodeActive(FAST_N_FURIOUS) && rand() % 10 != 0)
+                    return true;
+                break;
+
+            case FAST_N_FURIOUS:
+                if ((isCodeActive(TANK_CONTROLS) && rand() % 10 != 0) || isCodeActive(CHAOS_CODE) ||
+                    isCodeActive(SCRAMBLE_TEXTURES) || isCodeActive(WINDY_DAY))
+                    return true;
+                break;
+
+            case OFFSET_MARIO:
+                if (isCodeActive(REVERSE_MARIO))
+                    return true;
+                break;
+
+            case REVERSE_MARIO:
+                if (isCodeActive(OFFSET_MARIO))
+                    return true;
+                break;
+
+            case TINY_MARIO:
+                if (isCodeActive(GIANT_MARIO) || isCodeActive(WIDE_MARIO))
+                    return true;
+                break;
+
+			case FAKE_DEATH:
+                if (isCodeActive(CHAOS_CODE))
+                    return true;
+                break;
+
+			case HALVE_ROLL_TIME:
+                if (isCodeActive(CHAOS_CODE))
+                    return true;
+                break;
+
+			case PAUSE_TIMERS:
+                if (isCodeActive(CHAOS_CODE))
+                    return true;
+                break;
+
+			case DOUBLE_PERSPECTIVE:
+                if (isCodeActive(CHAOS_CODE))
+                    return true;
+                break;
+        }
+
+		return false;
+	}
 
 private:
 	int getRand() { return (rand() % currentCodeCount); }
@@ -475,21 +473,6 @@ private:
         }
 	}
 
-	void modulateCodeSlots() {
-
-        const f32 FREQ_MULT = .01;
-        f32 inter;		// basically just a f32 version of addTo_maxActiveCodes
-
-		inter = 2 * sinf(currentTime * FREQ_MULT);        
-
-		if (inter < 0)			// this slows down the count to -1, as well as caps the negative side of addTo_maxActiveCodes to 1 (effectively)
-            inter = inter / 1.5;
-        if (inter <= -1)		// makes addTo_maxActiveCodes spend a bit less time at -1
-            inter += 0.1;
-
-		addTo_maxActiveCodes = inter;
-	}
-
 // all specific code functions
 public:
     static void pauseWater(Code::FuncReset);        
@@ -501,7 +484,7 @@ public:
     static void stopTLiveActorPerform(Code::FuncReset);
     static void stopControlInputs(Code::FuncReset);
     static void spamSprayCentral(Code::FuncReset);
-    static void addCodeSlot(Code::FuncReset);
+    static void rollExtraCode(Code::FuncReset);
     static void smallJumps(Code::FuncReset);
     static void lockJumpDirection(Code::FuncReset);
     static void sadFLUDD(Code::FuncReset);
@@ -551,7 +534,7 @@ public:
     static void makeMarioAnObject(Code::FuncReset);
     static void popupSavePrompt(Code::FuncReset);
     static void pingLag(Code::FuncReset);
-    static void noGracePeriods(Code::FuncReset);
+    static void halveRollTime(Code::FuncReset);
     static void earthquake(Code::FuncReset);
     static void sometimesDoubleCoins(Code::FuncReset);
     static void reverseRarities(Code::FuncReset);

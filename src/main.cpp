@@ -356,14 +356,14 @@ static const u8 sSaveIcon[] = {
 
 static BetterSMS::Settings::SettingsGroup sSettingsGroup(1, 0, BetterSMS::Settings::Priority::MODE);
 
-static int sMaxActiveCodes = 4;
-static BetterSMS::Settings::IntSetting sMaxActiveCodesSetting("Average Active Codes", &sMaxActiveCodes);
+//static int sMaxActiveCodes = 4;
+//static BetterSMS::Settings::IntSetting sMaxActiveCodesSetting("Average Active Codes", &sMaxActiveCodes);
 
 static bool sDisplayCodes = true;
 static BetterSMS::Settings::BoolSetting sDisplayCodesSetting("Display Active Codes", &sDisplayCodes);
 
-static int sGracePeriodTimer = 7;
-static BetterSMS::Settings::IntSetting sGracePeriodTimerSetting("Grace Period", &sGracePeriodTimer);
+static int sRollTime = 8;
+static BetterSMS::Settings::IntSetting sRollTimeSetting("Roll Time", &sRollTime);
 
 /*
 / Module Info
@@ -389,7 +389,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {STOP_TLIVEACTOR_PERFORM,   "Untitled",                         20,         20,         codeContainer.stopTLiveActorPerform},
         {STOP_CONTROL_INPUTS,       ":)",                               20,			 1,		    codeContainer.stopControlInputs},
         {SPAM_SPRAY_CENTRAL,        "Spam Spray Central",               65,			20,		    codeContainer.spamSprayCentral},
-        {ADD_CODE_SLOT,             "Add Code Slot",                    20,			60,		    codeContainer.addCodeSlot},
+        {ROLL_EXTRA_CODE,           "Roll Extra Code",                  20,			 5,		    codeContainer.rollExtraCode},
         {SMALL_JUMPS,               "Small Jumps",                      55,			15,		    codeContainer.smallJumps},
         {CLUMSY_JUMPS,              "Clumsy Jumps",                     60,			20,		    codeContainer.lockJumpDirection},
         {PATHETIC_FLUDD,            "Pathetic FLUDD",                   70,			30,		    codeContainer.sadFLUDD},
@@ -416,8 +416,8 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 		{DOOR_STUCK,                "DOOR STUCK",					    55,			20,		    codeContainer.lockMarioAnim},
 		{GIANT_MARIO,               "GIANT MARIO",					    30,			15,		    codeContainer.giantMario},
 		{SNAKE,                     "MAR.IO",						    50,			10,		    codeContainer.snakeGame},
-		{MOON_GRAVITY,              "Moon Gravity",					    50,			15,		    codeContainer.moonGravity},
-		{CRAZY_GRAVITY,             "Crazy Gravity",					40,			30,		    codeContainer.crazyGravity},
+		{MOON_GRAVITY,              "Moon Gravity",					    50,			30,		    codeContainer.moonGravity},
+		{CRAZY_GRAVITY,             "Crazy Gravity",					40,			25,		    codeContainer.crazyGravity},
 		{CHAOS_CODE,                "Chaos Code",					     1,			60,		    codeContainer.chaosCode},
 		{DISABLE_WATER_COL,         "Disable Water Collision",	        50,			60,		    codeContainer.disableWaterCol},
         {SHUFFLE_OBJECTS,			"Shuffle Objects",					15,			 3,			codeContainer.shuffleObjects},
@@ -437,12 +437,12 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {MAKE_MARIO_OBJ,			"Prop Hunt",						65,			60,			codeContainer.makeMarioAnObject},
 		{POPUP_SAVE_PROMPT,			"Quicksave",						55,			 1,			codeContainer.popupSavePrompt},
 		{PING_LAG,					"Nintendo Online",					25,			25,			codeContainer.pingLag},
-		{NO_GRACE,					"No Grace Period",					15,			25,			codeContainer.noGracePeriods},
+		{HALVE_ROLL_TIME,			"No Grace Period",					15,			25,			codeContainer.halveRollTime},
 		{EARTHQUAKE,				"Earthquake!!!!",					15,			25,			codeContainer.earthquake},
 		{SOMETIMES_DOUBLE_COINS,	"Double Coins???",					60,			30,			codeContainer.sometimesDoubleCoins},
 		{REVERSE_RARITIES,			"Rarity Swap",						 1,			90,			codeContainer.reverseRarities},
 		{CHANGE_SCREEN_COLOR,	    "GAMING MONITOR",				    50,			30,			codeContainer.changeScreenColorToggle},
-		{UPSIDEDOWN_CAM,			"Flip-Turned Upside Down",			20,			30,			codeContainer.upsideDownCamToggle},
+		{UPSIDEDOWN_CAM,			"Flip-Turned Upside Down",			20,			20,			codeContainer.upsideDownCamToggle},
 		{JOYCON_DRIFT,				"Joycon Drift",						35,			30,			codeContainer.joyconDrift},
 		{SINE_MOMENTUM,				"Whacky Momentum",					15,			30,			codeContainer.sineMomentum},
 		{WINDY_DAY,					"Windy Day",						15,			30,			codeContainer.windyDay},
@@ -491,7 +491,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {SUPERPOSITION};
+    u8 whitelist[] = {CHAOS_CODE};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
@@ -563,14 +563,11 @@ BETTER_SMS_FOR_CALLBACK static void requestEndAllCodes(TMarDirector *director) {
 BETTER_SMS_FOR_CALLBACK static void chaosEngine(TMarDirector *director, const J2DOrthoGraph *ortho) {
 
     if (director->mCurState == TMarDirector::Status::STATE_NORMAL) {
-        codeContainer.activateCodes();
+        float timeSinceLastRoll = currentTime - codeContainer.lastRollTime;
+        if (timeSinceLastRoll >= codeContainer.rollTime && codeContainer.activateCode())
+            codeContainer.lastRollTime = currentTime;
         codeContainer.checkCodeTimers();
         codeContainer.iterateThroughCodes();
-    } else if (director->mAreaID == 15) {	// is in option.szs?
-        codeContainer.maxActiveCodes = sMaxActiveCodes;
-        codeContainer.baseMaxActiveCodes = sMaxActiveCodes;
-        codeContainer.gracePeriod    = sGracePeriodTimer;
-        codeContainer.baseGracePeriod    = sGracePeriodTimer;
     }
 }
 
@@ -598,24 +595,17 @@ BETTER_SMS_FOR_CALLBACK static void drawCodeDisplay(TMarDirector *director,  con
     char *displayBuffer = codeContainer.codeDisplay->getStringPtr();
     memset(displayBuffer, 0, NORMAL_BUF);  // clear buffer
 
-    if (codeContainer.isCodeActive(CHAOS_CODE) || codeContainer.isCodeGraced(CHAOS_CODE)) {
+    if (codeContainer.isCodeActive(CHAOS_CODE)) {
         Code chaosCode;
         codeContainer.getCodeFromID(CHAOS_CODE, chaosCode);
         snprintf(displayBuffer, NORMAL_BUF, "Chaos Code: %.0f%s\n",
                  chaosCode.duration - (currentTime - chaosCode.timeCalled), "s");
     } else {
         for (Code c : codeContainer.codeList) {
-        #if DEV_MODE
-            if (c.isActive || c.isGraced) {
-                snprintf(displayBuffer, NORMAL_BUF, "%s%s: %.0f%s\n", displayBuffer, c.name,
-                    c.duration - (currentTime - c.timeCalled), "s");
-            }
-        #else
             if (c.isActive) {
 				snprintf(displayBuffer, NORMAL_BUF, "%s%s: %.0f%s\n", displayBuffer, c.name,
                          c.duration - (currentTime - c.timeCalled), "s");
             }
-        #endif
         }
     }
 
@@ -661,6 +651,17 @@ BETTER_SMS_FOR_CALLBACK static void resetCodesOnStageExit(TApplication *tapp) {
         codeContainer.resetCode(SUPERPOSITION);
 }
 
+BETTER_SMS_FOR_CALLBACK static void applyChaosSettings(TMarDirector *director) {
+    codeContainer.baseRollTime = sRollTime;
+    if (codeContainer.isCodeActive(HALVE_ROLL_TIME))
+        codeContainer.rollTime = codeContainer.baseRollTime / 2;
+    else if (codeContainer.isCodeActive(CHAOS_CODE))
+        codeContainer.rollTime = 0;
+    else codeContainer.rollTime = sRollTime;
+
+	OSReport("-> %f\n", codeContainer.rollTime);
+}
+
 // Module definition
 
 static void initModule() {
@@ -673,20 +674,21 @@ static void initModule() {
     BetterSMS::Stage::addDraw2DCallback(chaosEngine);
     BetterSMS::Stage::addDraw2DCallback(drawCodeDisplay);
     BetterSMS::Stage::addExitCallback(resetCodesOnStageExit);
+    BetterSMS::Stage::addInitCallback(applyChaosSettings);
 
 	#if DEV_MODE
     BetterSMS::Stage::addUpdateCallback(requestEndAllCodes);
 	#endif
 
     // Register settings
-    sMaxActiveCodesSetting.setValueRange({1, 10, 1});
-    sSettingsGroup.addSetting(&sMaxActiveCodesSetting);
+    //sMaxActiveCodesSetting.setValueRange({1, 10, 1});
+    //sSettingsGroup.addSetting(&sMaxActiveCodesSetting);
 
 	
     sSettingsGroup.addSetting(&sDisplayCodesSetting);
-	sGracePeriodTimerSetting.setValueRange({0, 10, 1});
-    
-    sSettingsGroup.addSetting(&sGracePeriodTimerSetting);
+
+	sRollTimeSetting.setValueRange({5, 15, 1});
+    sSettingsGroup.addSetting(&sRollTimeSetting);
 
 
 
@@ -708,7 +710,7 @@ static void initModule() {
 }
 
 // Definition block
-KURIBO_MODULE_BEGIN("Chaos", "Angry_Max, MasterMattK", "v0.1") {
+KURIBO_MODULE_BEGIN("Hyper Chaos", "Angry_Max, MasterMattK", "v1.0") {
     // Set the load and unload callbacks to our registration functions
     KURIBO_EXECUTE_ON_LOAD { initModule(); }
 }

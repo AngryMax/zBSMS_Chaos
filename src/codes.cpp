@@ -83,12 +83,21 @@ void CodeContainer::spamSprayCentral(Code::FuncReset f) {
         spamSprayCentralPatch.disable();
 }
 
-void CodeContainer::addCodeSlot(Code::FuncReset f) {
-    if (f == Code::FuncReset::TRUE) {
-        codeContainer.maxActiveCodes = codeContainer.baseMaxActiveCodes;
-    } else if (f == Code::FuncReset::FALSE && codeContainer.maxActiveCodes == codeContainer.baseMaxActiveCodes) {
-        codeContainer.maxActiveCodes = codeContainer.baseMaxActiveCodes + 2;
-    }
+void CodeContainer::rollExtraCode(Code::FuncReset f) {
+    static int codesCalled = 0;
+
+	if (f == Code::FuncReset::TRUE) {
+        codesCalled = 0;
+		return;
+	}
+
+	if (codesCalled < 2 && codeContainer.activateCode())
+        codesCalled++;
+
+	if (codesCalled >= 2) {        
+		codeContainer.endCode(ROLL_EXTRA_CODE);
+		return;
+	}
 }
 
 pp::auto_patch smallJumpsPatch(SMS_PORT_REGION(0x80252098, 0, 0, 0), NOP, false);
@@ -693,20 +702,43 @@ void CodeContainer::chaosCode(Code::FuncReset f) {
     static bool execOnce = true;
 
     if (f == Code::FuncReset::TRUE) {
-        codeContainer.maxActiveCodes = codeContainer.baseMaxActiveCodes;
+        codeContainer.rollTime = codeContainer.baseRollTime;
         execOnce = true;
         return;
-    }
+    }	
 
     if (execOnce) {
         codeContainer.endCode(NO_MARIO_REDRAW);
         codeContainer.endCode(SIMON_SAYS);
         codeContainer.endCode(SNAKE);
+        codeContainer.endCode(FAST_N_FURIOUS);
+        codeContainer.endCode(SCRAMBLE_TEXTURES);
+        codeContainer.endCode(PAUSE_TIMERS);
+        if (codeContainer.isCodeActive(HALVE_ROLL_TIME)) {
+            codeContainer.endCode(HALVE_ROLL_TIME);
+            codeContainer.resetCode(HALVE_ROLL_TIME);
+        }
+        codeContainer.rollTime = 99999;
         execOnce = false;
         return;
     }
 
-    codeContainer.maxActiveCodes = codeContainer.currentCodeCount;
+    Code chaosCode;
+    if (!(codeContainer.getCodeFromID(CHAOS_CODE, chaosCode))) {
+        OSReport("[chaosCode] -> Could not find code with code id %d!\n", CHAOS_CODE);
+        return;
+    }
+
+    float timeSinceRolled = currentTime - chaosCode.timeCalled;
+    if (timeSinceRolled < 3) {
+        char *displayBuffer = codeContainer.codeDisplay->getStringPtr();
+        memset(displayBuffer, 0, NORMAL_BUF);
+        snprintf(displayBuffer, NORMAL_BUF, "Prepare for");
+        Utils::drawCodeDisplay(RED, WHITE, 48, 155, 150);
+        snprintf(displayBuffer, NORMAL_BUF, "CHAOS");
+        Utils::drawCodeDisplay(RED, 60, 180, 220);
+    } else
+        codeContainer.rollTime = 0;
 }
 
 pp::auto_patch disableWaterColPatch(SMS_PORT_REGION(0x8024efe4, 0, 0, 0), BLR, false);
@@ -1395,21 +1427,19 @@ void CodeContainer::pingLag(Code::FuncReset f) {
     }
 }
 
-void CodeContainer::noGracePeriods(Code::FuncReset f) {
+void CodeContainer::halveRollTime(Code::FuncReset f) {
 
 	static bool execOnce = true;
 
 	if (execOnce)
 	{
-        codeContainer.gracePeriod = 0;
-        codeContainer.maxActiveCodes++;
+        codeContainer.rollTime = codeContainer.baseRollTime / 2;
         execOnce = false;
 	}
 
 	if (f == Code::FuncReset::TRUE)
 	{
-        codeContainer.gracePeriod = codeContainer.baseGracePeriod;
-        codeContainer.maxActiveCodes--;
+        codeContainer.rollTime = codeContainer.baseRollTime;
         execOnce = true;
 	}
 }
@@ -1449,19 +1479,15 @@ void CodeContainer::sometimesDoubleCoins(Code::FuncReset f) {
         sometimesDoubleCoinsPatch.disable();
 }
 
-void CodeContainer::reverseRarities(Code::FuncReset f) {
+void CodeContainer::reverseRarities(Code::FuncReset f) {			// actual funcionality for this code is in getWeightedRand()
 	
-static bool execOnce = true;
+	static bool isNewCodeRolled = false;
 
-    if (execOnce) {			// adds a code slot so that the affect of this code can actually be felt
-        codeContainer.maxActiveCodes++;
-        execOnce = false;
-    }
+    if (!isNewCodeRolled && codeContainer.activateCode())			// calls a code slot so that the affect of this code can actually be felt
+        isNewCodeRolled = true;
 
-    if (f == Code::FuncReset::TRUE) {
-        codeContainer.maxActiveCodes--;
-        execOnce = true;
-    }
+    if (f == Code::FuncReset::TRUE)
+        isNewCodeRolled = false;
 }
 
 pp::togglable_ppc_bl changeScreenColorPatch(SMS_PORT_REGION(0x8017d0e8, 0, 0, 0), (void *)codeContainer.changeScreenColor, false);
