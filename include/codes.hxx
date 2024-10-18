@@ -39,6 +39,8 @@
 #include <SMS/MarioUtil/LightUtil.hxx>
 #include <SMS/MarioUtil/DrawUtil.hxx>
 #include <SMS/Manager/ModelWaterManager.hxx>
+#include <SMS/Manager/ItemManager.hxx>
+#include <SMS/Manager/MarioParticleManager.hxx>
 
 #include <BetterSMS/game.hxx>
 #include <BetterSMS/module.hxx>

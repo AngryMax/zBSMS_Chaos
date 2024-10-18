@@ -14,5 +14,5 @@ public:
 
     ResNTab *mResTab;  // ResNTab*
     u32 _4;
-    u16 _8;
+    u32 mIsInvisible; // _08
 };

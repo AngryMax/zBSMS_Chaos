@@ -12,7 +12,7 @@ public:
     virtual void createModelData() override;
 
     u32 getObjNumWithActorType(u32) const;
-    void makeObjAppear(f32, f32, f32, u32, bool);
+    TMapObjBase *makeObjAppear(f32, f32, f32, u32, bool);
     void makeObjAppear(u32);
     void makeObjAppeared(u32);
 
