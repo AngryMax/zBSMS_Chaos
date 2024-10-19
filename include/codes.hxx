@@ -448,7 +448,7 @@ public:
                 break;
 
 			case FAKE_DEATH:
-                if (isCodeActive(CHAOS_CODE))
+                if (isCodeActive(CHAOS_CODE) || isCodeActive(PAUSE_TIMERS))
                     return true;
                 break;
 
@@ -458,7 +458,7 @@ public:
                 break;
 
 			case PAUSE_TIMERS:
-                if (isCodeActive(CHAOS_CODE))
+                if (isCodeActive(CHAOS_CODE) || isCodeActive(FAKE_DEATH))
                     return true;
                 break;
 

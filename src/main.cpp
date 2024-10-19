@@ -667,6 +667,9 @@ BETTER_SMS_FOR_CALLBACK static void resetCodesOnStageExit(TApplication *tapp) {
 
     if (codeContainer.isCodeActive(SIGHTSEER))
         codeContainer.resetCode(SIGHTSEER);
+
+	if (codeContainer.isCodeActive(FREEZE_ANIMS))
+        codeContainer.resetCode(FREEZE_ANIMS);
 }
 
 BETTER_SMS_FOR_CALLBACK static void applyChaosSettings(TMarDirector *director) {
@@ -749,7 +752,7 @@ static void initModule() {
 }
 
 // Definition block
-KURIBO_MODULE_BEGIN("Hyper Chaos", "Angry_Max, MasterMattK", "v1.0") {
+KURIBO_MODULE_BEGIN("Hyper Chaos", "Angry_Max, MasterMattK", "v0.9") {
     // Set the load and unload callbacks to our registration functions
     KURIBO_EXECUTE_ON_LOAD { initModule(); }
 }
