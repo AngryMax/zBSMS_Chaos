@@ -695,7 +695,7 @@ void CodeContainer::crazyGravity(Code::FuncReset f) {
         return;
     }
 
-    gpMarioOriginal->mJumpParams.mGravity.set(cosf(currentTime));
+    gpMarioOriginal->mJumpParams.mGravity.set(cosf(currentTime) * 0.5);
 }
 
 void CodeContainer::chaosCode(Code::FuncReset f) {
