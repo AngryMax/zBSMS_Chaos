@@ -2449,14 +2449,16 @@ void CodeContainer::fastNFurious(Code::FuncReset f) {
 	u16 depletion_meterX  = 465;
     u16 depletion_meterY   = 208;
 
-
     if (f == Code::FuncReset::TRUE) {
         depletionHP = -200;
         return;
     }
 
-	if (gpMarDirector->mGameState &= 0x40)	// return if mario is in a cutscene bc that's hella unfair
-        return;	
+	if (gpMarDirector->mCurState == 7)
+        codeContainer.endCode(FAST_N_FURIOUS);
+
+    if (gpMarDirector->mCurState != 4)
+        return;
 
     if (mForwardSpeed <= 0)
         mForwardSpeed = 1;
@@ -2464,7 +2466,7 @@ void CodeContainer::fastNFurious(Code::FuncReset f) {
     if (mForwardSpeed < SPEED_MIN)
         depletionHP += 0.425;   
 	else if (mForwardSpeed > SPEED_ADD && depletionHP > -200)
-        depletionHP -= 0.1;   
+        depletionHP -= 0.075;   
 
 	if (depletionHP >= 0) {
         gpMarioOriginal->loserExec();

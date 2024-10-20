@@ -365,6 +365,13 @@ static BetterSMS::Settings::BoolSetting sDisplayCodesSetting("Display Active Cod
 static int sRollTime = 8;
 static BetterSMS::Settings::IntSetting sRollTimeSetting("Roll Time", &sRollTime);
 
+static bool sRemoveBootout = true;
+static BetterSMS::Settings::BoolSetting sRemoveBootoutSetting("Remove Level Bootout", &sRemoveBootout);
+
+static bool sInfiniteLives = false;
+static BetterSMS::Settings::BoolSetting sInfiniteLivesSetting("Infinite Lives", &sInfiniteLives);
+
+
 /*
 / Module Info
 */
@@ -450,7 +457,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 		{NOCLIP,					"Noclip",							 1,			 3,			codeContainer.noclip},			// shoutouts to joshuamk for unintentionally doing all the heavy work for this code
 		{JUMPSCARE,					"Jumpscare",						 5,			 1,			codeContainer.jumpscare},
 		{SMALL_WORLD,				"It's a Small World",				80,		   0.5,			codeContainer.smallWorld},
-		{RANDOM_SPRAY,				"Precision",						50,			30,			codeContainer.randomSpray},
+		{RANDOM_SPRAY,				"Precision",						45,			30,			codeContainer.randomSpray},
         {PLAY_SOUNDS,				"epic sfx",							60,			60,			codeContainer.playAllSounds},
         {PICK_UP_OBJ,				"Grab Object",						55,			 5,			codeContainer.pickUpObj},
         {ROTATE_OBJS,				"Rotate Objects",					60,			 1,			codeContainer.rotateObjs},
@@ -459,7 +466,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {SHRINK_RAY,				"Shrink Ray!",						40,			45,			codeContainer.shrinkRay},
         {CS_PLAYERS,				"CS Players",						50,			41.2,		codeContainer.csPlayers},
         {INVERT_MARIO,				"Inversion",						50,			45,		    codeContainer.invertMario},
-        {FIRE_MOVEMENT,				"MAMA!!",						    50,			40,		    codeContainer.fireMovement},
+        {FIRE_MOVEMENT,				"MAMA!!",						    50,			30,		    codeContainer.fireMovement},
         {LOL,						"lol",								40,			20,		    codeContainer.lol},
         {TILTED,					"Tilted",							65,			30,		    codeContainer.tilted},
         {POPUP_UX,				    "Popups",						    50,			 1,		    codeContainer.popUpUX},
@@ -491,7 +498,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {CRAZY_GRAVITY};
+    u8 whitelist[] = {FAST_N_FURIOUS};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
@@ -544,7 +551,7 @@ BETTER_SMS_FOR_CALLBACK static void updateTime(TApplication *tapp) {
 			currentTime += seconds;
     }
 
-    sBaseTime = OSGetTime();
+    sBaseTime = OSGetTime();	
 }
 
 #if DEV_MODE
@@ -575,7 +582,10 @@ BETTER_SMS_FOR_CALLBACK static void chaosEngine(TMarDirector *director, const J2
 
         if (gpMarioOriginal->mController->mButtons.mInput & TMarioGamePad::DPAD_UP)
             gpMarioOriginal->loserExec();
-    }
+    }	
+
+	if (sInfiniteLives && TFlagManager::smInstance->Type2Flag.mLifeCount != 99)
+        TFlagManager::smInstance->Type2Flag.mLifeCount = 99;
 }
 
 BETTER_SMS_FOR_CALLBACK static void initCodeDisplay(TMarDirector *director) {
@@ -703,6 +713,16 @@ BETTER_SMS_FOR_CALLBACK static void titleScreenEngine(TMarDirector *director) {
     }
 }
 
+
+
+static void assignOnDeathDestination(JDrama::TFlagT<u16> nextStageFlag, u16 flags) {
+    if (sRemoveBootout)
+        gpApplication.mNextScene = gpApplication.mCurrentScene;
+    else
+        nextStageFlag.set(flags);
+}
+SMS_PATCH_BL(SMS_PORT_REGION(0x80299808, 0, 0, 0), assignOnDeathDestination);	//credit both JoshuaMK (myself), CyrusLoS, and Eclipse Team as a whole. Any and all use of the source assets should credit Eclipse Team.
+
 // Module definition
 
 static void initModule() {
@@ -732,6 +752,9 @@ static void initModule() {
 	sRollTimeSetting.setValueRange({5, 15, 1});
     sSettingsGroup.addSetting(&sRollTimeSetting);
 
+	sSettingsGroup.addSetting(&sRemoveBootoutSetting);
+
+	sSettingsGroup.addSetting(&sInfiniteLivesSetting);
 
 
     {

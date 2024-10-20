@@ -458,12 +458,17 @@ public:
                 break;
 
 			case PAUSE_TIMERS:
-                if (isCodeActive(CHAOS_CODE) || isCodeActive(FAKE_DEATH))
+                if (isCodeActive(CHAOS_CODE) || isCodeActive(FAKE_DEATH) || isCodeActive(IMA_TIRED))
                     return true;
                 break;
 
 			case DOUBLE_PERSPECTIVE:
                 if (isCodeActive(CHAOS_CODE))
+                    return true;
+                break;
+
+			case IMA_TIRED:
+                if (isCodeActive(PAUSE_TIMERS))
                     return true;
                 break;
         }
