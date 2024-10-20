@@ -2072,6 +2072,9 @@ void CodeContainer::fireMovement(Code::FuncReset f) {
     static f32 mFireBackVelocity;
     static f32 mFireHeight;
 
+	if (gpMarioOriginal->mState == 0x891)
+        codeContainer.endCode(FIRE_MOVEMENT);
+
 	if (f == Code::FuncReset::TRUE)
 	{
         gpMarioOriginal->mDmgGraffitoFireParams.mDamage.set(mDamage_Orig);
