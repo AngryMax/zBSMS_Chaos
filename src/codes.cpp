@@ -2417,13 +2417,25 @@ void CodeContainer::trippyTextures(Code::FuncReset f) {
 pp::auto_patch imaTiredPatch(SMS_PORT_REGION(0x80251494, 0, 0, 0), BLR, false);
 void CodeContainer::imaTired(Code::FuncReset f) {
 
+	static int origState = 0;
+    static bool execOnce = true;
+
+	if (execOnce) {
+        origState = gpMarioOriginal->mState;
+        execOnce  = false;
+	}
+
 	gpMarioOriginal->sleeping();
     gpMarioOriginal->mState = 0xC000203;	// sleep
 
 	if (f == Code::FuncReset::FALSE && !imaTiredPatch.is_enabled())
         imaTiredPatch.enable();
-    else if (f == Code::FuncReset::TRUE)
+    else if (f == Code::FuncReset::TRUE) {
         imaTiredPatch.disable();
+        gpMarioOriginal->mState = origState;
+		origState = 0;
+		execOnce = true;
+    }
 
 }
 
@@ -2571,21 +2583,32 @@ pp::auto_patch fakeDeathPatch2(SMS_PORT_REGION(0x80032630, 0, 0, 0), 0x38600001,
 void CodeContainer::fakeDeath(Code::FuncReset f) {
 
 	static bool execOnce = true;
+    static int ifDivingStage = false;
     static u32 stageMusic;
 
 	if (f == Code::FuncReset::TRUE) {		
         execOnce = true;
-        gpMarioOriginal->mState = TMario::STATE_IDLE;
+
+        if (ifDivingStage)
+			gpMarioOriginal->mState = 0x891;
+        else gpMarioOriginal->mState = TMario::STATE_IDLE;
+
         fakeDeathPatch1.disable();
         fakeDeathPatch2.disable();
         gpApplication.mFader->setFadeStatus(TSMSFader::EFadeStatus::FADE_OFF);
         MSBgm::startBGM(stageMusic);
         gpMarioOriginal->mHealth = gpMarioOriginal->mDeParams.mHPMax.get();
+        
+        ifDivingStage = false;
         return;
 	}
 
 
     if (execOnce) {     
+
+		if (gpMarioOriginal->mState == 0x891)
+            ifDivingStage = true;
+
         fakeDeathPatch1.enable();
         fakeDeathPatch2.enable();
 
@@ -2594,7 +2617,7 @@ void CodeContainer::fakeDeath(Code::FuncReset f) {
         MSBgm::startBGM(MSStageInfo::BGM_MISS);
 
 		stageMusic = gStageBGM;
-        ((u16 *)gpCamera->_21C)[0x62 / 2] = 1; // _27E this value triggers the fov zoom
+        ((u16 *)gpCamera->_21C)[0x62 / 2] = 1; // _27E this value triggers the fov zoom		
 
         execOnce = false;
     }

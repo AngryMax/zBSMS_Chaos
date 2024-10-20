@@ -498,7 +498,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {FAST_N_FURIOUS};
+    u8 whitelist[] = {FAKE_DEATH};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
@@ -680,6 +680,12 @@ BETTER_SMS_FOR_CALLBACK static void resetCodesOnStageExit(TApplication *tapp) {
 
 	if (codeContainer.isCodeActive(FREEZE_ANIMS))
         codeContainer.resetCode(FREEZE_ANIMS);
+
+	if (codeContainer.isCodeActive(IMA_TIRED))
+        codeContainer.resetCode(IMA_TIRED);
+
+	if (codeContainer.isCodeActive(FAKE_DEATH))
+        codeContainer.resetCode(FAKE_DEATH);
 }
 
 BETTER_SMS_FOR_CALLBACK static void applyChaosSettings(TMarDirector *director) {
