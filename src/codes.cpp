@@ -2219,6 +2219,8 @@ void CodeContainer::superposition(Code::FuncReset f) {		// TODO: add a sparkle t
         *gpMarioPos = temp;
         timeToWait = 0;
     }
+
+	gpMarioParticleManager->emitAndBindToPosPtr(10, &marPrevPos, 0, nullptr);
 }
 
 void CodeContainer::wideMario(Code::FuncReset f) {
