@@ -343,12 +343,12 @@ public:
                 break;
 
             case SIMON_SAYS:
-                if (isCodeActive(SCRAMBLE_TEXTURES) || isCodeActive(CHAOS_CODE))
+                if (isCodeActive(SCRAMBLE_TEXTURES) || isCodeActive(CHAOS_CODE) || isCodeActive(FAST_N_FURIOUS))
                     return true;
                 break;
 
             case SNAKE:
-                if (isCodeActive(CHAOS_CODE) || isCodeActive(SCRAMBLE_TEXTURES))
+                if (isCodeActive(CHAOS_CODE) || isCodeActive(SCRAMBLE_TEXTURES) || isCodeActive(FAST_N_FURIOUS))
                     return true;
                 break;
 
@@ -428,7 +428,7 @@ public:
 
             case FAST_N_FURIOUS:
                 if ((isCodeActive(TANK_CONTROLS) && rand() % 10 != 0) || isCodeActive(CHAOS_CODE) ||
-                    isCodeActive(SCRAMBLE_TEXTURES) || isCodeActive(WINDY_DAY))
+                    isCodeActive(SCRAMBLE_TEXTURES) || isCodeActive(WINDY_DAY) || isCodeActive(HELPFUL_INPUT_DISPLAY) || isCodeActive(SIMON_SAYS) || isCodeActive(SNAKE) || isCodeActive(SMS_WIKI))
                     return true;
                 break;
 
@@ -469,6 +469,16 @@ public:
 
 			case IMA_TIRED:
                 if (isCodeActive(PAUSE_TIMERS))
+                    return true;
+                break;
+
+			case HELPFUL_INPUT_DISPLAY:
+                if (isCodeActive(FAST_N_FURIOUS))
+                    return true;
+                break;
+
+			case SMS_WIKI:
+                if (isCodeActive(FAST_N_FURIOUS))
                     return true;
                 break;
         }
