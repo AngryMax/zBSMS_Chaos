@@ -2619,6 +2619,9 @@ void CodeContainer::fakeDeath(Code::FuncReset f) {
 
     if (execOnce) {     
 
+		if (gpMarDirector->mCurState != 4)			// end code if not in a normal gameplay state
+			codeContainer.endCode(FAKE_DEATH);
+
 		if (gpMarioOriginal->mState == 0x891)
             ifDivingStage = true;
 
@@ -2741,7 +2744,7 @@ void CodeContainer::rainbowWater(Code::FuncReset f) {
 bool isMarioInCam = true;
 TVec3f currentCoords;
 
-pp::auto_patch outOfBodyPatch(SMS_PORT_REGION(0x8023793c, 0, 0, 0), NOP, false);
+pp::auto_patch outOfBodyPatch(SMS_PORT_REGION(0x8023793c, 0, 0, 0), NOP, false);		// TODO: figure out how/why poinks stop attaching to fludd b/c of this code and fix it
 pp::togglable_ppc_b outOfBodyViewCheckPatch(SMS_PORT_REGION(0x80217fc4, 0, 0, 0), (void *)codeContainer.outOfBodyViewCheck, false);
 void CodeContainer::outOfBody(Code::FuncReset f) { 
     static bool execOnce = true;
