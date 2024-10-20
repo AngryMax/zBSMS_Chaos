@@ -460,7 +460,7 @@ void CodeContainer::reverseInputs() {
     }
 }
 
-void CodeContainer::simonSays(Code::FuncReset f) {		// TODO: make the text bigger/closer to the vertical center to make it more obvious
+void CodeContainer::simonSays(Code::FuncReset f) {
 
 	static bool execRNGOnce = true;
     static bool inputMade = false;
@@ -504,25 +504,25 @@ void CodeContainer::simonSays(Code::FuncReset f) {		// TODO: make the text bigge
     switch ((u32)elapsedTime) {
         case 0:
             snprintf(displayBuffer, NORMAL_BUF, "Angry_Max says.");
-            Utils::drawCodeDisplay(PURPLE, 48, 50, 150);
+            Utils::drawCodeDisplay(PURPLE, 48, 50, 250);
             if (soundPlayed == 0 && Utils::playSound(MS_SOUND_EFFECT::MSD_SE_OBJ_AP_BUTTON))
                 soundPlayed++;
             return;
         case 1:
             snprintf(displayBuffer, NORMAL_BUF, "Angry_Max says..");
-            Utils::drawCodeDisplay(PURPLE, 48, 50, 150);
+            Utils::drawCodeDisplay(PURPLE, 48, 50, 250);
             if (soundPlayed == 1 && Utils::playSound(MS_SOUND_EFFECT::MSD_SE_OBJ_AP_BUTTON))
                 soundPlayed++;
             return;
         case 2:
             snprintf(displayBuffer, NORMAL_BUF, "Angry_Max says...");
-            Utils::drawCodeDisplay(PURPLE, 48, 50, 150);
+            Utils::drawCodeDisplay(PURPLE, 48, 50, 250);
             if (soundPlayed == 2 && Utils::playSound(MS_SOUND_EFFECT::MSD_SE_OBJ_AP_BUTTON))
                 soundPlayed++;
             return;
         default:
             snprintf(displayBuffer, NORMAL_BUF, "Press %s!", randButton[randVal]);
-            Utils::drawCodeDisplay(PURPLE, 48, 200, 150);
+            Utils::drawCodeDisplay(PURPLE, 48, 200, 250);
             wasCodeInterrupted = false;
             break;
     }
@@ -1777,6 +1777,8 @@ void CodeContainer::playAllSounds(Code::FuncReset f) {
 
 }
  
+pp::auto_patch pickUpObj_PeachPatch1(SMS_PORT_REGION(0x80214584, 0, 0, 0), NOP, false);
+pp::auto_patch pickUpObj_PeachPatch2(SMS_PORT_REGION(0x80214684, 0, 0, 0), NOP, false);
 void CodeContainer::pickUpObj(Code::FuncReset f) {
 
 	static bool execOnce = true;
@@ -1793,6 +1795,10 @@ void CodeContainer::pickUpObj(Code::FuncReset f) {
         isBird         = false;
         isGrabSuccess  = false;
         execOnce       = true;
+
+		pickUpObj_PeachPatch1.disable();
+		pickUpObj_PeachPatch2.disable();
+
         return;
     }
 
@@ -1834,6 +1840,8 @@ void CodeContainer::pickUpObj(Code::FuncReset f) {
                 case 0x803d8ca8:  // TKinopioManager
                 case 0x803d8c50:  // TKinojiManager
                 case 0x803d8bf8:  // TPeachManager
+                    pickUpObj_PeachPatch1.enable();
+                    pickUpObj_PeachPatch2.enable();	// might be a bit buggy?
 
 				// Item Birds
                 case 0x803abe24:  // TAnimalBirdManager
@@ -2189,7 +2197,7 @@ void CodeContainer::popUpUX(Code::FuncReset f) {
 	}
 }
 
-void CodeContainer::superposition(Code::FuncReset f) {		// TODO: add a sparkle to where mario's superposition is to make it more obvious what this code does
+void CodeContainer::superposition(Code::FuncReset f) {
 
 	static TVec3f marPrevPos;
     static f32 timeToWait   = 0;

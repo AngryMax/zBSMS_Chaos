@@ -29,3 +29,6 @@
 
 CodeContainer codeContainer;
 float currentTime;
+
+pp::auto_patch skippableCutscenesPatch1(SMS_PORT_REGION(0x802B5EF4, 0, 0, 0), 0x38600001, false);
+pp::auto_patch skippableCutscenesPatch2(SMS_PORT_REGION(0x802B5E8C, 0, 0, 0), 0x38600001, false);

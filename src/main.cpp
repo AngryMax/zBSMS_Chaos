@@ -371,6 +371,9 @@ static BetterSMS::Settings::BoolSetting sRemoveBootoutSetting("Remove Level Boot
 static bool sInfiniteLives = false;
 static BetterSMS::Settings::BoolSetting sInfiniteLivesSetting("Infinite Lives", &sInfiniteLives);
 
+static bool sSkipCutscenes = true;
+static BetterSMS::Settings::BoolSetting sSkipCutscenesSetting("Skippable Cutscenes", &sSkipCutscenes);
+
 
 /*
 / Module Info
@@ -498,7 +501,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {SUPERPOSITION};
+    u8 whitelist[] = {PICK_UP_OBJ};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
@@ -701,6 +704,9 @@ BETTER_SMS_FOR_CALLBACK static void applyChaosSettings(TMarDirector *director) {
 
 BETTER_SMS_FOR_CALLBACK static void titleScreenEngine(TMarDirector *director) {
 
+	skippableCutscenesPatch1.set_enabled(sSkipCutscenes);
+	skippableCutscenesPatch2.set_enabled(sSkipCutscenes);
+
 	if (director->mAreaID != 15)
         return;
 
@@ -719,15 +725,15 @@ BETTER_SMS_FOR_CALLBACK static void titleScreenEngine(TMarDirector *director) {
     }
 }
 
-
-
 static void assignOnDeathDestination(JDrama::TFlagT<u16> nextStageFlag, u16 flags) {
     if (sRemoveBootout)
         gpApplication.mNextScene = gpApplication.mCurrentScene;
     else
         nextStageFlag.set(flags);
 }
-SMS_PATCH_BL(SMS_PORT_REGION(0x80299808, 0, 0, 0), assignOnDeathDestination);	//credit both JoshuaMK (myself), CyrusLoS, and Eclipse Team as a whole. Any and all use of the source assets should credit Eclipse Team.
+SMS_PATCH_BL(SMS_PORT_REGION(0x80299808, 0, 0, 0), assignOnDeathDestination);	// credit both JoshuaMK (myself), CyrusLoS, and Eclipse Team as a whole. Any and all use of the source assets should credit Eclipse Team.
+
+
 
 // Module definition
 
@@ -761,6 +767,8 @@ static void initModule() {
 	sSettingsGroup.addSetting(&sRemoveBootoutSetting);
 
 	sSettingsGroup.addSetting(&sInfiniteLivesSetting);
+
+	sSettingsGroup.addSetting(&sSkipCutscenesSetting);
 
 
     {
