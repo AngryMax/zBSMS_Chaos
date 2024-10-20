@@ -480,7 +480,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {TRIPPY_TEXTURES,			"Trippy",							50,			40,			codeContainer.trippyTextures},
         {IMA_TIRED,					"I'ma Tired!",						50,			 1,			codeContainer.imaTired},
         {FREEZE_ANIMS,				"Stop Motion",						60,			30,			codeContainer.freezeAnims},
-        {FAST_N_FURIOUS,			"Move or... DIE!!!",				25,			30,			codeContainer.fastNFurious},
+        {MOVE_OR_DIE,				"Move or... DIE!!!",				25,			30,			codeContainer.moveOrDie},
         {DIVING_MODE,				"CAMERA BAD",						50,			30,			codeContainer.divingMode},
         {PAUSE_TIMERS,				"Pause Codes",						20,			30,			codeContainer.pauseTimers},	
         {CHANGE_MUSIC,				"Change Music",						30,			 1,			codeContainer.changeMusic},
@@ -501,7 +501,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {NO_WHITELIST};
+    u8 whitelist[] = {MOVE_OR_DIE};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {

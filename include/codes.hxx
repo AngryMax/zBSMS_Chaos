@@ -166,7 +166,7 @@ extern float currentTime;  // unit = seconds
 #define TRIPPY_TEXTURES			86
 #define IMA_TIRED				87
 #define FREEZE_ANIMS			88
-#define FAST_N_FURIOUS			89
+#define MOVE_OR_DIE				89
 #define DIVING_MODE				90
 #define PAUSE_TIMERS			91
 #define CHANGE_MUSIC			92
@@ -336,19 +336,19 @@ public:
                 break;
 
             case SCRAMBLE_TEXTURES:
-                if (isCodeActive(SIMON_SAYS) || isCodeActive(SNAKE) || isCodeActive(FAST_N_FURIOUS))
+                if (isCodeActive(SIMON_SAYS) || isCodeActive(SNAKE) || isCodeActive(MOVE_OR_DIE))
                     return true;
                 if (isCodeActive(CHAOS_CODE) && rand() % 100 != 0)
                     return true;
                 break;
 
             case SIMON_SAYS:
-                if (isCodeActive(SCRAMBLE_TEXTURES) || isCodeActive(CHAOS_CODE) || isCodeActive(FAST_N_FURIOUS))
+                if (isCodeActive(SCRAMBLE_TEXTURES) || isCodeActive(CHAOS_CODE) || isCodeActive(MOVE_OR_DIE))
                     return true;
                 break;
 
             case SNAKE:
-                if (isCodeActive(CHAOS_CODE) || isCodeActive(SCRAMBLE_TEXTURES) || isCodeActive(FAST_N_FURIOUS))
+                if (isCodeActive(CHAOS_CODE) || isCodeActive(SCRAMBLE_TEXTURES) || isCodeActive(MOVE_OR_DIE))
                     return true;
                 break;
 
@@ -417,16 +417,16 @@ public:
                 break;
 
             case WINDY_DAY:
-                if (isCodeActive(FAST_N_FURIOUS))
+                if (isCodeActive(MOVE_OR_DIE))
                     return true;
                 break;
 
             case TANK_CONTROLS:
-                if (isCodeActive(FAST_N_FURIOUS) && rand() % 10 != 0)
+                if (isCodeActive(MOVE_OR_DIE) && rand() % 10 != 0)
                     return true;
                 break;
 
-            case FAST_N_FURIOUS:
+            case MOVE_OR_DIE:
                 if ((isCodeActive(TANK_CONTROLS) && rand() % 10 != 0) || isCodeActive(CHAOS_CODE) ||
                     isCodeActive(SCRAMBLE_TEXTURES) || isCodeActive(WINDY_DAY) || isCodeActive(HELPFUL_INPUT_DISPLAY) || isCodeActive(SIMON_SAYS) || isCodeActive(SNAKE) || isCodeActive(SMS_WIKI))
                     return true;
@@ -473,12 +473,12 @@ public:
                 break;
 
 			case HELPFUL_INPUT_DISPLAY:
-                if (isCodeActive(FAST_N_FURIOUS))
+                if (isCodeActive(MOVE_OR_DIE))
                     return true;
                 break;
 
 			case SMS_WIKI:
-                if (isCodeActive(FAST_N_FURIOUS))
+                if (isCodeActive(MOVE_OR_DIE))
                     return true;
                 break;
         }
@@ -509,7 +509,7 @@ public:
             case RANDOM_SPRAY:
             case SHRINK_RAY:
             case LOL:
-            case FAST_N_FURIOUS:
+            case MOVE_OR_DIE:
 			case DIVING_MODE:
                 return false;
 		}
@@ -636,7 +636,7 @@ public:
     static void trippyTextures(Code::FuncReset);
     static void imaTired(Code::FuncReset);
     static void freezeAnims(Code::FuncReset);
-    static void fastNFurious(Code::FuncReset);
+    static void moveOrDie(Code::FuncReset);
     static void divingMode(Code::FuncReset);
     static void pauseTimers(Code::FuncReset);
     static void changeMusic(Code::FuncReset);

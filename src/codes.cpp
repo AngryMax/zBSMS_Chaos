@@ -711,7 +711,7 @@ void CodeContainer::chaosCode(Code::FuncReset f) {
         codeContainer.endCode(NO_MARIO_REDRAW);
         codeContainer.endCode(SIMON_SAYS);
         codeContainer.endCode(SNAKE);
-        codeContainer.endCode(FAST_N_FURIOUS);
+        codeContainer.endCode(MOVE_OR_DIE);
         codeContainer.endCode(SCRAMBLE_TEXTURES);
         codeContainer.endCode(PAUSE_TIMERS);
         if (codeContainer.isCodeActive(HALVE_ROLL_TIME)) {
@@ -2463,7 +2463,7 @@ void CodeContainer::freezeAnims(Code::FuncReset f) {
 	calledNum++;
 }
 
-void CodeContainer::fastNFurious(Code::FuncReset f) {
+void CodeContainer::moveOrDie(Code::FuncReset f) {
 
     const f32 SPEED_MIN = 40;
     const f32 SPEED_ADD = 85;
@@ -2480,9 +2480,10 @@ void CodeContainer::fastNFurious(Code::FuncReset f) {
     }
 
 	if (gpMarDirector->mCurState == 7)			// just end the code if mario dies for any reason
-        codeContainer.endCode(FAST_N_FURIOUS);
+        codeContainer.endCode(MOVE_OR_DIE);
 
-    if (gpMarDirector->mCurState != 4)			// pause hp depletion if the game state is anything but normal gameplay
+	u8 **marDir = (u8 **)0x8040E178;
+    if (gpMarDirector->mCurState != 4 || marDir[0][0x124] != 0)			// pause hp depletion if the game state is anything but normal gameplay
         return;
 
     if (mForwardSpeed <= 0)
@@ -2495,7 +2496,7 @@ void CodeContainer::fastNFurious(Code::FuncReset f) {
 
 	if (depletionHP >= 0) {
         gpMarioOriginal->loserExec();
-        codeContainer.endCode(FAST_N_FURIOUS);        
+        codeContainer.endCode(MOVE_OR_DIE);        
     }
 
     // speed meter
