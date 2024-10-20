@@ -2598,6 +2598,13 @@ void CodeContainer::fakeDeath(Code::FuncReset f) {
 	static bool execOnce = true;
     static int ifDivingStage = false;
     static u32 stageMusic;
+    static bool wasEnded = false;
+
+	if (wasEnded) {
+        wasEnded = false;
+        OSReport("-> HERE!!!!!!!\n");
+        return;
+	}
 
 	if (f == Code::FuncReset::TRUE) {		
         execOnce = true;
@@ -2619,8 +2626,15 @@ void CodeContainer::fakeDeath(Code::FuncReset f) {
 
     if (execOnce) {     
 
-		if (gpMarDirector->mCurState != 4)			// end code if not in a normal gameplay state
+		u8 **marDir = (u8 **)0x8040E178;
+
+		//OSReport("-> %d\n", marDir[0][0x124]);
+
+		if (marDir[0][0x124] != 0) {			// just end the code if not in a normal gameplay state
 			codeContainer.endCode(FAKE_DEATH);
+            wasEnded = true;
+            return;
+		}
 
 		if (gpMarioOriginal->mState == 0x891)
             ifDivingStage = true;
