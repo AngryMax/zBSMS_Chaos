@@ -460,7 +460,7 @@ void CodeContainer::reverseInputs() {
     }
 }
 
-void CodeContainer::simonSays(Code::FuncReset f) {
+void CodeContainer::simonSays(Code::FuncReset f) {		// TODO: make the text bigger/closer to the vertical center to make it more obvious
 
 	static bool execRNGOnce = true;
     static bool inputMade = false;
@@ -2186,7 +2186,7 @@ void CodeContainer::popUpUX(Code::FuncReset f) {
 	}
 }
 
-void CodeContainer::superposition(Code::FuncReset f) {
+void CodeContainer::superposition(Code::FuncReset f) {		// TODO: add a sparkle to where mario's superposition is to make it more obvious what this code does
 
 	static TVec3f marPrevPos;
     static f32 timeToWait   = 0;
@@ -2466,10 +2466,10 @@ void CodeContainer::fastNFurious(Code::FuncReset f) {
         return;
     }
 
-	if (gpMarDirector->mCurState == 7)
+	if (gpMarDirector->mCurState == 7)			// just end the code if mario dies for any reason
         codeContainer.endCode(FAST_N_FURIOUS);
 
-    if (gpMarDirector->mCurState != 4)
+    if (gpMarDirector->mCurState != 4)			// pause hp depletion if the game state is anything but normal gameplay
         return;
 
     if (mForwardSpeed <= 0)
