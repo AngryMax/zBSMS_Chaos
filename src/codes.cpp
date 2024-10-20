@@ -2602,7 +2602,6 @@ void CodeContainer::fakeDeath(Code::FuncReset f) {
 
 	if (wasEnded) {
         wasEnded = false;
-        OSReport("-> HERE!!!!!!!\n");
         return;
 	}
 
