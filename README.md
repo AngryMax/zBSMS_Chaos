@@ -27,3 +27,4 @@ After 1.1 is released, Hyper Chaos will become a backburner project. This means 
 # Credits
 * Credit to JoshuaMK and the various contributers for development of [BetterSunshineEngine](https://github.com/DotKuribo/BetterSunshineEngine), which is what makes this mod compatible with various others.
 * Credit to JoshuaMK and the various contributers for the [SunshineHeaderInterface](https://github.com/DotKuribo/SunshineHeaderInterface), which we used and modified to interface with the game in our code.
+* Special thanks to WarSpyKing for playtest
