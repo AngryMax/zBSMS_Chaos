@@ -2748,8 +2748,8 @@ void CodeContainer::selfieStick(Code::FuncReset f) {
     f32 yawRadians = (gpMarioOriginal->mAngle.y * M_PI) / 32768.0f;
 
 	f32 angleDiff = fabsf(Utils::clampAngleRadians(lastMarioAngle - yawRadians));
-    if (angleDiff > (M_PI / 6) || (gpMarioPos->x != lastMarPos.x && gpMarioPos->z != lastMarPos.z))
-        lastMarioAngle = (gpMarioOriginal->mAngle.y * M_PI) / 32768.0f;
+    if (angleDiff > (M_PI / 6))        
+        lastMarioAngle = (gpMarioOriginal->mAngle.y * M_PI) / 32768.0f;    
     else yawRadians = lastMarioAngle;
 
 	lastMarPos = *gpMarioPos;

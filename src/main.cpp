@@ -522,9 +522,9 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     }
     #endif
 
-    OSReport("Finished initVars!\n");
+    //OSReport("Finished initVars!\n");
     Utils::printChaosPtrAddr();
-    OSReport("starPower addr: 0x%x\n", &codeContainer.starPower);
+    //OSReport("starPower addr: 0x%x\n", &codeContainer.starPower);
 }
 
 static OSTime sBaseTime = 0;
@@ -604,7 +604,7 @@ BETTER_SMS_FOR_CALLBACK static void initCodeDisplay(TMarDirector *director) {
     codeContainer.codeDisplay->mGradientTop    = GREEN_TOP;
     codeContainer.codeDisplay->mGradientBottom = GREEN_BOTTOM;
 
-    OSReport("codeDisplay initialization successful!\n");
+    //OSReport("codeDisplay initialization successful!\n");
 }
 
 BETTER_SMS_FOR_CALLBACK static void drawCodeDisplay(TMarDirector *director,  const J2DOrthoGraph *ortho) {
@@ -699,7 +699,7 @@ BETTER_SMS_FOR_CALLBACK static void applyChaosSettings(TMarDirector *director) {
         codeContainer.rollTime = 0;
     else codeContainer.rollTime = sRollTime;
 
-	OSReport("-> %f\n", codeContainer.rollTime);
+	//OSReport("-> %f\n", codeContainer.rollTime);
 }
 
 BETTER_SMS_FOR_CALLBACK static void titleScreenEngine(TMarDirector *director) {
