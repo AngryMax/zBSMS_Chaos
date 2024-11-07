@@ -2710,18 +2710,52 @@ void CodeContainer::tinyMario(Code::FuncReset f) {
     gpMarioOriginal->mAttackHeight = 65;
 }
 
+
+pp::auto_patch selfieStickPatch(SMS_PORT_REGION(0x80029d5c, 0, 0, 0), BLR, false);
 void CodeContainer::selfieStick(Code::FuncReset f) {
 
     static TVec3f mTargetPos;
     static TVec3f mTranslation;
     static TVec3f projectedPos;
+    static TVec3f lastMarPos;
+    static s16 lastMarioAngle;
+
+	static bool execOnce = true;
+
+	if (f == Code::FuncReset::TRUE) {
+        selfieStickPatch.disable();
+        execOnce = true;
+
+        return;
+    }
+
+	if (execOnce) {
+    
+		execOnce = false;
+        lastMarioAngle = (gpMarioOriginal->mAngle.y * M_PI) / 32768.0f;
+		lastMarPos = *gpMarioPos;
+	}
+
+    if (!selfieStickPatch.is_enabled())
+        selfieStickPatch.enable();
     
     mTargetPos = *gpMarioPos;
     mTargetPos.y += 100;
-    mTranslation = gpCamera->mTranslation;
+    mTranslation = gpCamera->mTranslation;	
 
     projectedPos   = *gpMarioPos;
+    
     f32 yawRadians = (gpMarioOriginal->mAngle.y * M_PI) / 32768.0f;
+
+	f32 angleDiff = fabsf(Utils::clampAngleRadians(lastMarioAngle - yawRadians));
+    if (angleDiff > (M_PI / 6) || (gpMarioPos->x != lastMarPos.x && gpMarioPos->z != lastMarPos.z))
+        lastMarioAngle = (gpMarioOriginal->mAngle.y * M_PI) / 32768.0f;
+    else yawRadians = lastMarioAngle;
+
+	lastMarPos = *gpMarioPos;
+
+	//yawRadians = LERP(yawRadians, lastMarioAngle, 1);
+    //lastMarioAngle = yawRadians;
 
     projectedPos.x += 400 * sinf(yawRadians);
     projectedPos.z += 400 * cosf(yawRadians);    

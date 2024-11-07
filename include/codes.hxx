@@ -481,6 +481,16 @@ public:
                 if (isCodeActive(MOVE_OR_DIE))
                     return true;
                 break;
+
+			case SELFIE_STICK:
+                if (isCodeActive(JUMPSCARE))
+                    return true;
+                break;
+
+			case JUMPSCARE:
+                if (isCodeActive(SELFIE_STICK))
+                    return true;
+                break;
         }
 
 		return false;
@@ -724,4 +734,15 @@ namespace Utils {
         else
             return false;
     }
+
+	static f32 clampAngleRadians(f32 radians) {
+        while (radians >= M_PI)
+            radians -= 2 * M_PI;
+        while (radians < -M_PI)
+            radians += 2 * M_PI;
+
+        return radians;
+    }
 }
+
+#define LERP(a, b, t) ((a) + (t) * ((b) - (a)))
