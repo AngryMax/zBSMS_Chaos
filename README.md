@@ -24,6 +24,10 @@ Features you can expect in the next update(1.1):
 
 After 1.1 is released, Hyper Chaos will become a backburner project. This means that in some unkown point in the future, there could be an update with extra/changed codes, new settings, livestream voting, etc. We also would like to add a system for enabling/disabling certain codes, but we've yet to find a practical way to pull that off.
 
+# Quick Notes
+* Up on the dpad is a kill button if you're ever softlocked
+* Down on the dpad disables the in game GUI which also disables the hyper chaos engine as a byproduct. We couldn't implement an easy fix for this as it's built into this version of the BetterSMS engine, so avoid hitting this button. 
+
 # Credits
 * Credit to JoshuaMK and the various contributers for development of [BetterSunshineEngine](https://github.com/DotKuribo/BetterSunshineEngine), which is what makes this mod compatible with various others.
 * Credit to JoshuaMK and the various contributers for the [SunshineHeaderInterface](https://github.com/DotKuribo/SunshineHeaderInterface), which we used and modified to interface with the game in our code.
