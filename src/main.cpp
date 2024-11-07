@@ -432,7 +432,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 		{DISABLE_WATER_COL,         "Disable Water Collision",	        50,			60,		    codeContainer.disableWaterCol},
         {SHUFFLE_OBJECTS,			"Shuffle Objects",					15,			 3,			codeContainer.shuffleObjects},
         {CRAZY_COLLISION,			"Crazy Collision",					 1,			15,			codeContainer.crazyCollision},
-        {INV_WATER_MOMENTUM,		"Invert Water",						40,			60,			codeContainer.invertWaterToggle},
+        {INV_WATER_MOMENTUM,		"Invert Water",						25,			60,			codeContainer.invertWaterToggle},
         {MOVE_SHINES,				"The Shining",						 5,			30,			codeContainer.moveShines},
         {PAINT_RANDOM_COLLISION,	"Collision Paint",					50,			20,			codeContainer.paintRandomCollision},
         {TANK_CONTROLS,				"Tank Controls",					30,			30,			codeContainer.tankControls},
@@ -501,7 +501,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {CRAZY_GRAVITY};
+    u8 whitelist[] = {IMA_TIRED};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
@@ -583,7 +583,7 @@ BETTER_SMS_FOR_CALLBACK static void chaosEngine(TMarDirector *director, const J2
         codeContainer.checkCodeTimers();
         codeContainer.iterateThroughCodes();
 
-        if (gpMarioOriginal->mController->mButtons.mInput & TMarioGamePad::DPAD_UP)
+        if (gpMarioOriginal->mController->mButtons.mInput & TMarioGamePad::DPAD_UP)		// TODO: make this disable if in betterSMS debug mode
             gpMarioOriginal->loserExec();
     }	
 

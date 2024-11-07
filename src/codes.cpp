@@ -691,7 +691,7 @@ void CodeContainer::moonGravity(Code::FuncReset f) {
 
 void CodeContainer::crazyGravity(Code::FuncReset f) {
 
-	const s32 MAX_HEIGHT = 5000;
+	const s32 MAX_HEIGHT = 7000;
 
     if (f == Code::FuncReset::TRUE) {
         gpMarioOriginal->mJumpParams.mGravity.set(1.0);
@@ -2438,6 +2438,20 @@ void CodeContainer::imaTired(Code::FuncReset f) {
 
 	static int origState = 0;
     static bool execOnce = true;
+    static bool wasEnded = false;
+
+	if (wasEnded) {
+        wasEnded = false;
+        return;
+    }
+
+	u8 **marDir = (u8 **)0x8040E178;
+
+    if (marDir[0][0x124] != 0) {  // just end the code if not in a normal gameplay state
+        codeContainer.endCode(IMA_TIRED);
+        wasEnded = true;
+        return;
+    }
 
 	if (execOnce) {
         origState = gpMarioOriginal->mState;
