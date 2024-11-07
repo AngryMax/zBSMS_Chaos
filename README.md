@@ -5,7 +5,7 @@ A chaos mod for the BetterSMS Engine with 100 effects!
 Download the most recent release of the mod [here](https://github.com/AngryMax/zBSMS_Chaos/releases). Two methods of installation are provided:
 
 ### BetterSMS Module
-If you would like to use a more modular approach (which allows allows for compatibility with mods like Eclipse), set up BetterSunshineEngine by following the directions [here](https://github.com/DotKuribo/BetterSunshineEngine), and then place the kxe file in your extracted ISO's directory /files/Kuribo!/Mods/.
+If you would like to use a more modular approach (which allows allows for compatibility with mods like Eclipse), set up BetterSunshineEngine by following the directions [here](https://github.com/DotKuribo/BetterSunshineEngine), and then place the kxe file in your extracted ISO's directory `/files/Kuribo!/Mods/`.
 NOTE: This mod was developed for v3.1 of BetterSunshineEngine, so compatibility with other versions may vary.
 
 ### ISO Patch
@@ -27,4 +27,4 @@ After 1.1 is released, Hyper Chaos will become a backburner project. This means 
 # Credits
 * Credit to JoshuaMK and the various contributers for development of [BetterSunshineEngine](https://github.com/DotKuribo/BetterSunshineEngine), which is what makes this mod compatible with various others.
 * Credit to JoshuaMK and the various contributers for the [SunshineHeaderInterface](https://github.com/DotKuribo/SunshineHeaderInterface), which we used and modified to interface with the game in our code.
-* Special thanks to WarSpyKing for playtest
+* Special thanks to warspyking for playtest.
