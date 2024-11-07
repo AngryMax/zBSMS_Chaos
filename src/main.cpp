@@ -427,7 +427,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 		{GIANT_MARIO,               "GIANT MARIO",					    30,			15,		    codeContainer.giantMario},
 		{SNAKE,                     "MAR.IO",						    50,			10,		    codeContainer.snakeGame},
 		{MOON_GRAVITY,              "Moon Gravity",					    50,			30,		    codeContainer.moonGravity},
-		{CRAZY_GRAVITY,             "Crazy Gravity",					40,			25,		    codeContainer.crazyGravity},
+		{CRAZY_GRAVITY,             "Crazy Gravity",					40,			20,		    codeContainer.crazyGravity},
 		{CHAOS_CODE,                "Chaos Code",					     1,			60,		    codeContainer.chaosCode},
 		{DISABLE_WATER_COL,         "Disable Water Collision",	        50,			60,		    codeContainer.disableWaterCol},
         {SHUFFLE_OBJECTS,			"Shuffle Objects",					15,			 3,			codeContainer.shuffleObjects},
@@ -478,7 +478,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {SIGHTSEER,					"Delfino Sightseer",                10,			 1,			codeContainer.sightseer},
         {STAR_POWER,				"Star Power",						40,			10,			codeContainer.starPowerToggle},
         {TRIPPY_TEXTURES,			"Trippy",							50,			40,			codeContainer.trippyTextures},
-        {IMA_TIRED,					"I'ma Tired!",						50,			 1,			codeContainer.imaTired},
+        {IMA_TIRED,					"I'ma Tired!",						50,			 1.5,		codeContainer.imaTired},
         {FREEZE_ANIMS,				"Stop Motion",						60,			30,			codeContainer.freezeAnims},
         {MOVE_OR_DIE,				"Move or... DIE!!!",				25,			30,			codeContainer.moveOrDie},
         {DIVING_MODE,				"CAMERA BAD",						50,			30,			codeContainer.divingMode},
@@ -501,7 +501,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {MOVE_OR_DIE};
+    u8 whitelist[] = {CRAZY_GRAVITY};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {

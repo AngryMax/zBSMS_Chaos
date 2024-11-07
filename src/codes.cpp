@@ -690,12 +690,18 @@ void CodeContainer::moonGravity(Code::FuncReset f) {
 }
 
 void CodeContainer::crazyGravity(Code::FuncReset f) {
+
+	const s32 MAX_HEIGHT = 5000;
+
     if (f == Code::FuncReset::TRUE) {
         gpMarioOriginal->mJumpParams.mGravity.set(1.0);
         return;
     }
 
-    gpMarioOriginal->mJumpParams.mGravity.set(cosf(currentTime) * 0.5);
+    gpMarioOriginal->mJumpParams.mGravity.set(cosf(currentTime) * 0.75);
+
+	if (gpMarioPos->y >= gpMarioOriginal->mLastGroundedPos.y + MAX_HEIGHT)
+        gpMarioOriginal->mJumpParams.mGravity.set(1.0);
 }
 
 void CodeContainer::chaosCode(Code::FuncReset f) {
