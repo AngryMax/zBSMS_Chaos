@@ -17,11 +17,6 @@ An optional python script for displaying the active chaos effects is provided [h
 # Code Wiki
 If you'd like to read the documentation on what each code does, read up [here](https://docs.google.com/spreadsheets/d/1CBsjPsnEJkVuYLZ5TRXrL6cL7Uj8XLngio_n3UUDDVY/edit?)
 
-# Some Notes
-* This mod is made by two people: MasterMattK and Angry_Max! While I super appreciate people going out of their way to credit me(Angry_Max), MasterMattK also put in an equal amount of work into Hyper Chaos, so be sure to credit him as well!
-* Many codes have effects that last longer than the code itself. For example, nearly any code that changes the location, size, rotation, etc. of different objects will leave those objects at their new location, size, rotation, or etc. This is by design, as it leads to near a near infinite set of different circumstances you have to play around!
-* Loading zones are often included in codes that move objects around(IE: Object Vortex or Shuffle Objects). This is because we love CBT in the Hyper Chaos household.
-
 # Devolopment Roadmap
 Features you can expect in the next update(1.1):
 * Seeded RNG for code selection + the ability to input custom seeds
@@ -39,6 +34,9 @@ After 1.1 is released, Hyper Chaos will become a backburner project. This means 
 * "Lucid Dream" has some strange behavior when Mario ca
 
 # Quick Notes
+* This mod is made by two people: MasterMattK and Angry_Max! While I super appreciate people going out of their way to credit me(Angry_Max), MasterMattK also put in an equal amount of work into Hyper Chaos, so be sure to credit him as well!
+* Many codes have effects that last longer than the code itself. For example, nearly any code that changes the location, size, rotation, etc. of different objects will leave those objects at their new location, size, rotation, or etc. This is by design, as it leads to near a near infinite set of different circumstances you have to play around!
+* Loading zones are often included in codes that move objects around(IE: Object Vortex or Shuffle Objects). This is because we love CBT in the Hyper Chaos household.
 * Up on the dpad is a kill button if you're ever softlocked
 * Down on the dpad disables the in game GUI which also disables the hyper chaos engine as a byproduct. We couldn't implement an easy fix for this as it's built into this version of the BetterSMS engine, so avoid hitting this button. 
 
