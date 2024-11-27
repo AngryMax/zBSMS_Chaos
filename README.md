@@ -14,6 +14,14 @@ If you would like to simply patch the game like any other Sunshine mod, an xDelt
 # Installing the Code Display script
 An optional python script for displaying the active chaos effects is provided [here](https://github.com/MasterMattK/Hyper-Chaos-Code-Display). Installation and usage instructions are provided there.
 
+# Code Wiki
+If you'd like to read the documentation on what each code does, read up [here](https://docs.google.com/spreadsheets/d/1CBsjPsnEJkVuYLZ5TRXrL6cL7Uj8XLngio_n3UUDDVY/edit?)
+
+# Some Notes
+* This mod is made by two people: MasterMattK and Angry_Max! While I super appreciate people going out of their way to credit me(Angry_Max), MasterMattK also put in an equal amount of work into Hyper Chaos, so be sure to credit him as well!
+* Many codes have effects that last longer than the code itself. For example, nearly any code that changes the location, size, rotation, etc. of different objects will leave those objects at their new location, size, rotation, or etc. This is by design, as it leads to near a near infinite set of different circumstances you have to play around!
+* Loading zones are often included in codes that move objects around(IE: Object Vortex or Shuffle Objects). This is because we love CBT in the Hyper Chaos household.
+
 # Devolopment Roadmap
 Features you can expect in the next update(1.1):
 * Seeded RNG for code selection + the ability to input custom seeds
@@ -21,6 +29,12 @@ Features you can expect in the next update(1.1):
 * Balance changes if needed
 * Possibly other stuff
 * No release date
+
+# Known Bugs
+* Poinks(the pink guys that attach to FLUDD) sometimes don't want to attach to FLUDD.
+* A crash in Eel involving either "Landing Movement Lock" or "Lucid Dream."
+* Touching a shine while "MAMA!" is active causes it to go intangable, and therefor uncollectable.
+* "Lucid Dream" has some strange behavior when Mario ca
 
 After 1.1 is released, Hyper Chaos will become a backburner project. This means that in some unkown point in the future, there could be an update with extra/changed codes, new settings, livestream voting, etc. We also would like to add a system for enabling/disabling certain codes, but we've yet to find a practical way to pull that off.
 
