@@ -30,13 +30,13 @@ Features you can expect in the next update(1.1):
 * Possibly other stuff
 * No release date
 
+After 1.1 is released, Hyper Chaos will become a backburner project. This means that in some unkown point in the future, there could be an update with extra/changed codes, new settings, livestream voting, etc. We also would like to add a system for enabling/disabling certain codes, but we've yet to find a practical way to pull that off.
+
 # Known Bugs
 * Poinks(the pink guys that attach to FLUDD) sometimes don't want to attach to FLUDD.
 * A crash in Eel involving either "Landing Movement Lock" or "Lucid Dream."
 * Touching a shine while "MAMA!" is active causes it to go intangable, and therefor uncollectable.
 * "Lucid Dream" has some strange behavior when Mario ca
-
-After 1.1 is released, Hyper Chaos will become a backburner project. This means that in some unkown point in the future, there could be an update with extra/changed codes, new settings, livestream voting, etc. We also would like to add a system for enabling/disabling certain codes, but we've yet to find a practical way to pull that off.
 
 # Quick Notes
 * Up on the dpad is a kill button if you're ever softlocked
