@@ -743,6 +743,19 @@ namespace Utils {
 
         return radians;
     }
+
+	static u32 rng = 0;
+	static void srand() {
+
+		rng = OSGetTick();
+        OSReport("\nRng -> 0x%x\n", rng);
+
+	}
+
+	static u32 rand() {
+
+		return rng;
+	}
 }
 
 #define LERP(a, b, t) ((a) + (t) * ((b) - (a)))

@@ -447,7 +447,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {MAKE_MARIO_OBJ,			"Prop Hunt",						65,			60,			codeContainer.makeMarioAnObject},
 		{POPUP_SAVE_PROMPT,			"Quicksave",						55,			 1,			codeContainer.popupSavePrompt},
 		{PING_LAG,					"Nintendo Online",					25,			25,			codeContainer.pingLag},
-		{HALVE_ROLL_TIME,			"No Grace Period",					15,			25,			codeContainer.halveRollTime},
+		{HALVE_ROLL_TIME,			"Halve Roll Time",					15,			25,			codeContainer.halveRollTime},
 		{EARTHQUAKE,				"Earthquake!!!!",					15,			25,			codeContainer.earthquake},
 		{SOMETIMES_DOUBLE_COINS,	"Double Coins???",					60,			30,			codeContainer.sometimesDoubleCoins},
 		{REVERSE_RARITIES,			"Rarity Swap",						 1,			90,			codeContainer.reverseRarities},
@@ -496,6 +496,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         // idea: a code which draws the collision triangles in a radius (the matrix)
         // idea: bouncy surface code (make npcs or something bouncy to the touch)
 		// idea: a code that sets the camera to focus on the nearest object to mario
+
 	};
 
     #if DEV_MODE
@@ -524,6 +525,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 
     //OSReport("Finished initVars!\n");
     Utils::printChaosPtrAddr();
+    Utils::srand();
     //OSReport("starPower addr: 0x%x\n", &codeContainer.starPower);
 }
 
