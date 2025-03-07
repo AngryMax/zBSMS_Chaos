@@ -407,7 +407,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {CLUMSY_JUMPS,              "Clumsy Jumps",                     60,			20,		    codeContainer.lockJumpDirection},
         {PATHETIC_FLUDD,            "Pathetic FLUDD",                   70,			30,		    codeContainer.sadFLUDD},
         {LAND_MOVEMENT_LOCK,        "Landing Movement Lock",            40,			30,		    codeContainer.landMovementLock},
-        {UNLIMITED_TURBO,           "Unlimited Turbo but no Turbo",     25,			30,		    codeContainer.forceTurbo},
+        {UNLIMITED_TURBO,           "Unlimited Turbo but no Turbo",     25,			25,		    codeContainer.forceTurbo},
         {CRESCENDO,                 "Crescendo",                        50,         30,         codeContainer.setMusicVol},
         {SPEEN_ID,                  "S P E E N",                        45,         10,         codeContainer.SPEEN},
         {NOZZLE_ROLL,               "Nozzle Roulette",			        40,          7,         codeContainer.changeNozzleRandom},
@@ -486,7 +486,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {MOVE_OR_DIE,				"Move or... DIE!!!",				25,			30,			codeContainer.moveOrDie},
         {DIVING_MODE,				"CAMERA BAD",						50,			30,			codeContainer.divingMode},
         {PAUSE_TIMERS,				"Pause Codes",						20,			30,			codeContainer.pauseTimers},	
-        {CHANGE_MUSIC,				"Change Music",						30,			 1,			codeContainer.changeMusic},
+        {CHANGE_MUSIC,				"Change Music",						35,			 1,			codeContainer.changeMusic},
         {OFFSET_MARIO,				"Offset Mario",						50,			30,			codeContainer.offsetMarioToggle},
         {REVERSE_MARIO,				"Reverse Mario",					50,			30,			codeContainer.reverseMarioToggle},
         {FAKE_DEATH,				"Kill Mario",						25,			 5,			codeContainer.fakeDeath},
@@ -505,7 +505,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {NO_WHITELIST	};
+    u8 whitelist[] = {NO_WHITELIST};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
@@ -750,7 +750,7 @@ BETTER_SMS_FOR_CALLBACK static void setSeedCallback(TApplication *tapp) {
     };
 
     static int stickHoldStarted = 0;		// the value of sCustomRNGSeed when it began to get changed
-    static int step				= 1;		// settings step amount
+    static int step				= 1;		// settings step amount/decimal place being stepped
     static bool holdingStick    = false;	// if holding stick > 0.3 on x axis
     static scrollStates scrollState = NOT_SCROLLING;
     f32 menuTime;
@@ -800,7 +800,22 @@ static void assignOnDeathDestination(JDrama::TFlagT<u16> nextStageFlag, u16 flag
 }
 SMS_PATCH_BL(SMS_PORT_REGION(0x80299808, 0, 0, 0), assignOnDeathDestination);	// credit both JoshuaMK (myself), CyrusLoS, and Eclipse Team as a whole. Any and all use of the source assets should credit Eclipse Team.
 
+BETTER_SMS_FOR_CALLBACK static void customSeeds(TMarDirector *dir) {
 
+	switch (sCustomRNGSeed) {
+		case 7192002:			
+            if (!codeContainer.isCodeActive(SUN_DRIP))
+                codeContainer.forceActivateCode(SUN_DRIP);
+        case 69420:
+            codeContainer.rollTime = 0.5;
+        case 11211990:
+            if (!codeContainer.isCodeActive(SPAWN_YOSHI))
+                codeContainer.forceActivateCode(SPAWN_YOSHI);
+            if (codeContainer.isCodeActive(MOVE_OR_DIE))
+                codeContainer.endCode(MOVE_OR_DIE);
+	};
+
+}
 
 // Module definition
 
@@ -816,6 +831,7 @@ static void initModule() {
     BetterSMS::Stage::addExitCallback(resetCodesOnStageExit);
     BetterSMS::Stage::addInitCallback(applyChaosSettings);
     BetterSMS::Stage::addUpdateCallback(titleScreenEngine);
+    BetterSMS::Stage::addUpdateCallback(customSeeds);
 
 	BetterSMS::Game::addLoopCallback(setSeedCallback);  
 

@@ -465,7 +465,7 @@ public:
                 break;
 
             case TINY_MARIO:
-                if (isCodeActive(GIANT_MARIO) || isCodeActive(WIDE_MARIO))
+                if (isCodeActive(GIANT_MARIO) || isCodeActive(WIDE_MARIO) || isCodeActive(INVERT_MARIO))
                     return true;
                 break;
 
@@ -513,6 +513,18 @@ public:
                 if (isCodeActive(SELFIE_STICK))
                     return true;
                 break;
+            case INVERT_MARIO:
+				if (isCodeActive(TINY_MARIO))
+					return true;
+				break;
+            case OUT_OF_BODY:
+                if (isCodeActive(MAKE_MARIO_OBJ))
+                    return true;
+                break;
+            case MAKE_MARIO_OBJ:
+                if (isCodeActive(OUT_OF_BODY))
+                    return true;
+                break;
         }
 
 		return false;
@@ -548,6 +560,11 @@ public:
 		}
 
 		return true;
+	}
+
+	void forceActivateCode(int codeID) {
+        codeList[codeID].isActive   = true;
+        codeList[codeID].timeCalled = currentTime;
 	}
 
 private:
