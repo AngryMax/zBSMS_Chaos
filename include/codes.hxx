@@ -180,6 +180,26 @@ extern float currentTime;  // unit = seconds
 
 #define NO_WHITELIST		   255		// used to stay in DEV_MODE w/o a whitelist
 
+namespace Utils {
+
+	static u32 rng = 0;
+    static void srand() {
+        rng = OSGetTick();
+        OSReport("\nRNG Seed -> %d\n", rng);
+    }
+
+    // more or less a copy of sunshine's rand
+    static u32 rand() {
+        rng = rng * 0x41c64e6d + 0x3039;
+        return rng >> 0x10 & 0x7fff;
+    }
+
+	static void setSeed(u32 seed) {
+		rng = seed;
+        OSReport("\nNew RNG Seed -> %d\n", rng);
+	}
+}
+
 class Code  // we might want to add a member for display name
 {    
 
@@ -338,7 +358,7 @@ public:
             case SCRAMBLE_TEXTURES:
                 if (isCodeActive(SIMON_SAYS) || isCodeActive(SNAKE) || isCodeActive(MOVE_OR_DIE))
                     return true;
-                if (isCodeActive(CHAOS_CODE) && rand() % 100 != 0)
+                if (isCodeActive(CHAOS_CODE) && Utils::rand() % 100 != 0)
                     return true;
                 break;
 
@@ -360,7 +380,7 @@ public:
             case CRAZY_GRAVITY:
                 if (isCodeActive(MOON_GRAVITY))
                     return true;
-                if (isCodeActive(FIRE_MOVEMENT) && rand() % 10 != 0)
+                if (isCodeActive(FIRE_MOVEMENT) && Utils::rand() % 10 != 0)
                     return true;
                 break;
 
@@ -380,14 +400,14 @@ public:
                 break;
 
             case ASCEND:
-                if (isCodeActive(FIRE_MOVEMENT) && rand() % 10 != 0)
+                if (isCodeActive(FIRE_MOVEMENT) && Utils::rand() % 10 != 0)
                     return true;
                 break;
 
             case FIRE_MOVEMENT:
-                if (isCodeActive(ASCEND) && rand() % 10 != 0)
+                if (isCodeActive(ASCEND) && Utils::rand() % 10 != 0)
                     return true;
-                if (isCodeActive(CRAZY_GRAVITY) && rand() % 10 != 0)
+                if (isCodeActive(CRAZY_GRAVITY) && Utils::rand() % 10 != 0)
                     return true;
                 break;
 
@@ -422,12 +442,12 @@ public:
                 break;
 
             case TANK_CONTROLS:
-                if (isCodeActive(MOVE_OR_DIE) && rand() % 10 != 0)
+                if (isCodeActive(MOVE_OR_DIE) && Utils::rand() % 10 != 0)
                     return true;
                 break;
 
             case MOVE_OR_DIE:
-                if ((isCodeActive(TANK_CONTROLS) && rand() % 10 != 0) || isCodeActive(CHAOS_CODE) ||
+                if ((isCodeActive(TANK_CONTROLS) && Utils::rand() % 10 != 0) || isCodeActive(CHAOS_CODE) ||
                     isCodeActive(SCRAMBLE_TEXTURES) || isCodeActive(WINDY_DAY) || isCodeActive(HELPFUL_INPUT_DISPLAY) || isCodeActive(SIMON_SAYS) || isCodeActive(SNAKE) || isCodeActive(SMS_WIKI))
                     return true;
                 break;
@@ -528,7 +548,7 @@ public:
 	}
 
 private:
-	int getRand() { return (rand() % currentCodeCount); }
+    int getRand() { return (Utils::rand() % currentCodeCount); }
 
 	int getWeightedRand() {
         int roll;
@@ -538,10 +558,10 @@ private:
             roll = getRand();
 
             if (isCodeActive(REVERSE_RARITIES)) {
-                if (codeList[roll].rarity < rand() % 101)
+                if (codeList[roll].rarity < Utils::rand() % 101)
                     return roll;
             } else {
-                if (codeList[roll].rarity > rand() % 101)
+                if (codeList[roll].rarity > Utils::rand() % 101)
                     return roll;
             }
             
@@ -742,20 +762,7 @@ namespace Utils {
             radians += 2 * M_PI;
 
         return radians;
-    }
-
-	static u32 rng = 0;
-	static void srand() {
-
-		rng = OSGetTick();
-        OSReport("\nRng -> 0x%x\n", rng);
-
-	}
-
-	static u32 rand() {
-
-		return rng;
-	}
+    }	
 }
 
 #define LERP(a, b, t) ((a) + (t) * ((b) - (a)))

@@ -374,6 +374,9 @@ static BetterSMS::Settings::BoolSetting sInfiniteLivesSetting("Infinite Lives", 
 static bool sSkipCutscenes = true;
 static BetterSMS::Settings::BoolSetting sSkipCutscenesSetting("Skippable Cutscenes", &sSkipCutscenes);
 
+static int sCustomRNGSeed = 0;
+static BetterSMS::Settings::IntSetting sCustomRNGSeedSetting("Set Seed", &sCustomRNGSeed);
+
 
 /*
 / Module Info
@@ -525,7 +528,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 
     //OSReport("Finished initVars!\n");
     Utils::printChaosPtrAddr();
-    Utils::srand();
+    Utils::srand();		// seed the code rolling rng
     //OSReport("starPower addr: 0x%x\n", &codeContainer.starPower);
 }
 
@@ -707,7 +710,7 @@ BETTER_SMS_FOR_CALLBACK static void applyChaosSettings(TMarDirector *director) {
 BETTER_SMS_FOR_CALLBACK static void titleScreenEngine(TMarDirector *director) {
 
 	skippableCutscenesPatch1.set_enabled(sSkipCutscenes);
-	skippableCutscenesPatch2.set_enabled(sSkipCutscenes);
+	skippableCutscenesPatch2.set_enabled(sSkipCutscenes);	
 
 	if (director->mAreaID != 15)
         return;
@@ -716,7 +719,7 @@ BETTER_SMS_FOR_CALLBACK static void titleScreenEngine(TMarDirector *director) {
     f32 frameRate                 = BetterSMS::getFrameRate();
     frameRate == 60 ? shouldUpdateChaos ^= 1 : shouldUpdateChaos = true;
     if (!shouldUpdateChaos)
-        return;
+        return;	
 
     if (director->mCurState == TMarDirector::Status::STATE_NORMAL) {
         float timeSinceLastRoll = currentTime - codeContainer.lastRollTime;
@@ -725,6 +728,68 @@ BETTER_SMS_FOR_CALLBACK static void titleScreenEngine(TMarDirector *director) {
         codeContainer.checkCodeTimers();
         codeContainer.iterateThroughCodes();
     }
+
+	static f32 timeLeftOption = 0;	// keeps the below conditional from being spammed 
+	if (sCustomRNGSeed != 0 && gpApplication.mCurrentScene.mAreaID != gpApplication.mNextScene.mAreaID && timeLeftOption < currentTime - 5) {
+        Utils::endAllCodes();
+        Utils::setSeed(sCustomRNGSeed);
+        timeLeftOption = currentTime;
+    }
+
+}
+
+BETTER_SMS_FOR_CALLBACK static void setSeedCallback(TApplication *tapp) {
+
+	if (tapp->mCurrentScene.mAreaID != 15)	// has potential for conflicts with other mods
+        return;
+
+	enum scrollStates {
+        NOT_SCROLLING        = 0,
+        SCROLLING			 = 1,
+        DECIMAL_PLACE_LOCKED = 2
+    };
+
+    static int stickHoldStarted = 0;		// the value of sCustomRNGSeed when it began to get changed
+    static int step				= 1;		// settings step amount
+    static bool holdingStick    = false;	// if holding stick > 0.3 on x axis
+    static scrollStates scrollState = NOT_SCROLLING;
+    f32 menuTime;
+	
+	f32 absoluteStickValue = tapp->mGamePads[0]->mControlStick.mStickX;  // absolute value of mStickX
+    if (absoluteStickValue < 0)
+        absoluteStickValue *= -1;
+
+	if (absoluteStickValue > 0.2)
+        scrollState = SCROLLING;
+    else
+		scrollState = NOT_SCROLLING;
+
+	if (tapp->mGamePads[0]->mButtons.mInput & JUTGamePad::EButtons::Z)	// overrides the other two scrollStates by design
+        scrollState = DECIMAL_PLACE_LOCKED;
+
+
+	switch (scrollState) {
+
+        case NOT_SCROLLING:			// reset the step counter
+			step = 1;		
+			break;
+
+        case SCROLLING:				// every 5 steps, increase the decimal place that is being stepped
+			if (stickHoldStarted <= sCustomRNGSeed - (5 * step) || stickHoldStarted >= sCustomRNGSeed + (5 * step)) {
+                step             = step * 10;
+                stickHoldStarted = sCustomRNGSeed;
+            }
+            break;
+
+		case DECIMAL_PLACE_LOCKED:	// if z is held, lock the decimal place that is being stepped, even if the control stick is let go
+            stickHoldStarted = sCustomRNGSeed;
+	}
+
+	if (step > 1000000000)	// lock step to 10 decimal places
+        step = 1000000000;
+
+	sCustomRNGSeedSetting.setValueRange({-0x7fffffff, 0x7fffffff, step});
+
 }
 
 static void assignOnDeathDestination(JDrama::TFlagT<u16> nextStageFlag, u16 flags) {
@@ -744,13 +809,15 @@ static void initModule() {
 
     // Register callbacks
     BetterSMS::Game::addInitCallback(initVars);
-    BetterSMS::Game::addLoopCallback(updateTime);    
+    BetterSMS::Game::addLoopCallback(updateTime);          
     BetterSMS::Stage::addInitCallback(initCodeDisplay);
     BetterSMS::Stage::addDraw2DCallback(chaosEngine);
     BetterSMS::Stage::addDraw2DCallback(drawCodeDisplay);
     BetterSMS::Stage::addExitCallback(resetCodesOnStageExit);
     BetterSMS::Stage::addInitCallback(applyChaosSettings);
     BetterSMS::Stage::addUpdateCallback(titleScreenEngine);
+
+	BetterSMS::Game::addLoopCallback(setSeedCallback);  
 
 	#if DEV_MODE
     BetterSMS::Stage::addUpdateCallback(requestEndAllCodes);
@@ -772,6 +839,7 @@ static void initModule() {
 
 	sSettingsGroup.addSetting(&sSkipCutscenesSetting);
 
+	sSettingsGroup.addSetting(&sCustomRNGSeedSetting);
 
     {
         auto &saveInfo        = sSettingsGroup.getSaveInfo();
