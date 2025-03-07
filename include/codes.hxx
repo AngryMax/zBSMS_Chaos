@@ -409,6 +409,8 @@ public:
                     return true;
                 if (isCodeActive(CRAZY_GRAVITY) && Utils::rand() % 10 != 0)
                     return true;
+                if (isCodeActive(MOVE_OR_DIE))
+                    return true;
                 break;
 
             case POPUP_SAVE_PROMPT:
@@ -448,7 +450,7 @@ public:
 
             case MOVE_OR_DIE:
                 if ((isCodeActive(TANK_CONTROLS) && Utils::rand() % 10 != 0) || isCodeActive(CHAOS_CODE) ||
-                    isCodeActive(SCRAMBLE_TEXTURES) || isCodeActive(WINDY_DAY) || isCodeActive(HELPFUL_INPUT_DISPLAY) || isCodeActive(SIMON_SAYS) || isCodeActive(SNAKE) || isCodeActive(SMS_WIKI))
+                    isCodeActive(SCRAMBLE_TEXTURES) || isCodeActive(WINDY_DAY) || isCodeActive(HELPFUL_INPUT_DISPLAY) || isCodeActive(SIMON_SAYS) || isCodeActive(SNAKE) || isCodeActive(SMS_WIKI) || isCodeActive(FIRE_MOVEMENT))
                     return true;
                 break;
 
@@ -541,6 +543,7 @@ public:
             case LOL:
             case MOVE_OR_DIE:
 			case DIVING_MODE:
+            case DUMMY_THICC_MARIO:
                 return false;
 		}
 
