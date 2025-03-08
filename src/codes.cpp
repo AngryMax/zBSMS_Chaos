@@ -60,11 +60,17 @@ void CodeContainer::noMActorModels(Code::FuncReset f) {
 }
 
 pp::auto_patch moveTLiveActorDrawPatch(SMS_PORT_REGION(0x80217ec0, 0, 0, 0), BLR, false);
-void CodeContainer::stopTLiveActorPerform(Code::FuncReset f) {
-    if (f == Code::FuncReset::FALSE && !moveTLiveActorDrawPatch.is_enabled())
+void CodeContainer::stopTLiveActorPerform(Code::FuncReset f) {if (f == Code::FuncReset::FALSE && !moveTLiveActorDrawPatch.is_enabled() && (int)currentTime % 5)
         moveTLiveActorDrawPatch.enable();
-    else if (f == Code::FuncReset::TRUE)
+    else if (f == Code::FuncReset::TRUE || !((int)currentTime % 5))
         moveTLiveActorDrawPatch.disable();
+}
+
+void CodeContainer::disableStopTLiveActorPerform() {
+
+	if (gpMarDirector->mCurState == 7)  // just end the code if mario dies for any reason
+        codeContainer.endCode(STOP_TLIVEACTOR_PERFORM);
+
 }
 
 pp::auto_patch stopControlInputsPatch(SMS_PORT_REGION(0x802c93ec, 0, 0, 0), BLR, false);
@@ -2485,34 +2491,49 @@ void CodeContainer::freezeAnims(Code::FuncReset f) {
 
 void CodeContainer::moveOrDie(Code::FuncReset f) {
 
-    const f32 SPEED_MIN = 40;
-    const f32 SPEED_ADD = 85;
-    f32 mForwardSpeed   = gpMarioOriginal->mForwardSpeed;
+    const f32 SPEED_MIN = 40;	// minimum speed needed to not lose hp
+    const f32 SPEED_ADD = 95;	// minim speed needed to regain hp    
     static f32 depletionHP = -200;  // depletionHP starts at -200, if it hits 0 you die.
     u8 speed_meterX  = 150;
     u16 speed_meterY = 400;
 	u16 depletion_meterX  = 465;
     u16 depletion_meterY   = 208;
 
-    if (f == Code::FuncReset::TRUE) {
+
+
+	 if (f == Code::FuncReset::TRUE) {
         depletionHP = -200;
         return;
     }
 
-	if (gpMarDirector->mCurState == 7)			// just end the code if mario dies for any reason
+    if (gpMarDirector->mCurState == 7)  // just end the code if mario dies for any reason
         codeContainer.endCode(MOVE_OR_DIE);
 
-	u8 **marDir = (u8 **)0x8040E178;
-    if (gpMarDirector->mCurState != 4 || marDir[0][0x124] != 0)			// pause hp depletion if the game state is anything but normal gameplay
+    u8 **marDir = (u8 **)0x8040E178;
+    if (gpMarDirector->mCurState != 4 ||
+        marDir[0][0x124] !=
+            0)  // pause hp depletion if the game state is anything but normal gameplay
         return;
 
+
+
+	f32 mForwardSpeed   = gpMarioOriginal->mForwardSpeed;
     if (mForwardSpeed <= 0)
         mForwardSpeed = 1;
 
-    if (mForwardSpeed < SPEED_MIN)
+    f32 absoluteSpeedY = gpMarioOriginal->mSpeed.y;
+    if (absoluteSpeedY < 0)
+        absoluteSpeedY *= -1;
+    absoluteSpeedY /= 1.5;
+
+	f32 totalSpeed = absoluteSpeedY + mForwardSpeed;
+
+
+
+    if (totalSpeed < SPEED_MIN)
         depletionHP += 0.425;   
-	else if (mForwardSpeed > SPEED_ADD && depletionHP > -200)
-        depletionHP -= 0.075;   
+	else if (totalSpeed > SPEED_ADD && depletionHP > -200)
+        depletionHP -= 0.075;
 
 	if (depletionHP >= 0) {
         gpMarioOriginal->loserExec();
@@ -2521,7 +2542,7 @@ void CodeContainer::moveOrDie(Code::FuncReset f) {
 
     // speed meter
     J2DFillBox(speed_meterX - 6, speed_meterY - 4, 100 * 3 + 12, 18, GRAY_TRANSP);
-    J2DFillBox(speed_meterX, speed_meterY, (int)mForwardSpeed * 3, 10, {(u8)(mForwardSpeed * -2.5), (u8)(mForwardSpeed * 2.5), 0, 0xff});
+    J2DFillBox(speed_meterX, speed_meterY, (int)totalSpeed * 3, 10, {(u8)(totalSpeed * -2.5), (u8)(totalSpeed * 2.5), 0, 0xff});
 
     // depletion meter
     J2DFillBox(depletion_meterX, depletion_meterY, 28, 100 * 2 + 6, GRAY_TRANSP);
@@ -2545,9 +2566,12 @@ pp::auto_patch divingModePatch(SMS_PORT_REGION(0x80140cd0, 0, 0, 0), NOP, false)
 void CodeContainer::divingMode(Code::FuncReset f) {
 
 	if (f == Code::FuncReset::TRUE) {
-        gpMarioOriginal->mAttributes.mGainHelmetFlwCamera = false;		// its not a bug, it's a feature ;^)
-        divingModePatch.disable();
+        if (gpApplication.mCurrentScene.mAreaID != TGameSequence::Area::AREA_MAREBOSS)
+            gpMarioOriginal->mAttributes.mGainHelmetFlwCamera = false;		// its not a bug, it's a feature ;^) edit: it was a bug that caused a crash in mareboss ;-;
+
+        divingModePatch.disable();        
         return;
+        
     } 
 
     divingModePatch.enable();

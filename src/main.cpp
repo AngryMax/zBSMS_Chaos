@@ -374,6 +374,9 @@ static BetterSMS::Settings::BoolSetting sInfiniteLivesSetting("Infinite Lives", 
 static bool sSkipCutscenes = true;
 static BetterSMS::Settings::BoolSetting sSkipCutscenesSetting("Skippable Cutscenes", &sSkipCutscenes);
 
+static int sCustomRNGSeed = 0;
+static BetterSMS::Settings::IntSetting sCustomRNGSeedSetting("Set Seed", &sCustomRNGSeed);
+
 
 /*
 / Module Info
@@ -396,7 +399,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {NO_MARIO_REDRAW,           "No Mario Redraw",		            60,			15,		    codeContainer.noMarioRedraw},									
         {HOLD_CAP,                  "Cappy?",                           75,			45,		    codeContainer.holdCapToggle},
         {NO_MACTOR_MODELS,          "The Void Calls...",		        20,			20,		    codeContainer.noMActorModels},
-        {STOP_TLIVEACTOR_PERFORM,   "Untitled",                         20,         20,         codeContainer.stopTLiveActorPerform},
+        {STOP_TLIVEACTOR_PERFORM,   "Untitled",                         15,         20,         codeContainer.stopTLiveActorPerform},
         {STOP_CONTROL_INPUTS,       ":)",                               20,			 1,		    codeContainer.stopControlInputs},
         {SPAM_SPRAY_CENTRAL,        "Spam Spray Central",               65,			20,		    codeContainer.spamSprayCentral},
         {ROLL_EXTRA_CODE,           "Roll Extra Code",                  20,			 5,		    codeContainer.rollExtraCode},
@@ -404,7 +407,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {CLUMSY_JUMPS,              "Clumsy Jumps",                     60,			20,		    codeContainer.lockJumpDirection},
         {PATHETIC_FLUDD,            "Pathetic FLUDD",                   70,			30,		    codeContainer.sadFLUDD},
         {LAND_MOVEMENT_LOCK,        "Landing Movement Lock",            40,			30,		    codeContainer.landMovementLock},
-        {UNLIMITED_TURBO,           "Unlimited Turbo but no Turbo",     25,			30,		    codeContainer.forceTurbo},
+        {UNLIMITED_TURBO,           "Unlimited Turbo but no Turbo",     25,			25,		    codeContainer.forceTurbo},
         {CRESCENDO,                 "Crescendo",                        50,         30,         codeContainer.setMusicVol},
         {SPEEN_ID,                  "S P E E N",                        45,         10,         codeContainer.SPEEN},
         {NOZZLE_ROLL,               "Nozzle Roulette",			        40,          7,         codeContainer.changeNozzleRandom},
@@ -447,7 +450,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {MAKE_MARIO_OBJ,			"Prop Hunt",						65,			60,			codeContainer.makeMarioAnObject},
 		{POPUP_SAVE_PROMPT,			"Quicksave",						55,			 1,			codeContainer.popupSavePrompt},
 		{PING_LAG,					"Nintendo Online",					25,			25,			codeContainer.pingLag},
-		{HALVE_ROLL_TIME,			"No Grace Period",					15,			25,			codeContainer.halveRollTime},
+		{HALVE_ROLL_TIME,			"Halve Roll Time",					15,			25,			codeContainer.halveRollTime},
 		{EARTHQUAKE,				"Earthquake!!!!",					15,			25,			codeContainer.earthquake},
 		{SOMETIMES_DOUBLE_COINS,	"Double Coins???",					60,			30,			codeContainer.sometimesDoubleCoins},
 		{REVERSE_RARITIES,			"Rarity Swap",						 1,			90,			codeContainer.reverseRarities},
@@ -469,7 +472,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {SHRINK_RAY,				"Shrink Ray!",						40,			45,			codeContainer.shrinkRay},
         {CS_PLAYERS,				"CS Players",						50,			41.2,		codeContainer.csPlayers},
         {INVERT_MARIO,				"Inversion",						50,			45,		    codeContainer.invertMario},
-        {FIRE_MOVEMENT,				"MAMA!!",						    50,			30,		    codeContainer.fireMovement},
+        {FIRE_MOVEMENT,				"MAMA!!",						    50,			25,		    codeContainer.fireMovement},
         {LOL,						"lol",								40,			20,		    codeContainer.lol},
         {TILTED,					"Tilted",							65,			30,		    codeContainer.tilted},
         {POPUP_UX,				    "Popups",						    50,			 1,		    codeContainer.popUpUX},
@@ -478,17 +481,17 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {SIGHTSEER,					"Delfino Sightseer",                10,			 1,			codeContainer.sightseer},
         {STAR_POWER,				"Star Power",						40,			10,			codeContainer.starPowerToggle},
         {TRIPPY_TEXTURES,			"Trippy",							50,			40,			codeContainer.trippyTextures},
-        {IMA_TIRED,					"I'ma Tired!",						50,			 1.5,		codeContainer.imaTired},
+        {IMA_TIRED,					"I'ma Tired!",						50,			1.5,		codeContainer.imaTired},
         {FREEZE_ANIMS,				"Stop Motion",						60,			30,			codeContainer.freezeAnims},
         {MOVE_OR_DIE,				"Move or... DIE!!!",				25,			30,			codeContainer.moveOrDie},
-        {DIVING_MODE,				"CAMERA BAD",						50,			30,			codeContainer.divingMode},
+        {DIVING_MODE,				"Scuba Mode",						50,			30,			codeContainer.divingMode},
         {PAUSE_TIMERS,				"Pause Codes",						20,			30,			codeContainer.pauseTimers},	
-        {CHANGE_MUSIC,				"Change Music",						30,			 1,			codeContainer.changeMusic},
+        {CHANGE_MUSIC,				"Change Music",						35,			 1,			codeContainer.changeMusic},
         {OFFSET_MARIO,				"Offset Mario",						50,			30,			codeContainer.offsetMarioToggle},
         {REVERSE_MARIO,				"Reverse Mario",					50,			30,			codeContainer.reverseMarioToggle},
         {FAKE_DEATH,				"Kill Mario",						25,			 5,			codeContainer.fakeDeath},
         {TINY_MARIO,				"Tiny Mario",						50,			30,			codeContainer.tinyMario},
-        {SELFIE_STICK,				"Selfie Stick",						20,			30,			codeContainer.selfieStick},
+        {SELFIE_STICK,				"Selfie Stick",						20,			15,			codeContainer.selfieStick},
         {RAINBOW_WATER,				"Rainbow Water!",					50,			30,			codeContainer.rainbowWater},
         {OUT_OF_BODY,				"Lucid Dream",					    40,			30,			codeContainer.outOfBody}
         // idea: code that adds companion (maybe companion can pick you up and throw you)
@@ -496,12 +499,13 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         // idea: a code which draws the collision triangles in a radius (the matrix)
         // idea: bouncy surface code (make npcs or something bouncy to the touch)
 		// idea: a code that sets the camera to focus on the nearest object to mario
+
 	};
 
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {NO_WHITELIST	};
+    u8 whitelist[] = {NO_WHITELIST};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
@@ -524,6 +528,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 
     //OSReport("Finished initVars!\n");
     Utils::printChaosPtrAddr();
+    Utils::srand();		// seed the code rolling rng
     //OSReport("starPower addr: 0x%x\n", &codeContainer.starPower);
 }
 
@@ -705,7 +710,9 @@ BETTER_SMS_FOR_CALLBACK static void applyChaosSettings(TMarDirector *director) {
 BETTER_SMS_FOR_CALLBACK static void titleScreenEngine(TMarDirector *director) {
 
 	skippableCutscenesPatch1.set_enabled(sSkipCutscenes);
-	skippableCutscenesPatch2.set_enabled(sSkipCutscenes);
+	skippableCutscenesPatch2.set_enabled(sSkipCutscenes);	
+
+	codeContainer.disableStopTLiveActorPerform();	// not a title screen thing but im too lazy to make another game update callback
 
 	if (director->mAreaID != 15)
         return;
@@ -714,7 +721,7 @@ BETTER_SMS_FOR_CALLBACK static void titleScreenEngine(TMarDirector *director) {
     f32 frameRate                 = BetterSMS::getFrameRate();
     frameRate == 60 ? shouldUpdateChaos ^= 1 : shouldUpdateChaos = true;
     if (!shouldUpdateChaos)
-        return;
+        return;	
 
     if (director->mCurState == TMarDirector::Status::STATE_NORMAL) {
         float timeSinceLastRoll = currentTime - codeContainer.lastRollTime;
@@ -723,6 +730,41 @@ BETTER_SMS_FOR_CALLBACK static void titleScreenEngine(TMarDirector *director) {
         codeContainer.checkCodeTimers();
         codeContainer.iterateThroughCodes();
     }
+
+	static f32 timeLeftOption = 0;	// keeps the below conditional from being spammed 
+	if (sCustomRNGSeed != 0 && gpApplication.mCurrentScene.mAreaID != gpApplication.mNextScene.mAreaID && timeLeftOption < currentTime - 5) {
+        Utils::endAllCodes();
+        Utils::setSeed(sCustomRNGSeed);
+        timeLeftOption = currentTime;
+    }
+
+}
+
+BETTER_SMS_FOR_CALLBACK static void setSeedCallback(TApplication *tapp) {
+
+	if (tapp->mCurrentScene.mAreaID != 15)	// has potential for conflicts with other mods
+        return;
+
+	static bool zPressed	= false;
+    static bool lastZState	= false;
+    static int step			= 1;
+
+
+	if (tapp->mGamePads[0]->mButtons.mInput & JUTGamePad::EButtons::Z)
+        zPressed = true;
+    else
+        zPressed = false;
+    
+
+	if (zPressed && !lastZState)
+        step *= 10;
+    if (step > 1000000000)
+        step = 1;
+
+	lastZState = zPressed;
+
+	sCustomRNGSeedSetting.setValueRange({-0x7fffffff, 0x7fffffff, step});
+
 }
 
 static void assignOnDeathDestination(JDrama::TFlagT<u16> nextStageFlag, u16 flags) {
@@ -733,7 +775,35 @@ static void assignOnDeathDestination(JDrama::TFlagT<u16> nextStageFlag, u16 flag
 }
 SMS_PATCH_BL(SMS_PORT_REGION(0x80299808, 0, 0, 0), assignOnDeathDestination);	// credit both JoshuaMK (myself), CyrusLoS, and Eclipse Team as a whole. Any and all use of the source assets should credit Eclipse Team.
 
+BETTER_SMS_FOR_CALLBACK static void customSeeds(TMarDirector *dir) {
 
+	switch (sCustomRNGSeed) {
+		case 7192002:			
+            if (!codeContainer.isCodeActive(SUN_DRIP))
+                codeContainer.forceActivateCode(SUN_DRIP);
+            break;
+        case 69420:
+            codeContainer.rollTime = 0.5;
+            break;
+        case 11211990:
+            if (!codeContainer.isCodeActive(SPAWN_YOSHI))
+                codeContainer.forceActivateCode(SPAWN_YOSHI);
+            if (codeContainer.isCodeActive(MOVE_OR_DIE))
+                codeContainer.endCode(MOVE_OR_DIE);
+            break;
+        case 882000:
+            if (!codeContainer.isCodeActive(PAINT_RANDOM_COLLISION))
+                codeContainer.forceActivateCode(PAINT_RANDOM_COLLISION);
+            if (!codeContainer.isCodeActive(SPAM_SPRAY_CENTRAL))
+                codeContainer.forceActivateCode(SPAM_SPRAY_CENTRAL);
+        case 12202003:
+            if (!codeContainer.isCodeActive(OUT_OF_BODY))
+                codeContainer.forceActivateCode(OUT_OF_BODY);
+            if (!codeContainer.isCodeActive(MOVE_SHINES))
+                codeContainer.forceActivateCode(MOVE_SHINES);
+	};
+
+}
 
 // Module definition
 
@@ -742,13 +812,16 @@ static void initModule() {
 
     // Register callbacks
     BetterSMS::Game::addInitCallback(initVars);
-    BetterSMS::Game::addLoopCallback(updateTime);    
+    BetterSMS::Game::addLoopCallback(updateTime);          
     BetterSMS::Stage::addInitCallback(initCodeDisplay);
     BetterSMS::Stage::addDraw2DCallback(chaosEngine);
     BetterSMS::Stage::addDraw2DCallback(drawCodeDisplay);
     BetterSMS::Stage::addExitCallback(resetCodesOnStageExit);
     BetterSMS::Stage::addInitCallback(applyChaosSettings);
     BetterSMS::Stage::addUpdateCallback(titleScreenEngine);
+    BetterSMS::Stage::addUpdateCallback(customSeeds);
+
+	BetterSMS::Game::addLoopCallback(setSeedCallback);  
 
 	#if DEV_MODE
     BetterSMS::Stage::addUpdateCallback(requestEndAllCodes);
@@ -770,6 +843,7 @@ static void initModule() {
 
 	sSettingsGroup.addSetting(&sSkipCutscenesSetting);
 
+	sSettingsGroup.addSetting(&sCustomRNGSeedSetting);
 
     {
         auto &saveInfo        = sSettingsGroup.getSaveInfo();
@@ -789,7 +863,7 @@ static void initModule() {
 }
 
 // Definition block
-KURIBO_MODULE_BEGIN("Hyper Chaos", "Angry_Max, MasterMattK", "v1.0") {
+KURIBO_MODULE_BEGIN("Hyper Chaos", "Angry_Max, MasterMattK", "v1.1") {
     // Set the load and unload callbacks to our registration functions
     KURIBO_EXECUTE_ON_LOAD { initModule(); }
 }

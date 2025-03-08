@@ -180,6 +180,26 @@ extern float currentTime;  // unit = seconds
 
 #define NO_WHITELIST		   255		// used to stay in DEV_MODE w/o a whitelist
 
+namespace Utils {
+
+	static u32 rng = 0;
+    static void srand() {
+        rng = OSGetTick();
+        OSReport("\nRNG Seed -> %d\n", rng);
+    }
+
+    // more or less a copy of sunshine's rand
+    static u32 rand() {
+        rng = rng * 0x41c64e6d + 0x3039;
+        return rng >> 0x10 & 0x7fff;
+    }
+
+	static void setSeed(u32 seed) {
+		rng = seed;
+        OSReport("\nNew RNG Seed -> %d\n", rng);
+	}
+}
+
 class Code  // we might want to add a member for display name
 {    
 
@@ -338,7 +358,7 @@ public:
             case SCRAMBLE_TEXTURES:
                 if (isCodeActive(SIMON_SAYS) || isCodeActive(SNAKE) || isCodeActive(MOVE_OR_DIE))
                     return true;
-                if (isCodeActive(CHAOS_CODE) && rand() % 100 != 0)
+                if (isCodeActive(CHAOS_CODE) && Utils::rand() % 100 != 0)
                     return true;
                 break;
 
@@ -360,7 +380,7 @@ public:
             case CRAZY_GRAVITY:
                 if (isCodeActive(MOON_GRAVITY))
                     return true;
-                if (isCodeActive(FIRE_MOVEMENT) && rand() % 10 != 0)
+                if (isCodeActive(FIRE_MOVEMENT) && Utils::rand() % 10 != 0)
                     return true;
                 break;
 
@@ -380,14 +400,14 @@ public:
                 break;
 
             case ASCEND:
-                if (isCodeActive(FIRE_MOVEMENT) && rand() % 10 != 0)
+                if (isCodeActive(FIRE_MOVEMENT) && Utils::rand() % 10 != 0)
                     return true;
                 break;
 
             case FIRE_MOVEMENT:
-                if (isCodeActive(ASCEND) && rand() % 10 != 0)
+                if (isCodeActive(ASCEND) && Utils::rand() % 10 != 0)
                     return true;
-                if (isCodeActive(CRAZY_GRAVITY) && rand() % 10 != 0)
+                if (isCodeActive(CRAZY_GRAVITY) && Utils::rand() % 10 != 0)
                     return true;
                 break;
 
@@ -422,12 +442,12 @@ public:
                 break;
 
             case TANK_CONTROLS:
-                if (isCodeActive(MOVE_OR_DIE) && rand() % 10 != 0)
+                if (isCodeActive(MOVE_OR_DIE) && Utils::rand() % 10 != 0)
                     return true;
                 break;
 
             case MOVE_OR_DIE:
-                if ((isCodeActive(TANK_CONTROLS) && rand() % 10 != 0) || isCodeActive(CHAOS_CODE) ||
+                if ((isCodeActive(TANK_CONTROLS) && Utils::rand() % 10 != 0) || isCodeActive(CHAOS_CODE) ||
                     isCodeActive(SCRAMBLE_TEXTURES) || isCodeActive(WINDY_DAY) || isCodeActive(HELPFUL_INPUT_DISPLAY) || isCodeActive(SIMON_SAYS) || isCodeActive(SNAKE) || isCodeActive(SMS_WIKI))
                     return true;
                 break;
@@ -443,7 +463,7 @@ public:
                 break;
 
             case TINY_MARIO:
-                if (isCodeActive(GIANT_MARIO) || isCodeActive(WIDE_MARIO))
+                if (isCodeActive(GIANT_MARIO) || isCodeActive(WIDE_MARIO) || isCodeActive(INVERT_MARIO))
                     return true;
                 break;
 
@@ -458,7 +478,7 @@ public:
                 break;
 
 			case PAUSE_TIMERS:
-                if (isCodeActive(CHAOS_CODE) || isCodeActive(FAKE_DEATH) || isCodeActive(IMA_TIRED))
+                if (isCodeActive(CHAOS_CODE) || isCodeActive(FAKE_DEATH) || isCodeActive(IMA_TIRED) || isCodeActive(DOUBLE_TIME))
                     return true;
                 break;
 
@@ -491,6 +511,26 @@ public:
                 if (isCodeActive(SELFIE_STICK))
                     return true;
                 break;
+            case INVERT_MARIO:
+				if (isCodeActive(TINY_MARIO))
+					return true;
+				break;
+            case OUT_OF_BODY:
+                if (isCodeActive(MAKE_MARIO_OBJ))
+                    return true;
+                break;
+            case MAKE_MARIO_OBJ:
+                if (isCodeActive(OUT_OF_BODY))
+                    return true;
+                break;
+            case DOUBLE_TIME:
+                if (isCodeActive(PAUSE_TIMERS))
+                    return true;
+                break;
+            case SUN_DRIP:
+				if (isCodeActive(NO_MARIO_REDRAW))
+					return true;
+				break;
         }
 
 		return false;
@@ -521,14 +561,20 @@ public:
             case LOL:
             case MOVE_OR_DIE:
 			case DIVING_MODE:
+            case DUMMY_THICC_MARIO:
                 return false;
 		}
 
 		return true;
 	}
 
+	void forceActivateCode(int codeID) {
+        codeList[codeID].isActive   = true;
+        codeList[codeID].timeCalled = currentTime;
+	}
+
 private:
-	int getRand() { return (rand() % currentCodeCount); }
+    int getRand() { return (Utils::rand() % currentCodeCount); }
 
 	int getWeightedRand() {
         int roll;
@@ -538,10 +584,10 @@ private:
             roll = getRand();
 
             if (isCodeActive(REVERSE_RARITIES)) {
-                if (codeList[roll].rarity < rand() % 101)
+                if (codeList[roll].rarity < Utils::rand() % 101)
                     return roll;
             } else {
-                if (codeList[roll].rarity > rand() % 101)
+                if (codeList[roll].rarity > Utils::rand() % 101)
                     return roll;
             }
             
@@ -557,6 +603,7 @@ public:
     static void holdCap();
     static void noMActorModels(Code::FuncReset);
     static void stopTLiveActorPerform(Code::FuncReset);
+    static void disableStopTLiveActorPerform();	// disables the above code if mario dies
     static void stopControlInputs(Code::FuncReset);
     static void spamSprayCentral(Code::FuncReset);
     static void rollExtraCode(Code::FuncReset);
@@ -742,7 +789,7 @@ namespace Utils {
             radians += 2 * M_PI;
 
         return radians;
-    }
+    }	
 }
 
 #define LERP(a, b, t) ((a) + (t) * ((b) - (a)))
