@@ -527,6 +527,10 @@ public:
                 if (isCodeActive(PAUSE_TIMERS))
                     return true;
                 break;
+            case SUN_DRIP:
+				if (isCodeActive(NO_MARIO_REDRAW))
+					return true;
+				break;
         }
 
 		return false;

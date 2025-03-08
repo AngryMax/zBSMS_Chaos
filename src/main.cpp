@@ -765,56 +765,6 @@ BETTER_SMS_FOR_CALLBACK static void setSeedCallback(TApplication *tapp) {
 
 	sCustomRNGSeedSetting.setValueRange({-0x7fffffff, 0x7fffffff, step});
 
-	return;
-
-
-	enum scrollStates {
-        NOT_SCROLLING        = 0,
-        SCROLLING			 = 1,
-        DECIMAL_PLACE_LOCKED = 2
-    };
-
-    static int stickHoldStarted = 0;		// the value of sCustomRNGSeed when it began to get changed
-    //static int step				= 1;		// settings step amount/decimal place being stepped
-    static bool holdingStick    = false;	// if holding stick > 0.3 on x axis
-    static scrollStates scrollState = NOT_SCROLLING;
-    f32 menuTime;
-	
-	f32 absoluteStickValue = tapp->mGamePads[0]->mControlStick.mStickX;  // absolute value of mStickX
-    if (absoluteStickValue < 0)
-        absoluteStickValue *= -1;
-
-	if (absoluteStickValue > 0.2)
-        scrollState = SCROLLING;
-    else
-		scrollState = NOT_SCROLLING;
-
-	if (tapp->mGamePads[0]->mButtons.mInput & JUTGamePad::EButtons::Z)	// overrides the other two scrollStates by design
-        scrollState = DECIMAL_PLACE_LOCKED;
-
-
-	switch (scrollState) {
-
-        case NOT_SCROLLING:			// reset the step counter
-			step = 1;		
-			break;
-
-        case SCROLLING:				// every 5 steps, increase the decimal place that is being stepped
-			if (stickHoldStarted <= sCustomRNGSeed - (5 * step) || stickHoldStarted >= sCustomRNGSeed + (5 * step)) {
-                step             = step * 10;
-                stickHoldStarted = sCustomRNGSeed;
-            }
-            break;
-
-		case DECIMAL_PLACE_LOCKED:	// if z is held, lock the decimal place that is being stepped, even if the control stick is let go
-            stickHoldStarted = sCustomRNGSeed;
-	}
-
-	if (step > 1000000000)	// lock step to 10 decimal places
-        step = 1000000000;
-
-	sCustomRNGSeedSetting.setValueRange({-0x7fffffff, 0x7fffffff, step});
-
 }
 
 static void assignOnDeathDestination(JDrama::TFlagT<u16> nextStageFlag, u16 flags) {
@@ -831,13 +781,16 @@ BETTER_SMS_FOR_CALLBACK static void customSeeds(TMarDirector *dir) {
 		case 7192002:			
             if (!codeContainer.isCodeActive(SUN_DRIP))
                 codeContainer.forceActivateCode(SUN_DRIP);
+            break;
         case 69420:
             codeContainer.rollTime = 0.5;
+            break;
         case 11211990:
             if (!codeContainer.isCodeActive(SPAWN_YOSHI))
                 codeContainer.forceActivateCode(SPAWN_YOSHI);
             if (codeContainer.isCodeActive(MOVE_OR_DIE))
                 codeContainer.endCode(MOVE_OR_DIE);
+            break;
 	};
 
 }
