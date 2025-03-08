@@ -491,7 +491,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {REVERSE_MARIO,				"Reverse Mario",					50,			30,			codeContainer.reverseMarioToggle},
         {FAKE_DEATH,				"Kill Mario",						25,			 5,			codeContainer.fakeDeath},
         {TINY_MARIO,				"Tiny Mario",						50,			30,			codeContainer.tinyMario},
-        {SELFIE_STICK,				"Selfie Stick",						20,			30,			codeContainer.selfieStick},
+        {SELFIE_STICK,				"Selfie Stick",						20,			15,			codeContainer.selfieStick},
         {RAINBOW_WATER,				"Rainbow Water!",					50,			30,			codeContainer.rainbowWater},
         {OUT_OF_BODY,				"Lucid Dream",					    40,			30,			codeContainer.outOfBody}
         // idea: code that adds companion (maybe companion can pick you up and throw you)
@@ -745,6 +745,29 @@ BETTER_SMS_FOR_CALLBACK static void setSeedCallback(TApplication *tapp) {
 	if (tapp->mCurrentScene.mAreaID != 15)	// has potential for conflicts with other mods
         return;
 
+	static bool zPressed	= false;
+    static bool lastZState	= false;
+    static int step			= 1;
+
+
+	if (tapp->mGamePads[0]->mButtons.mInput & JUTGamePad::EButtons::Z)
+        zPressed = true;
+    else
+        zPressed = false;
+    
+
+	if (zPressed && !lastZState)
+        step *= 10;
+    if (step > 1000000000)
+        step = 1;
+
+	lastZState = zPressed;
+
+	sCustomRNGSeedSetting.setValueRange({-0x7fffffff, 0x7fffffff, step});
+
+	return;
+
+
 	enum scrollStates {
         NOT_SCROLLING        = 0,
         SCROLLING			 = 1,
@@ -752,7 +775,7 @@ BETTER_SMS_FOR_CALLBACK static void setSeedCallback(TApplication *tapp) {
     };
 
     static int stickHoldStarted = 0;		// the value of sCustomRNGSeed when it began to get changed
-    static int step				= 1;		// settings step amount/decimal place being stepped
+    //static int step				= 1;		// settings step amount/decimal place being stepped
     static bool holdingStick    = false;	// if holding stick > 0.3 on x axis
     static scrollStates scrollState = NOT_SCROLLING;
     f32 menuTime;
@@ -877,7 +900,7 @@ static void initModule() {
 }
 
 // Definition block
-KURIBO_MODULE_BEGIN("Hyper Chaos", "Angry_Max, MasterMattK", "v1.0") {
+KURIBO_MODULE_BEGIN("Hyper Chaos", "Angry_Max, MasterMattK", "v1.1") {
     // Set the load and unload callbacks to our registration functions
     KURIBO_EXECUTE_ON_LOAD { initModule(); }
 }
