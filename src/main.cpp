@@ -791,6 +791,16 @@ BETTER_SMS_FOR_CALLBACK static void customSeeds(TMarDirector *dir) {
             if (codeContainer.isCodeActive(MOVE_OR_DIE))
                 codeContainer.endCode(MOVE_OR_DIE);
             break;
+        case 882000:
+            if (!codeContainer.isCodeActive(PAINT_RANDOM_COLLISION))
+                codeContainer.forceActivateCode(PAINT_RANDOM_COLLISION);
+            if (!codeContainer.isCodeActive(SPAM_SPRAY_CENTRAL))
+                codeContainer.forceActivateCode(SPAM_SPRAY_CENTRAL);
+        case 12202003:
+            if (!codeContainer.isCodeActive(OUT_OF_BODY))
+                codeContainer.forceActivateCode(OUT_OF_BODY);
+            if (!codeContainer.isCodeActive(MOVE_SHINES))
+                codeContainer.forceActivateCode(MOVE_SHINES);
 	};
 
 }
