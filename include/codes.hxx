@@ -409,8 +409,6 @@ public:
                     return true;
                 if (isCodeActive(CRAZY_GRAVITY) && Utils::rand() % 10 != 0)
                     return true;
-                //if (isCodeActive(MOVE_OR_DIE))
-                  //  return true;
                 break;
 
             case POPUP_SAVE_PROMPT:
@@ -450,7 +448,7 @@ public:
 
             case MOVE_OR_DIE:
                 if ((isCodeActive(TANK_CONTROLS) && Utils::rand() % 10 != 0) || isCodeActive(CHAOS_CODE) ||
-                    isCodeActive(SCRAMBLE_TEXTURES) || isCodeActive(WINDY_DAY) || isCodeActive(HELPFUL_INPUT_DISPLAY) || isCodeActive(SIMON_SAYS) || isCodeActive(SNAKE) || isCodeActive(SMS_WIKI) /*|| isCodeActive(FIRE_MOVEMENT)*/)
+                    isCodeActive(SCRAMBLE_TEXTURES) || isCodeActive(WINDY_DAY) || isCodeActive(HELPFUL_INPUT_DISPLAY) || isCodeActive(SIMON_SAYS) || isCodeActive(SNAKE) || isCodeActive(SMS_WIKI))
                     return true;
                 break;
 
@@ -480,7 +478,7 @@ public:
                 break;
 
 			case PAUSE_TIMERS:
-                if (isCodeActive(CHAOS_CODE) || isCodeActive(FAKE_DEATH) || isCodeActive(IMA_TIRED))
+                if (isCodeActive(CHAOS_CODE) || isCodeActive(FAKE_DEATH) || isCodeActive(IMA_TIRED) || isCodeActive(DOUBLE_TIME))
                     return true;
                 break;
 
@@ -523,6 +521,10 @@ public:
                 break;
             case MAKE_MARIO_OBJ:
                 if (isCodeActive(OUT_OF_BODY))
+                    return true;
+                break;
+            case DOUBLE_TIME:
+                if (isCodeActive(PAUSE_TIMERS))
                     return true;
                 break;
         }
