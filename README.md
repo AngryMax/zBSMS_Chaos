@@ -18,19 +18,20 @@ An optional python script for displaying the active chaos effects is provided [h
 If you'd like to read the documentation on what each code does, read up [here](https://docs.google.com/spreadsheets/d/1CBsjPsnEJkVuYLZ5TRXrL6cL7Uj8XLngio_n3UUDDVY/edit?)
 
 # Devolopment Roadmap
-Features you can expect in the next update(1.1):
-* Seeded RNG for code selection + the ability to input custom seeds
+Possible features in future updates:
+* New codes taking advantage of BetterSMS custom objects
+* Livestream voting on codes instead of RNG
+* A system for enabling/disabling codes if possible
 * Important bug/crash fixes if needed
 * Balance changes if needed
 * Possibly other stuff
+* Fix unintended behavior of "Lucid Dream"
+* Easter Eggs
 * No release date
-
-After 1.1 is released, Hyper Chaos will become a backburner project. This means that in some unkown point in the future, there could be an update with extra/changed codes, new settings, livestream voting, etc. We also would like to add a system for enabling/disabling certain codes, but we've yet to find a practical way to pull that off.
 
 # Known Bugs
 * Poinks(the pink guys that attach to FLUDD) sometimes don't want to attach to FLUDD.
-* A crash in Eel involving either "Landing Movement Lock" or "Lucid Dream."
-* Touching a shine while "MAMA!" is active causes it to go intangable, and therefor uncollectable.
+* A somewhat rare crash that involves "I'ma Tired" activating during Roller Coaster
 * "Lucid Dream" has some strange behavior when Mario ca
 
 # Quick Notes
