@@ -60,11 +60,17 @@ void CodeContainer::noMActorModels(Code::FuncReset f) {
 }
 
 pp::auto_patch moveTLiveActorDrawPatch(SMS_PORT_REGION(0x80217ec0, 0, 0, 0), BLR, false);
-void CodeContainer::stopTLiveActorPerform(Code::FuncReset f) {
-    if (f == Code::FuncReset::FALSE && !moveTLiveActorDrawPatch.is_enabled())
+void CodeContainer::stopTLiveActorPerform(Code::FuncReset f) {if (f == Code::FuncReset::FALSE && !moveTLiveActorDrawPatch.is_enabled() && (int)currentTime % 5)
         moveTLiveActorDrawPatch.enable();
-    else if (f == Code::FuncReset::TRUE)
+    else if (f == Code::FuncReset::TRUE || !((int)currentTime % 5))
         moveTLiveActorDrawPatch.disable();
+}
+
+void CodeContainer::disableStopTLiveActorPerform() {
+
+	if (gpMarDirector->mCurState == 7)  // just end the code if mario dies for any reason
+        codeContainer.endCode(STOP_TLIVEACTOR_PERFORM);
+
 }
 
 pp::auto_patch stopControlInputsPatch(SMS_PORT_REGION(0x802c93ec, 0, 0, 0), BLR, false);
@@ -2526,11 +2532,8 @@ void CodeContainer::moveOrDie(Code::FuncReset f) {
 
     if (totalSpeed < SPEED_MIN)
         depletionHP += 0.425;   
-	else if (totalSpeed > SPEED_ADD && depletionHP > -200) {
-
+	else if (totalSpeed > SPEED_ADD && depletionHP > -200)
         depletionHP -= 0.075;
-        OSReport("\n-> ADDING HP\n");
-    }
 
 	if (depletionHP >= 0) {
         gpMarioOriginal->loserExec();
@@ -2563,9 +2566,12 @@ pp::auto_patch divingModePatch(SMS_PORT_REGION(0x80140cd0, 0, 0, 0), NOP, false)
 void CodeContainer::divingMode(Code::FuncReset f) {
 
 	if (f == Code::FuncReset::TRUE) {
-        gpMarioOriginal->mAttributes.mGainHelmetFlwCamera = false;		// its not a bug, it's a feature ;^)
-        divingModePatch.disable();
+        if (gpApplication.mCurrentScene.mAreaID != TGameSequence::Area::AREA_MAREBOSS)
+            gpMarioOriginal->mAttributes.mGainHelmetFlwCamera = false;		// its not a bug, it's a feature ;^) edit: it was a bug that caused a crash in mareboss ;-;
+
+        divingModePatch.disable();        
         return;
+        
     } 
 
     divingModePatch.enable();

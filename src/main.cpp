@@ -399,7 +399,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {NO_MARIO_REDRAW,           "No Mario Redraw",		            60,			15,		    codeContainer.noMarioRedraw},									
         {HOLD_CAP,                  "Cappy?",                           75,			45,		    codeContainer.holdCapToggle},
         {NO_MACTOR_MODELS,          "The Void Calls...",		        20,			20,		    codeContainer.noMActorModels},
-        {STOP_TLIVEACTOR_PERFORM,   "Untitled",                         20,         20,         codeContainer.stopTLiveActorPerform},
+        {STOP_TLIVEACTOR_PERFORM,   "Untitled",                         15,         20,         codeContainer.stopTLiveActorPerform},
         {STOP_CONTROL_INPUTS,       ":)",                               20,			 1,		    codeContainer.stopControlInputs},
         {SPAM_SPRAY_CENTRAL,        "Spam Spray Central",               65,			20,		    codeContainer.spamSprayCentral},
         {ROLL_EXTRA_CODE,           "Roll Extra Code",                  20,			 5,		    codeContainer.rollExtraCode},
@@ -472,7 +472,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {SHRINK_RAY,				"Shrink Ray!",						40,			45,			codeContainer.shrinkRay},
         {CS_PLAYERS,				"CS Players",						50,			41.2,		codeContainer.csPlayers},
         {INVERT_MARIO,				"Inversion",						50,			45,		    codeContainer.invertMario},
-        {FIRE_MOVEMENT,				"MAMA!!",						    50,			30,		    codeContainer.fireMovement},
+        {FIRE_MOVEMENT,				"MAMA!!",						    50,			25,		    codeContainer.fireMovement},
         {LOL,						"lol",								40,			20,		    codeContainer.lol},
         {TILTED,					"Tilted",							65,			30,		    codeContainer.tilted},
         {POPUP_UX,				    "Popups",						    50,			 1,		    codeContainer.popUpUX},
@@ -481,10 +481,10 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
         {SIGHTSEER,					"Delfino Sightseer",                10,			 1,			codeContainer.sightseer},
         {STAR_POWER,				"Star Power",						40,			10,			codeContainer.starPowerToggle},
         {TRIPPY_TEXTURES,			"Trippy",							50,			40,			codeContainer.trippyTextures},
-        {IMA_TIRED,					"I'ma Tired!",						50,			 1.5,		codeContainer.imaTired},
+        {IMA_TIRED,					"I'ma Tired!",						50,			1.5,		codeContainer.imaTired},
         {FREEZE_ANIMS,				"Stop Motion",						60,			30,			codeContainer.freezeAnims},
         {MOVE_OR_DIE,				"Move or... DIE!!!",				25,			30,			codeContainer.moveOrDie},
-        {DIVING_MODE,				"CAMERA BAD",						50,			30,			codeContainer.divingMode},
+        {DIVING_MODE,				"Scuba Mode",						50,			30,			codeContainer.divingMode},
         {PAUSE_TIMERS,				"Pause Codes",						20,			30,			codeContainer.pauseTimers},	
         {CHANGE_MUSIC,				"Change Music",						35,			 1,			codeContainer.changeMusic},
         {OFFSET_MARIO,				"Offset Mario",						50,			30,			codeContainer.offsetMarioToggle},
@@ -505,7 +505,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
-    u8 whitelist[] = {NO_WHITELIST};
+    u8 whitelist[] = {FIRE_MOVEMENT, MOVE_OR_DIE};
     if (!(whitelist[0] == NO_WHITELIST)) {
         for (Code c : addList) {
             for (u8 id : whitelist) {
@@ -711,6 +711,8 @@ BETTER_SMS_FOR_CALLBACK static void titleScreenEngine(TMarDirector *director) {
 
 	skippableCutscenesPatch1.set_enabled(sSkipCutscenes);
 	skippableCutscenesPatch2.set_enabled(sSkipCutscenes);	
+
+	codeContainer.disableStopTLiveActorPerform();	// not a title screen thing but im too lazy to make another game update callback
 
 	if (director->mAreaID != 15)
         return;

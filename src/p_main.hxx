@@ -23,7 +23,7 @@
 
 #include "codes.hxx"
 
-#define DEV_MODE false
+#define DEV_MODE true
 
 // color definitions have been moved to codes.hxx :)
 

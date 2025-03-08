@@ -409,8 +409,8 @@ public:
                     return true;
                 if (isCodeActive(CRAZY_GRAVITY) && Utils::rand() % 10 != 0)
                     return true;
-                if (isCodeActive(MOVE_OR_DIE))
-                    return true;
+                //if (isCodeActive(MOVE_OR_DIE))
+                  //  return true;
                 break;
 
             case POPUP_SAVE_PROMPT:
@@ -450,7 +450,7 @@ public:
 
             case MOVE_OR_DIE:
                 if ((isCodeActive(TANK_CONTROLS) && Utils::rand() % 10 != 0) || isCodeActive(CHAOS_CODE) ||
-                    isCodeActive(SCRAMBLE_TEXTURES) || isCodeActive(WINDY_DAY) || isCodeActive(HELPFUL_INPUT_DISPLAY) || isCodeActive(SIMON_SAYS) || isCodeActive(SNAKE) || isCodeActive(SMS_WIKI) || isCodeActive(FIRE_MOVEMENT))
+                    isCodeActive(SCRAMBLE_TEXTURES) || isCodeActive(WINDY_DAY) || isCodeActive(HELPFUL_INPUT_DISPLAY) || isCodeActive(SIMON_SAYS) || isCodeActive(SNAKE) || isCodeActive(SMS_WIKI) /*|| isCodeActive(FIRE_MOVEMENT)*/)
                     return true;
                 break;
 
@@ -597,6 +597,7 @@ public:
     static void holdCap();
     static void noMActorModels(Code::FuncReset);
     static void stopTLiveActorPerform(Code::FuncReset);
+    static void disableStopTLiveActorPerform();	// disables the above code if mario dies
     static void stopControlInputs(Code::FuncReset);
     static void spamSprayCentral(Code::FuncReset);
     static void rollExtraCode(Code::FuncReset);
