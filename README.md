@@ -14,15 +14,32 @@ If you would like to simply patch the game like any other Sunshine mod, an xDelt
 # Installing the Code Display script
 An optional python script for displaying the active chaos effects is provided [here](https://github.com/MasterMattK/Hyper-Chaos-Code-Display). Installation and usage instructions are provided there.
 
+# Code Wiki
+If you'd like to read the documentation on what each code does, read up [here](https://docs.google.com/spreadsheets/d/1CBsjPsnEJkVuYLZ5TRXrL6cL7Uj8XLngio_n3UUDDVY/edit?)
+
 # Devolopment Roadmap
-Features you can expect in the next update(1.1):
-* Seeded RNG for code selection + the ability to input custom seeds
+Possible features in future updates:
+* New codes taking advantage of BetterSMS custom objects
+* Livestream voting on codes instead of RNG
+* A system for enabling/disabling codes if possible
 * Important bug/crash fixes if needed
 * Balance changes if needed
 * Possibly other stuff
+* Fix unintended behavior of "Lucid Dream"
+* Easter Eggs
 * No release date
 
-After 1.1 is released, Hyper Chaos will become a backburner project. This means that in some unkown point in the future, there could be an update with extra/changed codes, new settings, livestream voting, etc. We also would like to add a system for enabling/disabling certain codes, but we've yet to find a practical way to pull that off.
+# Known Bugs
+* Poinks(the pink guys that attach to FLUDD) sometimes don't want to attach to FLUDD.
+* A somewhat rare crash that involves "I'ma Tired" activating during Roller Coaster
+* "Lucid Dream" has some strange behavior when Mario ca
+
+# Quick Notes
+* This mod is made by two people: MasterMattK and Angry_Max! While I super appreciate people going out of their way to credit me(Angry_Max), MasterMattK also put in an equal amount of work into Hyper Chaos, so be sure to credit him as well!
+* Many codes have effects that last longer than the code itself. For example, nearly any code that changes the location, size, rotation, etc. of different objects will leave those objects at their new location, size, rotation, or etc. This is by design, as it leads to near a near infinite set of different circumstances you have to play around!
+* Loading zones are often included in codes that move objects around(IE: Object Vortex or Shuffle Objects). This is because we love CBT in the Hyper Chaos household.
+* Up on the dpad is a kill button if you're ever softlocked
+* Down on the dpad disables the in game GUI which also disables the hyper chaos engine as a byproduct. We couldn't implement an easy fix for this as it's built into this version of the BetterSMS engine, so avoid hitting this button. 
 
 # Credits
 * Credit to JoshuaMK and the various contributers for development of [BetterSunshineEngine](https://github.com/DotKuribo/BetterSunshineEngine), which is what makes this mod compatible with various others.
