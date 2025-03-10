@@ -1,6 +1,7 @@
 #include <SMS/Player/Mario.hxx>
 #include <SMS/MSound/MSBGM.hxx>
 
+
 #include "p_main.hxx"
 
 /*
@@ -502,6 +503,7 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 
 	};
 
+
     #if DEV_MODE
 
     // any code names listed here will get their rarity set to 100 while the rest are set to 0
@@ -535,6 +537,8 @@ BETTER_SMS_FOR_CALLBACK static void initVars(TApplication *tapp) {
 static OSTime sBaseTime = 0;
 
 BETTER_SMS_FOR_CALLBACK static void updateTime(TApplication *tapp) {
+
+	BetterSMS::PowerPC::writeU32((u32 *)0x80299CF0, 0x3880FFFF);
 
     if (!tapp->mDirector)
         return;
